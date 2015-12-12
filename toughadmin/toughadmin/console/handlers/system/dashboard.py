@@ -78,19 +78,22 @@ class InitdbHandler(BaseHandler):
     def post(self):
         return self.render_json(**execute("/opt/toughadmin/toughctl --initdb"))
 
-@permit.route(r"/dashboard/update", u"更新系统状态", MenuSys, order=1.0002, is_menu=False)
+
+@permit.route(r"/dashboard/restart", u"重启服务", MenuSys, order=1.0004, is_menu=False)
 class RestartHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
         return self.render_json(**execute("supervisorctl restart all && supervisorctl status all"))
 
-@permit.route(r"/dashboard/upgrade", u"升级系统版本", MenuSys, order=1.0003, is_menu=False)
+
+@permit.route(r"/dashboard/update", u"更新系统状态", MenuSys, order=1.0002, is_menu=False)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
         return self.render_json(**execute("supervisorctl status all"))
 
-@permit.route(r"/dashboard/restart", u"重启服务", MenuSys, order=1.0004, is_menu=False)
+
+@permit.route(r"/dashboard/upgrade", u"升级系统版本", MenuSys, order=1.0003, is_menu=False)
 class UpgradeHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
