@@ -37,6 +37,7 @@ class PingProc:
             self.syslog.error("ping admin server error, %s" % jsonresp['msg'])
 
         elif jsonresp['code'] == 100:
+            self.syslog.info("portal didn't register, now join it")
             self.add_portal()
 
     def ping(self):
