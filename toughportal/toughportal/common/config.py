@@ -56,6 +56,8 @@ class Config():
         _syslog_port = os.environ.get("SYSLOG_PORT")
         _syslog_level = os.environ.get("SYSLOG_LEVEL")
         _timezone = os.environ.get("TIMEZONE")
+        _portal_name = os.environ.get("PORTAL_NAME")
+        _portal_addr = os.environ.get("PORTAL_ADDR")
 
 
         if _syslog_enable:
@@ -68,6 +70,10 @@ class Config():
             self.defaults.syslog_level = _syslog_level
         if _timezone:
             self.defaults.tz = _timezone
+        if _portal_name:
+            self.portal.name = _portal_name
+        if _portal_addr:
+            self.portal.ipaddr = _portal_addr
 
     def update(self):
         """ update config file"""
