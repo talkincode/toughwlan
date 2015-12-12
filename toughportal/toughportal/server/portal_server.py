@@ -98,8 +98,8 @@ class PortalListen(protocol.DatagramProtocol):
         
     def run_normal(self):
         log.startLogging(sys.stdout)
-        self.syslog.info('portal server listen %s' % self.portal_host)
-        reactor.listenUDP(self.listen_port, self,interface=self.portal_host)
+        self.syslog.info('portal server listen %s' % self.config.portal.host)
+        reactor.listenUDP(self.config.portal.listen, self,interface=self.config.portal.host)
         # reactor.run()
             
 
