@@ -60,7 +60,8 @@ class Config():
         _syslog_port = os.environ.get("SYSLOG_PORT")
         _syslog_level = os.environ.get("SYSLOG_LEVEL")
         _timezone = os.environ.get("TIMEZONE")
-
+        _db_type = os.environ.get("DB_TYPE")
+        _db_url = os.environ.get("DB_URL")
 
         if _syslog_enable:
             self.defaults.syslog_enable = _syslog_enable
@@ -72,6 +73,10 @@ class Config():
             self.defaults.syslog_level = _syslog_level
         if _timezone:
             self.defaults.tz = _timezone
+        if _db_type:
+            self.database.dbtype = _db_type
+        if _db_url:
+            self.database.dburl = _db_url
 
     def update(self):
         """ update config file"""
