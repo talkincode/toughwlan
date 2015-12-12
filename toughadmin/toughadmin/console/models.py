@@ -164,7 +164,6 @@ class TraPortal(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
     ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False, doc=u"IP地址")
     name = Column(u'name', Unicode(length=64), nullable=False, doc=u"radius名称")
-    admin_port = Column(u'admin_port', INTEGER(), nullable=False, doc=u"管理端口")
     secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
     http_port = Column(u'http_port', INTEGER(), nullable=False, doc=u"http认证端口")
     listen_port = Column(u'listen_port', INTEGER(), nullable=False, doc=u"监听端口")
