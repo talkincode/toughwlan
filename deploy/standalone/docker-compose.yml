@@ -1,5 +1,5 @@
 wlandb:
-    image: "daocloud.io/talkincode/docker-mysql"
+    image: "index.alauda.cn/toughstruct/mysql"
     privileged: true
     ports:
         - "3306:3306"
@@ -13,7 +13,7 @@ wlandb:
         - /home/var/mysql:/var/lib/mysql
 
 portal:
-    image: 'daocloud.io/talkincode/toughwlan-standalone'
+    image: 'index.alauda.cn/toughstruct/toughwlan'
     privileged: true
     ports:
         - "1810:1810"
@@ -27,6 +27,8 @@ portal:
     links:
         - wlandb
     environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
         - TIMEZONE=CST-8
         - AC_SERVER=127.0.0.1:2000
         - ADMIN_URL=http://127.0.0.1:1810/api

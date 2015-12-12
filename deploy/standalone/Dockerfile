@@ -12,7 +12,7 @@ RUN ln -s /opt/toughwlan/toughadmin/toughadmin.conf /etc/toughadmin.conf
 RUN ln -s /opt/toughwlan/toughportal/toughportal.conf /etc/toughportal.conf
 RUN ln -s /opt/toughwlan/toughengine/toughengine.conf /etc/toughengine.conf
 
-RUN ln -s /opt/toughwlan/standalone/etc/supervisord.conf /etc/supervisord.conf
+RUN ln -s /opt/toughwlan/deploy/standalone/etc/supervisord.conf /etc/supervisord.conf
 
 # nginx config link
 
