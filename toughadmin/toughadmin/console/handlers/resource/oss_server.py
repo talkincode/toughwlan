@@ -32,7 +32,7 @@ class AddHandler(BaseHandler):
             self.render("base_form.html", form=form)
             return
         if self.db.query(models.TraOssServer).filter_by(oss_server_ip=form.d.oss_server_ip).count() > 0:
-            self.render("base_form.html", form=form, msg=u"策略服务器已经存在")
+            self.render("base_form.html", form=form, msg=u"OSS服务器已经存在")
             return
         oss_server = models.TraOssServer()
         oss_server.oss_server_ip = form.d.oss_server_ip
@@ -98,7 +98,7 @@ class DeleteHandler(BaseHandler):
                                                                      models.TraOssServer.status==1).first()
 
         if oss_server:
-            self.render_json(code=1, msg=u"此策略服务器正处于活动状态,不允许删除")
+            self.render_json(code=1, msg=u"此OSS服务器为主服务器,不允许删除")
             return
 
         self.db.query(models.TraOssServer).filter_by(id=oss_id).delete()
@@ -107,13 +107,13 @@ class DeleteHandler(BaseHandler):
         ops_log.operator_name = self.get_secure_cookie("tra_user")
         ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
         ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)删除策略服务器信息:%s' % (ops_log.operator_name, oss_id)
+        ops_log.operate_desc = u'操作员(%s)删除OSS服务器信息:%s' % (ops_log.operator_name, oss_id)
         self.db.add(ops_log)
         self.db.commit()
 
         self.render_json(code=0,msg=u'success')
 
-@permit.route(r"/oss/activate", u"OSS服务器激活", MenuRes, order=2.0204, is_menu=False)
+@permit.route(r"/oss/activate", u"OSS服务器祝主服务器激活", MenuRes, order=2.0204, is_menu=False)
 class ActivateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -126,7 +126,7 @@ class ActivateHandler(BaseHandler):
         ops_log.operator_name = self.get_secure_cookie("tra_user")
         ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
         ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)激活策略服务器信息:%s' % (ops_log.operator_name, oss_id)
+        ops_log.operate_desc = u'操作员(%s)设置激活主OSS服务器信息:%s' % (ops_log.operator_name, oss_id)
         self.db.add(ops_log)
         self.db.commit()
 

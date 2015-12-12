@@ -4,7 +4,7 @@ from toughadmin.common import pyforms
 from toughadmin.common.pyforms import rules
 from toughadmin.common.pyforms.rules import button_style, input_style
 
-boolean = {0: u"未激活", 1: u"激活"}
+boolean = {0: u"否", 1: u"是"}
 
 def oss_add_form():
     return pyforms.Form(
