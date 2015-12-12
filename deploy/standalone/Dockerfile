@@ -1,4 +1,4 @@
-FROM index.alauda.cn/toughstruct/tough-pypy
+FROM talkincode/toughwlan:pypy
 MAINTAINER jamiesun <jamiesun.net@gmail.com>
 
 VOLUME ["/var/toughwlan"]
