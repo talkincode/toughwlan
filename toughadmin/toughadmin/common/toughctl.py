@@ -27,7 +27,7 @@ def run_gensql(config):
     def _e(sql, *multiparams, **params): print (sql)
 
     engine = create_engine(
-        config.get('database', "dburl"),
+        config.database.dburl,
         strategy='mock',
         executor=_e
     )
@@ -63,11 +63,11 @@ def run():
     config = iconfig.find_config(args.conf)
 
     if args.debug or args.xdebug:
-        config.set('DEFAULT', 'debug', 'true')
+        config.defaults.debug = True
 
 
     if args.port > 0:
-        config.set('admin', 'port', str(args.port))
+        config.admin.port = args.port
 
     if args.gensql:
         return run_gensql(config)

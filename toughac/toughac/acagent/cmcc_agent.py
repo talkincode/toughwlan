@@ -8,7 +8,7 @@ from toughac.portal import cmcc,pktutils
 from toughac.common import logger
 
 
-class HuaweiAgent(protocol.DatagramProtocol):
+class CmccAgent(protocol.DatagramProtocol):
     def __init__(self, config):
         self.config = config
         self.syslog = logger.Logger(self.config)
@@ -133,5 +133,5 @@ class HuaweiAgent(protocol.DatagramProtocol):
 
 
 def run(config):
-    portal = HuaweiAgent(config)
+    portal = CmccAgent(config)
     portal.run_normal()

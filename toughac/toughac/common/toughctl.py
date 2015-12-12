@@ -37,10 +37,10 @@ def run():
         config.defaults.debug=True
 
     if args.port > 0:
-        config.ac.port = int(args.port)
+        config.ac.port = args.port
 
     if args.vendor > 0:
-        config.ac.vendor = str(args.vendor)
+        config.ac.vendor = args.vendor
 
     if args.portal:
         return run_cmcc(config)
