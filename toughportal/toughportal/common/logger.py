@@ -30,6 +30,8 @@ class Logger:
         if self.syslog_server:
             self.syslog_address = (self.syslog_server,self.syslog_port)
         self.level = string_to_level(config.defaults.get('syslog_level', 'INFO'))
+        if config.defaults.debug:
+            self.level = string_to_level("DEBUG")
 
         self.syslogger = logging.getLogger('toughportal')
         self.syslogger.setLevel(self.level)
@@ -38,7 +40,8 @@ class Logger:
             handler = logging.handlers.SysLogHandler(address=(self.syslog_server, self.syslog_port))
             handler.setFormatter(FORMATTER)
             self.syslogger.addHandler(handler)
-        else:
+
+        if config.defaults.debug:
             stream_handler = logging.StreamHandler(sys.stderr)
             stream_handler.setFormatter(FORMATTER)
             self.syslogger.addHandler(stream_handler)
