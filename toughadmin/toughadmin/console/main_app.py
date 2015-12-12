@@ -91,7 +91,7 @@ class Application(cyclone.web.Application):
 
 def run(config):
     log.startLogging(sys.stdout)
-    log.msg('handlers web server listen %s' % config.admin.host)
+    log.msg('admin web server listen %s' % config.admin.host)
     app = Application(config)
     reactor.listenTCP(int(config.admin.port), app, interface=config.admin.host)
     reactor.run()

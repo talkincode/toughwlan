@@ -33,7 +33,7 @@ class Logger:
         if config.defaults.debug:
             self.level = string_to_level("DEBUG")
 
-        self.syslogger = logging.getLogger('toughportal')
+        self.syslogger = logging.getLogger('toughadmin')
         self.syslogger.setLevel(self.level)
 
         if self.syslog_enable and self.syslog_server:
