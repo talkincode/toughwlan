@@ -25,17 +25,17 @@ if __name__ == '__main__':
     config = iconfig.find_config(args.conf)
 
     if args.debug or args.xdebug:
-        config.set('DEFAULT', 'debug', 'true')
+        config.defaults.debug = True
 
     if args.listen:
         if args.port:
-            config.set('portal', 'listen', str(args.port))
+            config.portal.listen = args.port
         portal_server.run(config)
         reactor.run()
 
     if args.portal:
         if args.port:
-            config.set('portal', 'port', str(args.port))
+            config.portal.port = args.port
         portal_app.run(config)
         reactor.run()
 
