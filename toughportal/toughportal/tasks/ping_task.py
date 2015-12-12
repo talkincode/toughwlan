@@ -42,7 +42,7 @@ class PingProc:
 
     def ping(self):
         sign = self.mksign(params=[self.config.portal.name, self.config.portal.ipaddr])
-        reqdata = json.dumps(dict(name=self.config.portal.name, ip_addr=self.config.portal.ipaddr, sign=sign))
+        reqdata = json.dumps(dict(name=self.config.portal.name, ipaddr=self.config.portal.ipaddr, sign=sign))
 
         if self.config.defaults.debug:
             self.syslog.debug("register portal request: %s" % reqdata)
@@ -71,14 +71,14 @@ class PingProc:
         sign = self.mksign(params=[
             self.config.portal.name,
             self.config.portal.ipaddr,
-            self.config.portal.secret,
+            self.config.portal.key,
             self.config.portal.port,
             self.config.portal.listen
         ])
         reqdata = json.dumps(dict(
             name=self.config.portal.name,
-            ip_addr=self.config.portal.ipaddr,
-            secret=self.config.portal.secret,
+            ipaddr=self.config.portal.ipaddr,
+            secret=self.config.portal.key,
             http_port=self.config.portal.port,
             listen_port=self.config.portal.listen,
             sign=sign

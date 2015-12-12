@@ -21,7 +21,7 @@ class PortalPingHandler(ApiHandler):
             return
 
         name = req_msg.get('name')
-        ipaddr = req_msg.get('ip_addr') or self.request.remote_ip
+        ipaddr = req_msg.get('ipaddr') or self.request.remote_ip
 
         # check radius exists
         portal = self.db.query(models.TraPortal).filter_by(name=name, ip_addr=ipaddr).first()
@@ -45,7 +45,7 @@ class PortalAddHandler(ApiHandler):
             return
 
         name = req_msg.get('name')
-        ip_addr = req_msg.get('ip_addr') or self.request.remote_ip
+        ip_addr = req_msg.get('ipaddr') or self.request.remote_ip
 
         if self.db.query(models.TraPortal).filter_by(name=name, ip_addr=ip_addr).count() > 0:
             return self.render_json(code=0, msg=u'portal exists')
