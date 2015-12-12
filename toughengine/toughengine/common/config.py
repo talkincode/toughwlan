@@ -42,7 +42,7 @@ class Config():
             raise Exception("no config")
 
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
-        self.admin = ConfigDict(**{k: v for k, v in self.config.items("admin") if k not in self.defaults})
+        self.api = ConfigDict(**{k: v for k, v in self.config.items("api") if k not in self.defaults})
         self.radiusd = ConfigDict(**{k: v for k, v in self.config.items("radiusd") if k not in self.defaults})
 
         self.defaults.debug = self.defaults.debug in ("1","true")
@@ -81,9 +81,9 @@ class Config():
         for k,v in self.defaults.iteritems():
             self.config.set("DEFAULT", k, v)
 
-        for k, v in self.admin.iteritems():
+        for k, v in self.api.iteritems():
             if k not in self.defaults:
-                self.config.set("admin", k, v)
+                self.config.set("api", k, v)
 
         for k, v in self.radiusd.iteritems():
             if k not in self.defaults:
