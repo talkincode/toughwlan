@@ -1,0 +1,75 @@
+<%inherit file="base.html"/>
+<%def name="head()">
+<script>
+    function deleteAttr(attr_id) {
+        if (confirm("确认删除吗？")) {
+            window.location.href = "/domain/attr/delete?attr_id=" +attr_id;
+        }
+    }
+</script>
+</%def>
+<%def name="body()">
+<section class="content">
+    <div class="box">
+    <div class="panel-heading"><i class="fa fa-archive"></i> 域信息
+    <div class="bar pull-right"><a href="javascript:history.go(-1);">返回</a></div>
+    </div>
+        <div class="panel-body">
+            % if permit.match(current_user.username,'/domain/attr/add'):
+        <div class="pull-right bottom10">
+            <a href="/domain/attr/add?domain_code=${domain.domain_code}" class="btn btn-sm btn-info">增加域属性</a>
+        </div>
+            % endif
+        <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="6">基本信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>域名称</td>
+                        <td>${domain.domain_code}</td>
+                        <td>模版名</td>
+                        <td>${domain.tpl_name}</td>
+                        <td>域描述</td>
+                        <td colspan="5">${domain.domain_desc}</td>
+                    </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-hover ">
+                <thead>
+                    <tr>
+                        <th colspan="4">域属性列表</th>
+                    </tr>
+            <tr class="active">
+                <th>属性名称</th>
+                <th>属性值</th>
+                <th>属性描述</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            % for attr in attrs:
+            <tr>
+                <td>${attr.attr_name}</td>
+                <td>${attr.attr_value}</td>
+                <td>${attr.attr_desc}</td>
+                <td>
+                    % if permit.match(current_user.username,'/domain/attr/update'):
+                <a class="opt-btn btn-default" href="/domain/attr/update?attr_id=${attr.id}">修改</a>
+                    % endif
+                    % if permit.match(current_user.username,'/domain/attr/delete'):
+                <a class="opt-btn btn-default" href="javascript:deleteAttr('${attr.id}');">删除</a>
+                    % endif
+                </td>
+            </tr>
+            % endfor
+            </tbody>
+        </table>        
+    </div>
+</div>
+</div>
+    </section>
+</%def>

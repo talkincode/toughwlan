@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+
+start()
+{
+    pypy toughctl --admin -c etc/toughadmin.conf
+}
+
+initdb()
+{
+    pypy toughctl --initdb -c etc/toughadmin.conf
+}
+
+case "$1" in
+
+  start)
+    start
+  ;;
+
+  initdb)
+    initdb
+  ;;
+
+esac

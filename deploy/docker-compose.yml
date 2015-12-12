@@ -1,0 +1,81 @@
+logdb:
+    image: "daocloud.io/talkincode/docker-mysql"
+    privileged: true
+    ports:
+        - "3306:3306"
+    environment:
+        - MYSQL_USER=logadm
+        - MYSQL_PASSWORD=logpwd
+        - MYSQL_DATABASE=logger
+        - MYSQL_ROOT_PASSWORD=logroot
+    restart: always
+    volumes:
+        - /home/var/mysql:/var/lib/mysql
+
+logger:
+    image: 'daocloud.io/talkincode/toughlogger'
+    privileged: true
+    ports:
+        - "514:514/udp"
+        - "1514:1514"
+        - "1820:1820"
+    links:
+        - logdb
+    environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://logadm:logpwd@mydb:3306/logger?charset=utf8
+    restart: always
+    volumes:
+        - /data/var/toughlogger:/var/toughlogger
+
+admin:
+    image: 'daocloud.io/talkincode/toughwlan-admin'
+    privileged: true
+    ports:
+        - "1810:1810"
+    links:
+        - logdb
+        - logger
+    restart: always
+    volumes:
+        - /home/var/toughadmin:/var/toughadmin
+
+portal:
+    image: 'daocloud.io/talkincode/toughwlan-portal'
+    privileged: true
+    ports:
+        - "1818:1818"
+        - "50100:50100/udp"
+    links:
+        - logdb
+        - admin
+        - logger
+    environment:
+        - TIMEZONE=CST-8
+        - AC_SERVER=10.10.10.100:2000
+        - ADMIN_URL=http://10.10.10.111:1810/api
+        - ADMIN_SECRET=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
+        - PORTAL_NAME=portal_test
+        - PORTAL_ADDR=10.10.10.68
+    restart: always
+    volumes:
+        - /home/var/toughportal:/var/toughportal
+
+radius:
+    image: 'daocloud.io/talkincode/toughradius-v1'
+    privileged: true
+    ports:
+        - "1812:1812/udp"
+        - "1813:1813/udp"
+        - "1815:1815"
+        - "1816:1816"
+        - "1817:1817"
+        - "1819:1819"
+    links:
+        - logdb
+        - logger
+        - admin
+    restart: always
+    volumes:
+        - /home/var/toughradius:/var/toughradius
+

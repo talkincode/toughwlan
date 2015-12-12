@@ -1,0 +1,55 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+    function deleteSession(session_id)
+    {
+        if(confirm("确认删除吗？"))
+        {
+            window.location.href = "/session/delete?session_id="+session_id;
+        }
+    }
+
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-sitemap"></i>
+            <h3 class="box-title">用户会话列表</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>nas地址</th>
+                        <th>会话标识</th>
+                        <th>上线时间</th>
+                        <th>IP地址</th>
+                        <th>MAC地址</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    % for item in page_data.result:
+                    <tr>
+                        <td>${item.username}</td>
+                        <td>${item.nas_addr}</td>
+                        <td>${item.session_id}</td>
+                        <td>${item.start_time}</td>
+                        <td>${item.ipaddr}</td>
+                        <td>${item.macaddr}</td>
+                    </tr>
+                    % endfor
+                    </tbody>
+                </table>
+                ${page_data.render()}
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

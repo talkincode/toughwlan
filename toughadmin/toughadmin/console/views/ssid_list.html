@@ -1,0 +1,62 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+    function deleteSsid(ssid_id)
+    {
+        if(confirm("确认删除吗？"))
+        {
+            window.location.href = "/ssid/delete?ssid_id="+ssid_id;
+        }
+    }
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-sitemap"></i>
+            <h3 class="box-title">SSID信息列表</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+                % if permit.match(current_user.username,'/ssid/add'):
+                <div class="pull-right bottom10">
+                     <a href="/ssid/add" class="btn btn-sm btn-default">增加SSID信息</a>
+                </div>
+                % endif
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>域编码</th>
+                            <th>SSID</th>
+                            <th>SSID描述</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for mssid in page_data.result:
+                            <tr>
+                                <td>${mssid.domain_code}</td>
+                                <td>${mssid.ssid}</td>
+                                <td>${mssid.ssid_desc}</td>
+                                <td>
+                                    % if permit.match(current_user.username,'/ssid/update'):
+                                    <a class="opt-btn btn-default" href="/ssid/update?ssid_id=${mssid.id}">修改</a>
+                                    % endif
+                                    % if permit.match(current_user.username,'/ssid/delete'):
+                                    <a class="opt-btn btn-default" href="javascript:deleteSsid('${mssid.id}')">删除</a>
+                                    % endif
+                                </td>
+                            </tr>
+                        % endfor
+                    </tbody>
+                </table>
+                ${page_data.render()}
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

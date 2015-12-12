@@ -1,0 +1,58 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-sitemap"></i>
+            <h3 class="box-title">Radius节点状态信息</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+
+                <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="6"> Radius节点状态信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>radius名称</td>
+                        <td colspan="5">${status.radius_name}</td>
+                    </tr>
+                    <tr>
+                        <td>认证包总数</td>
+                        <td>${status.auth_all}</td>
+                        <td>认证接受包</td>
+                        <td>${status.auth_accept}</td>
+                        <td>认证拒绝包</td>
+                        <td>${status.auth_reject}</td>
+                    </tr>
+                    <tr>
+                        <td>计费包总数</td>
+                        <td>${status.acct_all}</td>
+                        <td>计费开始包</td>
+                        <td>${status.acct_start}</td>
+                        <td>计费结束包</td>
+                        <td>${status.acct_stop}</td>
+                    </tr>
+                    <tr>
+                        <td>计费更新包</td>
+                        <td>${status.acct_update}</td>
+                        <td>计费启用</td>
+                        <td>${status.acct_on}</td>
+                        <td>计费关闭</td>
+                        <td>${status.acct_off}</td>
+                    </tr>
+            </tbody>
+        </table>
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

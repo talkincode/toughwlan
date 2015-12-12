@@ -1,0 +1,85 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script>
+    function deletePolicy(policy_id)
+    {
+        if(confirm("确认删除吗？"))
+        {
+            params = {policy_id: policy_id, _xsrf: '${handler.xsrf_token}'};
+            $.post("/oss/delete", params, function (data) {
+                if (data.code > 0) {
+                    alert(data.msg)
+                    return false;
+                }
+                else {
+                    window.location.href = "/policy";
+                }
+            }, "json");
+        }
+    }
+
+    function activatePolicy(policy_id)
+    {
+        if(confirm("同一时间只有一台服务器能处于活动状态,确认激活策略服务器吗？"))
+        {
+            window.location.href = "/oss/activate?oss_id="+policy_id;
+        }
+    }
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-sitemap"></i>
+            <h3 class="box-title">OSS服务器列表</h3>
+        </div>
+        <div class="box-body">
+            <div class="container">
+                % if permit.match(current_user.username,'/oss/add'):
+                <div class="pull-right bottom10">
+                     <a href="/oss/add" class="btn btn-sm btn-default">增加OSS服务器信息</a>
+                </div>
+                % endif
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>OSS服务器IP</th>
+                            <th>OSS服务器认证端口</th>
+                            <th>OSS服务器记账端口</th>
+                            <th>状态</th>
+                            <th>共享密钥</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        % for oss_server in oss_server_list:
+                            <tr>
+                                <td>${oss_server.policy_server_ip}</td>
+                                <td>${oss_server.policy_auth_port}</td>
+                                <td>${oss_server.policy_acct_port}</td>
+                                <td>${oss_status[policy_server.status]}</td>
+                                <td>${oss_server.secret}</td>
+                                <td>
+                                    % if permit.match(current_user.username,'/oss/update'):
+                                    <a class="opt-btn btn-default" href="/policy/update?oss_id=${oss_server.id}">修改</a>
+                                    % endif
+                                    % if permit.match(current_user.username,'/oss/delete'):
+                                    <a class="opt-btn btn-default" href="javascript:deletePolicy('${oss_server.id}')">删除</a>
+                                    % endif
+                                    % if permit.match(current_user.username,'/oss/activate'):
+                                    <a class="opt-btn btn-default" href="javascript:activatePolicy('${oss_server.id}')">激活</a>
+                                    % endif
+                                </td>
+                            </tr>
+                        % endfor
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</%def>

@@ -1,0 +1,52 @@
+<%inherit file="base.html"/>
+<%def name="head()">
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+</script>
+</%def>
+
+
+<%def name="body()">
+
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="fa fa-archive"></i>
+            <h3 class="box-title">用户消息查询</h3>
+        </div>
+        <div class="box-body">
+    <form class="form-well" role="form" action="/packets" method="post">
+    <div class="form-group">
+        <label class="col-sm-2 control-label" id="lab_username" for="username">用户上网账号</label>
+        <input name="_xsrf" id="_xsrf'" type="hidden" value="${handler.xsrf_token}"/>
+        <div class="col-sm-5">
+            <input name="username" placeholder="用户上网账号" required="required" id="username" type="text" class="form-control"/>
+        </div>
+        <div class="col-sm-5">
+            <button name="submit" placeholder="submit" id="submit" type="submit" class="btn btn-primary"><b>开始查询</b></button>
+        </div>
+    </div>
+    </form>
+    <table class="table table-hover">
+        % if packets:
+        <th>用户名</th>
+        <th>Mac地址</th>
+        <th>时间</th>
+        <th>详细信息</th>
+        % for packet in packets:
+            <tr>
+                <td>${packet['userName']}</td>
+                <td>${packet.get('macAddress')}</td>
+                <td>${packet['startTime']}</td>
+                <td>${eval('"'+packet['desc']+'"')}</td>
+            </tr>
+        % endfor
+        % endif
+    </table>
+</div>
+</div>
+</section>
+</%def>
+
