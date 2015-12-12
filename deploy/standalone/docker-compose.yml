@@ -28,6 +28,11 @@ portal:
         - wlandb
     environment:
         - TIMEZONE=CST-8
+        - AC_SERVER=127.0.0.1:2000
+        - ADMIN_URL=http://127.0.0.1:1810/api
+        - ADMIN_SECRET=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
+        - PORTAL_NAME=portal_default
+        - PORTAL_ADDR=127.0.0.1
     restart: always
     volumes:
         - /home/var/toughwlan:/var/toughwlan

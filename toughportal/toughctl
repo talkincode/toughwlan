@@ -37,10 +37,10 @@ if __name__ == '__main__':
         if args.port:
             config.set('portal', 'port', str(args.port))
         portal_app.run(config)
+        reactor.run()
 
-        if args.ping:
-            ping_task.run(config)
-
+    if args.ping:
+        ping_task.run(config)
         reactor.run()
 
 
