@@ -5,7 +5,7 @@ from twisted.python import log
 from twisted.internet import reactor
 from cyclone import httpclient
 from hashlib import md5
-from toughportal.common import logger
+from toughengine.common import logger
 
 class PingProc:
     def __init__(self, config):
@@ -25,29 +25,29 @@ class PingProc:
             log.msg(resp.body)
 
         if resp.code != 200:
-            self.syslog.error("portal ping admin server error,http status = %s" % resp.code)
+            self.syslog.error("radius ping admin server error,http status = %s" % resp.code)
             return
 
         jsonresp = json.loads(resp.body)
         if jsonresp['code'] == 0:
             if self.config.defaults.debug:
-                self.syslog.debug("portal ping admin success")
+                self.syslog.debug("radius ping admin success")
 
         elif jsonresp['code'] == 1:
-            self.syslog.error("portal ping admin server error, %s" % jsonresp['msg'])
+            self.syslog.error("radius ping admin server error, %s" % jsonresp['msg'])
 
         elif jsonresp['code'] == 100:
-            self.syslog.info("portal didn't register")
-
+            self.syslog.info("radius didn't register")
 
     def ping(self):
-        sign = self.mksign(params=[self.config.portal.name, self.config.portal.ipaddr])
-        reqdata = json.dumps(dict(name=self.config.portal.name, ipaddr=self.config.portal.ipaddr, sign=sign))
+        sign = self.mksign(params=[self.config.radiusd.name, self.config.radiusd.ipaddr])
+        reqdata = json.dumps(dict(name=self.config.radiusd.name, ipaddr=self.config.radiusd.ipaddr, sign=sign))
 
         if self.config.defaults.debug:
-            self.syslog.debug("register portal request: %s" % reqdata)
+            self.syslog.debug("radius ping admin request: %s" % reqdata)
+
         headers = {"Content-Type": ["application/json"]}
-        d = httpclient.fetch("%s/portal/ping" % self.config.api.apiurl,postdata=reqdata, headers=headers)
+        d = httpclient.fetch("%s/radius/ping" % self.config.api.apiurl, postdata=reqdata, headers=headers)
         d.addCallback(self.on_ping)
 
 

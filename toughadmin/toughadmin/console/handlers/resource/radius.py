@@ -20,24 +20,18 @@ class RadiusHandler(BaseHandler):
                     radius_list=radius_list,
                     radius_status=radius_form.radius_status)
 
-    def post(self):
-        pass
 
 
-@permit.route(r"/radius/detail", u"Radius节点详情", MenuRes, order=2.0302, is_menu=False)
+@permit.route(r"/radius/detail", u"Radius节点详情", MenuRes, order=2.0302)
 class RadiusDetailHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         radius_name = self.get_argument("radius_name")
         status = self.db.query(models.TraStatus).filter_by(radius_name=radius_name).first()
-        print status
         self.render("radius_detail.html",status=status)
 
-    def post(self):
-        pass
 
-
-@permit.route(r"/radius/delete", u"Radius节点删除", MenuRes, order=2.0301, is_menu=False)
+@permit.route(r"/radius/delete", u"Radius节点删除", MenuRes, order=2.0301)
 class RadiusDeleteHandler(BaseHandler):
     @cyclone.web.authenticated
 
