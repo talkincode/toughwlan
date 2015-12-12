@@ -31,8 +31,6 @@ class HttpClient():
         _params.sort()
         _params.insert(0, secret)
         strs = safestr(''.join(_params))
-        # if self.config.defaults.debug:
-        #     self.log.info("[HttpClient] ::::::: sign_src = %s" % strs)
         mds = md5(strs).hexdigest()
         return mds.upper()
 
@@ -47,8 +45,7 @@ class HttpClient():
         sign = msg['sign']
         params = [msg[k] for k in msg if k != 'sign' ]
         local_sign = self.make_sign(secret, params)
-        # if self.config.defaults.debug:
-        #     self.log.msg("[HttpClient] ::::::: remote_sign = %s ,local_sign = %s" % (sign, local_sign))
+
         return sign == local_sign
 
 
@@ -84,8 +81,8 @@ class HttpClient():
 
     @defer.inlineCallbacks
     def get_nas(self, nasaddr):
-        nas_fetch_url = self.config.radiusd.get('nas_fetch_url')
-        nas_fetch_secret = self.config.radiusd.get('nas_fetch_secret')
+        nas_fetch_url = "%s/nas/fetch" % self.config.api.apiurl
+        nas_fetch_secret = self.config.api.apikey
         if not nas_fetch_url:
             raise ValueError("nas_fetch_url is None")
 
@@ -98,12 +95,12 @@ class HttpClient():
                 sign=sign
             ), ensure_ascii=False)
             resp = yield self.send(nas_fetch_url, reqdata, nas_fetch_secret)
-            print resp
+            self.log.info("query nas data %s" % repr(resp))
             defer.returnValue(resp)
         except Exception as err:
             import traceback
             traceback.print_exc()
-            self.log.msg(u"[HttpClient] ::::::: fetch nas failure,%s" % safestr(err.message))
+            self.log.error(u"[HttpClient] ::::::: fetch nas failure,%s" % safestr(err.message))
             defer.returnValue(dict(code=1, msg=u"fetch nas error, please see log detail"))
 
 

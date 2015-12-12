@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-import sys, json
+import sys, json, time
 from twisted.python import log
 from twisted.internet import reactor
 from cyclone import httpclient
@@ -40,8 +40,9 @@ class PingProc:
             self.syslog.info("radius didn't register")
 
     def ping(self):
-        sign = self.mksign(params=[self.config.radiusd.name, self.config.radiusd.ipaddr])
-        reqdata = json.dumps(dict(name=self.config.radiusd.name, ipaddr=self.config.radiusd.ipaddr, sign=sign))
+        nonce = str(time.time())
+        sign = self.mksign(params=[self.config.radiusd.name, nonce])
+        reqdata = json.dumps(dict(name=self.config.radiusd.name, nonce=nonce, sign=sign))
 
         if self.config.defaults.debug:
             self.syslog.debug("radius ping admin request: %s" % reqdata)

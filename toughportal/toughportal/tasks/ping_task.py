@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import sys, json
+import time
 from twisted.python import log
 from twisted.internet import reactor
 from cyclone import httpclient
@@ -41,8 +42,9 @@ class PingProc:
 
 
     def ping(self):
-        sign = self.mksign(params=[self.config.portal.name, self.config.portal.ipaddr])
-        reqdata = json.dumps(dict(name=self.config.portal.name, ipaddr=self.config.portal.ipaddr, sign=sign))
+        nonce = str(time.time())
+        sign = self.mksign(params=[self.config.portal.name, nonce])
+        reqdata = json.dumps(dict(name=self.config.portal.name, nonce=nonce, sign=sign))
 
         if self.config.defaults.debug:
             self.syslog.debug("register portal request: %s" % reqdata)
