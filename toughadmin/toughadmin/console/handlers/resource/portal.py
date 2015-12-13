@@ -11,7 +11,7 @@ from toughadmin.console import models
 
 portal_status = {0: u"正常", 1: u"未连接"}
 
-@permit.route(r"/portal", u"Portal节点管理", MenuRes, order=2.0800, is_menu=True)
+@permit.route(r"/portal", u"Portal节点管理", MenuRes, order=3.0001, is_menu=True)
 class PortalHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -23,7 +23,7 @@ class PortalHandler(BaseHandler):
     def post(self):
         pass
 
-@permit.route(r"/portal/delete", u"Portal节点删除", MenuRes, order=2.0801, is_menu=False)
+@permit.route(r"/portal/delete", u"Portal节点删除", MenuRes, order=3.0002, is_menu=False)
 class PortalDeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):

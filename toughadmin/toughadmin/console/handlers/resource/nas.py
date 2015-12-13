@@ -12,7 +12,7 @@ from toughadmin.console import models
 from toughadmin.console.handlers.resource import nas_forms
 
 
-@permit.route(r"/bas", u"接入设备管理", MenuRes, order=2.0100, is_menu=True)
+@permit.route(r"/bas", u"接入设备管理", MenuRes, order=1.0000, is_menu=True)
 class BasHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -21,7 +21,7 @@ class BasHandler(BaseHandler):
                       bas_list=self.db.query(models.TraBas))
 
 
-@permit.route(r"/bas/add", u"接入设备新增", MenuRes, order=2.0101, is_menu=False)
+@permit.route(r"/bas/add", u"接入设备新增", MenuRes, order=1.0001)
 class AddHandler(BaseHandler):
 
     @cyclone.web.authenticated
@@ -58,7 +58,7 @@ class AddHandler(BaseHandler):
 
         self.redirect("/bas",permanent=False)
 
-@permit.route(r"/bas/update", u"接入设备修改", MenuRes, order=2.0102, is_menu=False)
+@permit.route(r"/bas/update", u"接入设备修改", MenuRes, order=1.00002)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -92,7 +92,7 @@ class UpdateHandler(BaseHandler):
 
         self.redirect("/bas",permanent=False)
 
-@permit.route(r"/bas/delete", u"接入设备删除", MenuRes, order=2.0102, is_menu=False)
+@permit.route(r"/bas/delete", u"接入设备删除", MenuRes, order=1.0003)
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):

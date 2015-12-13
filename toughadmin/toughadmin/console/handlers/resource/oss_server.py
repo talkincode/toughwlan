@@ -12,14 +12,14 @@ from toughadmin.console import models
 from toughadmin.console.handlers.resource import oss_server_forms
 
 
-@permit.route(r"/oss", u"OSS服务器管理", MenuRes, order=2.0200, is_menu=True)
+@permit.route(r"/oss", u"OSS服务器管理", MenuRes, order=4.0001, is_menu=True)
 class OssServerHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         self.render("oss_server_list.html",oss_status=oss_server_forms.boolean,
                       oss_server_list=self.db.query(models.TraOssServer))
 
-@permit.route(r"/oss/add", u"OSS服务器新增", MenuRes, order=2.0201, is_menu=False)
+@permit.route(r"/oss/add", u"OSS服务器新增", MenuRes, order=4.0002)
 class AddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -56,7 +56,7 @@ class AddHandler(BaseHandler):
         self.redirect("/oss",permanent=False)
 
 
-@permit.route(r"/oss/update", u"策略服务器修改", MenuRes, order=2.0202, is_menu=False)
+@permit.route(r"/oss/update", u"策略服务器修改", MenuRes, order=4.0003)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -88,7 +88,7 @@ class UpdateHandler(BaseHandler):
         self.redirect("/oss",permanent=False)
 
 
-@permit.route(r"/oss/delete", u"策略服务器删除", MenuRes, order=2.0203, is_menu=False)
+@permit.route(r"/oss/delete", u"策略服务器删除", MenuRes, order=4.0004)
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
@@ -113,7 +113,7 @@ class DeleteHandler(BaseHandler):
 
         self.render_json(code=0,msg=u'success')
 
-@permit.route(r"/oss/activate", u"OSS服务器祝主服务器激活", MenuRes, order=2.0204, is_menu=False)
+@permit.route(r"/oss/activate", u"OSS服务器祝主服务器激活", MenuRes, order=4.0005)
 class ActivateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):

@@ -10,12 +10,14 @@ from toughadmin.common.permit import permit
 from toughadmin.console import models
 from toughadmin.console.handlers.resource import ostype_forms
 
-
+permit.route(r"/ostype", u"终端类型管理", MenuRes, order=9.0001, is_menu=True)
 class OsTypeHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         self.render("ostype_list.html", page_data=self.get_page_data(self.db.query(models.TraOSTypes)))
 
+
+permit.route(r"/ostype/add", u"终端类型新增", MenuRes, order=9.0002)
 class AddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -47,6 +49,7 @@ class AddHandler(BaseHandler):
         self.redirect("/ostype",permanent=False)
 
 
+permit.route(r"/ostype/update", u"终端类型修改", MenuRes, order=9.0003)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -76,6 +79,7 @@ class UpdateHandler(BaseHandler):
         self.redirect("/ostype",permanent=False)
 
 
+permit.route(r"/ostype/delete", u"终端类型删除", MenuRes, order=9.0003)
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -94,7 +98,6 @@ class DeleteHandler(BaseHandler):
 
 
 
-permit.add_route(OsTypeHandler, r"/ostype", u"终端类型管理", MenuRes, order=2.0400, is_menu=True)
-permit.add_route(AddHandler, r"/ostype/add", u"终端类型新增", MenuRes, order=2.0401, is_menu=False)
-permit.add_route(UpdateHandler, r"/ostype/update", u"终端类型修改", MenuRes, order=2.0402, is_menu=False)
-permit.add_route(DeleteHandler, r"/ostype/delete", u"终端类型删除", MenuRes, order=2.0402, is_menu=False)
+
+
+

@@ -11,7 +11,7 @@ from toughadmin.common.permit import permit
 from toughadmin.console import models
 from toughadmin.console.handlers.resource import ssid_form
 
-
+@permit.route(r"/ssid", u"SSID信息管理", MenuRes, order=6.0000, is_menu=True)
 class SsidHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -19,7 +19,7 @@ class SsidHandler(BaseHandler):
                       page_data=self.get_page_data(self.db.query(models.TraSsid)))
 
 
-
+@permit.route(r"/ssid/add", u"SSID信息新增", MenuRes, order=6.0001)
 class AddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -50,6 +50,7 @@ class AddHandler(BaseHandler):
         self.redirect("/ssid",permanent=False)
 
 
+@permit.route(r"/ssid/update", u"SSID信息修改", MenuRes, order=6.0002)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -78,7 +79,7 @@ class UpdateHandler(BaseHandler):
         self.db.commit()
         self.redirect("/ssid",permanent=False)
 
-
+@permit.route(r"/ssid/delete", u"SSID信息删除", MenuRes, order=6.0003)
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -96,7 +97,7 @@ class DeleteHandler(BaseHandler):
         self.redirect("/ssid",permanent=False)
 
 
-permit.add_route(SsidHandler, r"/ssid", u"SSID信息管理", MenuRes, order=2.0600, is_menu=True)
-permit.add_route(AddHandler, r"/ssid/add", u"SSID信息新增", MenuRes, order=2.0601, is_menu=False)
-permit.add_route(UpdateHandler, r"/ssid/update", u"SSID信息修改", MenuRes, order=2.0602, is_menu=False)
-permit.add_route(DeleteHandler, r"/ssid/delete", u"SSID信息删除", MenuRes, order=2.0603, is_menu=False)
+
+
+
+

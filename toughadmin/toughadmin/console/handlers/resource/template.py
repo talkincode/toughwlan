@@ -9,22 +9,15 @@ from toughadmin.common.permit import permit
 from toughadmin.console.handlers.resource import template_forms
 from toughadmin.console import models
 
-
+@permit.route(r"/template", u"认证模版管理", MenuRes, order=7.0000, is_menu=True)
 class TemplateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         tpl_list = self.db.query(models.TraTemplate)
         self.render("template.html",tpl_list=tpl_list)
 
-class TemplateDetailHandler(BaseHandler):
-    @cyclone.web.authenticated
-    def get(self):
-        tpl_id = self.get_argument("tpl_id")
-        tpl = self.db.query(models.TraTemplate).get(tpl_id)
-        attrs = self.db.query(models.TraTemplateAttr).filter_by(tpl_name=tpl.tpl_name)
-        self.render("template_detail.html",tpl=tpl,attrs=attrs)
 
-
+@permit.route(r"/template/add", u"模版新增", MenuRes, order=7.0001)
 class TemplateAddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -46,6 +39,7 @@ class TemplateAddHandler(BaseHandler):
         self.redirect("/template")
 
 
+@permit.route(r"/template/update", u"模版修改", MenuRes, order=7.0002)
 class TemplateUpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -70,6 +64,7 @@ class TemplateUpdateHandler(BaseHandler):
         self.redirect("/template")
 
 
+@permit.route(r"/template/delete", u"模版删除", MenuRes, order=7.0003)
 class TemplateDeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self, *args, **kwargs):
@@ -78,7 +73,16 @@ class TemplateDeleteHandler(BaseHandler):
         self.db.commit()
         self.redirect("/template")
 
+@permit.route(r"/template/detail", u"模版详情", MenuRes, order=7.0004)
+class TemplateDetailHandler(BaseHandler):
+    @cyclone.web.authenticated
+    def get(self):
+        tpl_id = self.get_argument("tpl_id")
+        tpl = self.db.query(models.TraTemplate).get(tpl_id)
+        attrs = self.db.query(models.TraTemplateAttr).filter_by(tpl_name=tpl.tpl_name)
+        self.render("template_detail.html", tpl=tpl, attrs=attrs)
 
+@permit.route(r"/template/attr/add", u"模版属性新增", MenuRes, order=7.0005)
 class TemplateAttrAddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -106,7 +110,7 @@ class TemplateAttrAddHandler(BaseHandler):
         tpl_id = self.db.query(models.TraTemplate.id).filter_by(tpl_name=form.d.tpl_name).scalar()
         self.redirect("/template/detail?tpl_id=%s"%tpl_id)
 
-
+@permit.route(r"/template/attr/update", u"模版属性修改", MenuRes, order=7.0006)
 class TemplateAttrUpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -131,7 +135,7 @@ class TemplateAttrUpdateHandler(BaseHandler):
         tpl_id = self.db.query(models.TraTemplate.id).filter_by(tpl_name=form.d.tpl_name).scalar()
         self.redirect("/template/detail?tpl_id=%s" % tpl_id)
 
-
+@permit.route(r"/template/attr/delete", u"模版属性删除", MenuRes, order=7.0007)
 class TemplateAttrDeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -145,11 +149,11 @@ class TemplateAttrDeleteHandler(BaseHandler):
         self.redirect("/template/detail?tpl_id=%s" % tpl_id)
 
 
-permit.add_route(TemplateHandler, r"/template", u"认证模版管理", MenuRes, order=2.0500, is_menu=True)
-permit.add_route(TemplateAddHandler, r"/template/add", u"模版新增", MenuRes, order=2.0501, is_menu=False)
-permit.add_route(TemplateUpdateHandler, r"/template/update", u"模版修改", MenuRes, order=2.0502, is_menu=False)
-permit.add_route(TemplateDeleteHandler, r"/template/delete", u"模版删除", MenuRes, order=2.0503, is_menu=False)
-permit.add_route(TemplateDetailHandler, r"/template/detail", u"模版详情", MenuRes, order=2.0504, is_menu=False)
-permit.add_route(TemplateAttrAddHandler, r"/template/attr/add", u"模版属性新增", MenuRes, order=2.0505, is_menu=False)
-permit.add_route(TemplateAttrUpdateHandler, r"/template/attr/update", u"模版属性修改", MenuRes, order=2.0506, is_menu=False)
-permit.add_route(TemplateAttrDeleteHandler, r"/template/attr/delete", u"模版属性删除", MenuRes, order=2.0507, is_menu=False)
+
+
+
+
+
+
+
+

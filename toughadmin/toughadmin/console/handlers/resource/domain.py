@@ -12,13 +12,13 @@ from toughadmin.console import models
 from toughadmin.console.handlers.resource import domain_form
 
 
-@permit.route(r"/domain", u"域信息管理", MenuRes, order=2.0500, is_menu=True)
+@permit.route(r"/domain", u"域信息管理", MenuRes, order=5.0000, is_menu=True)
 class DomainHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         self.render("domain_list.html", page_data=self.get_page_data(self.db.query(models.TraDomain)))
 
-@permit.route(r"/domain/detail", u"域信息详情", MenuRes, order=2.0504, is_menu=False)
+@permit.route(r"/domain/detail", u"域信息详情", MenuRes, order=5.0001)
 class DomainDetailHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -28,7 +28,7 @@ class DomainDetailHandler(BaseHandler):
         self.render("domain_detail.html", domain=domain, attrs=attrs)
 
 
-@permit.route(r"/domain/add", u"域信息新增", MenuRes, order=2.0501, is_menu=False)
+@permit.route(r"/domain/add", u"域信息新增", MenuRes, order=5.0002)
 class AddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -59,7 +59,7 @@ class AddHandler(BaseHandler):
         self.db.commit()
         self.redirect("/domain",permanent=False)
 
-@permit.route(r"/domain/update", u"域信息修改", MenuRes, order=2.0502, is_menu=False)
+@permit.route(r"/domain/update", u"域信息修改", MenuRes, order=5.0003)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -88,7 +88,7 @@ class UpdateHandler(BaseHandler):
         self.db.commit()
         self.redirect("/domain",permanent=False)
 
-@permit.route(r"/domain/delete", u"域信息删除", MenuRes, order=2.0503, is_menu=False)
+@permit.route(r"/domain/delete", u"域信息删除", MenuRes, order=5.0004)
 class DeleteHandler(BaseHandler):
 
     @cyclone.web.authenticated
@@ -111,7 +111,7 @@ class DeleteHandler(BaseHandler):
         self.db.commit()
         return self.render_json(code=0, msg=u"删除域成功!")
 
-@permit.route(r"/domain/attr/add", u"域属性新增", MenuRes, order=2.0505, is_menu=False)
+@permit.route(r"/domain/attr/add", u"域属性新增", MenuRes, order=5.0005)
 class DomainAttrAddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -139,7 +139,7 @@ class DomainAttrAddHandler(BaseHandler):
         domain_id = self.db.query(models.TraDomain.id).filter_by(domain_code=form.d.domain_code).scalar()
         self.redirect("/domain/detail?domain_id=%s" % domain_id)
 
-@permit.route(r"/domain/attr/update", u"域属性修改", MenuRes, order=2.0506, is_menu=False)
+@permit.route(r"/domain/attr/update", u"域属性修改", MenuRes, order=5.0006)
 class DomainAttrUpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -164,7 +164,7 @@ class DomainAttrUpdateHandler(BaseHandler):
         domain_id = self.db.query(models.TraDomain.id).filter_by(domain_code=form.d.domain_code).scalar()
         self.redirect("/domain/detail?domain_id=%s" % domain_id)
 
-@permit.route(r"/domain/attr/delete", u"域属性删除", MenuRes, order=2.0507, is_menu=False)
+@permit.route(r"/domain/attr/delete", u"域属性删除", MenuRes, order=5.0007)
 class DomainAttrDeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
