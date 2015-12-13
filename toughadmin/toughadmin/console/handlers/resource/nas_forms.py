@@ -6,7 +6,13 @@ from toughadmin.common.pyforms.rules import button_style, input_style
 
 boolean = {0: u"否", 1: u"是"}
 timetype = {0: u"标准时区,北京时间", 1: u"时区和时间同区"}
-portaltype = {'cmccv1': "CMCC V1", 'cmccv2': "CMCC V2", 'huwweiv1': "HUAWEI V1", 'huwweiv2': "HUAWEI V2" }
+portaltype = {
+    'cmccv1': "CMCC V1",
+    'cmccv2': "CMCC V2",
+    'huwweiv1': "HUAWEI V1",
+    'huwweiv2': "HUAWEI V2",
+    'wifidog': "WIFIDOG"
+}
 
 bastype = {
     '0'    : u'标准',

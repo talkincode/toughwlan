@@ -132,15 +132,15 @@ class TraSsid(DeclarativeBase):
     ssid_desc = Column(u'ssid_desc', Unicode(length=64), nullable=False, doc=u"ssid描述")
 
 
-class TraStatus(DeclarativeBase):
+class TraRadiusStatus(DeclarativeBase):
     """radius状态信息表 """
-    __tablename__ = 'tra_status'
+    __tablename__ = 'tra_radius_status'
 
     __table_args__ = {}
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"id")
-    radius_name = Column(u'radius_name', Unicode(length=16), nullable=False,doc=u"radius名称")
+    radius_ipaddr = Column(u'radius_ipaddr', Unicode(length=16), nullable=False,doc=u"radius地址")
     auth_all = Column(u'auth_all', INTEGER(), nullable=False, doc=u"认证总数")
     auth_accept = Column(u'auth_accept', INTEGER(), nullable=False, doc=u"认证成功数")
     auth_reject = Column(u'auth_reject', INTEGER(), nullable=False, doc=u"认证拒绝数")

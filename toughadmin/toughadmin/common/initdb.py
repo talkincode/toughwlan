@@ -75,6 +75,17 @@ def init_db(db):
     domain.tpl_name = 'default'
     db.add(domain)
 
+    nas = models.TraBas()
+    nas.ip_addr = "127.0.0.1"
+    nas.bas_name = "local ac"
+    nas.bas_secret = "testing123"
+    nas.ac_port = 2000
+    nas.coa_port = 3799
+    nas.portal_vendor = "cmccv1"
+    nas.time_type = 0
+    nas.vendor_id = 3902
+    db.add(nas)
+
     radius = models.TraRadius()
     radius.ip_addr = "127.0.0.1"
     radius.name = "local radius"

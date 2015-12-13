@@ -12,6 +12,7 @@ portal_add_form = pyforms.Form(
     pyforms.Textbox("secret", rules.len_of(1, 32), description=u"共享密钥", required="required", **input_style),
     pyforms.Textbox("http_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     pyforms.Textbox("listen_port", rules.is_number, description=u"监听端口", required="required", **input_style),
+    pyforms.Button("submit", type="submit", html=u"<b>提交</b>", **button_style),
     title=u"新增portal",
     action="/portal/add"
 )
@@ -22,6 +23,7 @@ portal_update_form = pyforms.Form(
     pyforms.Textbox("secret", rules.len_of(1, 32), description=u"共享密钥", required="required", **input_style),
     pyforms.Textbox("http_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     pyforms.Textbox("listen_port", rules.is_number, description=u"监听端口", required="required", **input_style),
+    pyforms.Button("submit", type="submit", html=u"<b>提交</b>", **button_style),
     title=u"修改portal",
     action="/portal/update"
 )
