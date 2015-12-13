@@ -203,6 +203,18 @@ def add_months(dt,months):
     day = min(dt.day,calendar.monthrange(year,month)[1])
     return dt.replace(year=year, month=month, day=day)
 
+
+def is_connect(timestr, period=180):
+    if not timestr:
+        return False
+    try:
+        last_ping = datetime.datetime.strptime(timestr, "%Y-%m-%d %H:%M:%S")
+        now = datetime.datetime.now()
+        tt = now - last_ping
+        return tt.seconds < period
+    except:
+        return False
+
 def safestr(val):
     if val is None:
         return ''

@@ -39,7 +39,7 @@ class NasFetchHandler(api_base.ApiHandler):
             'secret'      : nas.bas_secret,
             'vendor_id'   : nas.vendor_id,
             'coa_port'    : int(nas.coa_port or 3799),
-            'ac_port'    : int(nas.ac_port or 2000),
+            'ac_port'     : int(nas.ac_port or 2000),
             'api_secret'  : self.settings.config.defaults.secret,
             'api_auth_url': "http://{0}:{1}/api/authorize".format(api_addr,api_port),
             'api_acct_url': "http://{0}:{1}/api/acctounting".format(api_addr, api_port),

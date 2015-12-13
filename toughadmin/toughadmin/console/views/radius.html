@@ -47,9 +47,9 @@
                                 <td>${item.secret}</td>
                                 <td>${item.auth_port}</td>
                                 <td>${item.acct_port}</td>
-                                <td>${radius_status[item.status]}</td>
-                                <td>${item.last_check}</td>
+                                <td>${utils.is_connect(item.last_check) and '<span class="label label-success">连接</span>' or '<span class="label label-default">失联</span>'}
                                 </td>
+                                <td>${item.last_check}</td>
                                 <td>
                                     % if permit.match(current_user.username,'/radius/update'):
                                     <a class="opt-btn btn-default" href="/radius/update?radius_id=${item.id}">修改</a>

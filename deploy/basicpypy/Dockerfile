@@ -24,6 +24,8 @@ RUN pypy -m pip install service_identity
 RUN pypy -m pip install MySQL-python
 RUN pypy -m pip install SQLAlchemy
 RUN pypy -m pip install pybeanstalk
+RUN pypy -m pip install txyam
+
 
 RUN echo "set nocompatible" >> /root/.vimrc && echo "set backspace=2" >> /root/.vimrc
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime

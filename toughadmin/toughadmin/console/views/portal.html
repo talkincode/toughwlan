@@ -47,8 +47,8 @@
                         <td>${item.ip_addr}</td>
                         <td>${item.secret}</td>
                         <td>${item.http_port}</td>
-                        <td>${item.listen_port}</td>
-                        <td>${portal_status[item.status]}</td>
+                        <td>${item.listen_port}</td><td>${utils.is_connect(item.last_check) and '<span \
+                            class="label label-success">连接</span>' or '<span class="label label-default">失联</span>'}
                         <td>${item.last_check}</td>
                         </td>
                         <td>

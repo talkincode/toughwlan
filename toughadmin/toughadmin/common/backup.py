@@ -52,8 +52,6 @@ def restoredb(config,restorefs):
                             db.execute("delete from %s;" % table_name)
                         continue
 
-
-
                     if tabname not in cache_datas:
                         cache_datas[tabname] = [rdata]
                     else:
