@@ -53,19 +53,18 @@ def restoredb(config,restorefs):
                             db.execute("delete from %s;" % table_name)
                         continue
 
-                    print 'insert datas into %s' % tabname
+
 
                     if tabname not in cache_datas:
                         cache_datas[tabname] = [rdata]
                     else:
                         cache_datas[tabname].append(rdata)
 
-                    objs = cache_datas.get(table_name)
-                    if objs and len(objs) >= 500:
-                        db.execute(metadata.tables[table_name].insert().values(objs))
+                    if tabname in cache_datas and len(cache_datas[tabname]) >= 500:
+                        print 'insert datas<%s> into %s' % (len(cache_datas[tabname]), tabname)
+                        db.execute(metadata.tables[tabname].insert().values(cache_datas[tabname]))
                         del cache_datas[tabname]
-                        
-                    # db.execute("commit;")
+
                 except:
                     print 'error data %s ...'% line
                     import traceback
@@ -74,6 +73,7 @@ def restoredb(config,restorefs):
             print "insert last data"
             for tname, tdata in cache_datas.iteritems():
                 try:
+                    print 'insert datas<%s> into %s' % (len(tdata), tname)
                     db.execute(metadata.tables[tname].insert().values(tdata))
                 except:
                     print 'error data %s ...' % tdata
