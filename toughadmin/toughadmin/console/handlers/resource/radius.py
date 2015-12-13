@@ -50,6 +50,8 @@ class AddHandler(BaseHandler):
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
         radius.auth_port = form.d.auth_port
+        radius.status = 0
+        radius.last_check = utils.get_currtime()
         self.db.add(radius)
 
         ops_log = models.TraOperateLog()

@@ -5,6 +5,7 @@ import os
 
 sys.path.insert(0,os.path.split(__file__)[0])
 sys.path.insert(0,os.path.abspath(os.path.pardir))
+from toughadmin.common import utils
 from toughadmin.console import models
 from sqlalchemy.orm import scoped_session, sessionmaker
 from hashlib import md5
@@ -13,7 +14,7 @@ from hashlib import md5
 def init_db(db):
 
     params = [
-        ('system_name',u'管理系统名称',u'ToughRADIUS管理控制台'),
+        ('system_name',u'管理系统名称',u'ToughWlan管理控制台'),
         ('is_debug',u'DEBUG模式',u'0'),
         ('smtp_server',u'SMTP服务器地址',u'smtp.mailgun.org'),
         ('smtp_user',u'SMTP用户名',u'service@toughradius.org'),
@@ -73,6 +74,26 @@ def init_db(db):
     domain.domain_desc = u'默认域'
     domain.tpl_name = 'default'
     db.add(domain)
+
+    radius = models.TraRadius()
+    radius.ip_addr = "127.0.0.1"
+    radius.name = "local radius"
+    radius.secret = "testing123"
+    radius.acct_port = 1812
+    radius.auth_port = 1813
+    radius.status = 0
+    radius.last_check = utils.get_currtime()
+    db.add(radius)
+
+    portal = models.TraPortal()
+    portal.ip_addr = "127.0.0.1"
+    portal.name = "local portal"
+    portal.secret = "testing123"
+    portal.http_port = 1812
+    portal.listen_port = 1813
+    portal.status = 0
+    portal.last_check = utils.get_currtime()
+    db.add(portal)
 
     ssid = models.TraSsid()
     ssid.domain_code = domain.domain_code

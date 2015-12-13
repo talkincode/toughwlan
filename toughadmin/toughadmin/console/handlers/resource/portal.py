@@ -41,6 +41,8 @@ class AddHandler(BaseHandler):
         portal.secret = form.d.secret
         portal.http_port = form.d.http_port
         portal.listen_port = form.d.listen_port
+        portal.status = 0
+        portal.last_check = utils.get_currtime()
         self.db.add(portal)
 
         ops_log = models.TraOperateLog()
