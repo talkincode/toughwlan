@@ -25,7 +25,7 @@ class PortalPingHandler(ApiHandler):
         # check radius exists
         portal = self.db.query(models.TraPortal).filter_by(name=name, ip_addr=ipaddr).first()
         if not portal:
-            return self.render_json(code=100, msg=u'portal node not exists')
+            return self.render_json(code=100, msg=u'portal node <{0}> not exists'.format(ipaddr))
         else:
             portal.last_check = utils.get_currtime()
             self.db.commit()

@@ -27,7 +27,7 @@ class RadiusPingHandler(ApiHandler):
         # check radius exists
         radius = self.db.query(models.TraRadius).filter_by(name=name, ip_addr=ipaddr).first()
         if not radius:
-            return self.render_json(code=100, msg=u'radius node not exists')
+            return self.render_json(code=100, msg=u'radius node <{0}> not exists'.format(ipaddr))
         else:
             radius.last_check = utils.get_currtime()
             self.db.commit()
