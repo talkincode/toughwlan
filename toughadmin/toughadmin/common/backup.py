@@ -16,14 +16,21 @@ def dumpdb(config,dumpfs):
     engine = get_engine(config)
     db = engine.connect()
     metadata = models.get_metadata(engine)
-    with gzip.open(dumpfs,'wb') as dumpfs:
+    with gzip.open(dumpfs, 'wb') as dumpfs:
+
+        table_names = [_name for _name, _ in metadata.tables.items()]
+        table_headers = ('table_names', table_names)
+        dumpfs.write(json.dumps(table_headers, ensure_ascii=False).encode('utf-8'))
+        dumpfs.write('\n')
+
         for _name,_table in metadata.tables.items():
             if _name in excludes:
                 continue
-            rows = db.execute(select([_table])).fetchall()
-            obj = dict(table=_name,data=[dict(r.items()) for r in rows])
-            dumpfs.write(json.dumps(obj,ensure_ascii=False).encode('utf-8'))
-            dumpfs.write('\n')
+            rows = db.execute(select([_table]))
+            for rows in rows:
+                obj = (_name, dict(rows.items()))
+                dumpfs.write(json.dumps(obj,ensure_ascii=False).encode('utf-8'))
+                dumpfs.write('\n')
     db.close()
 
 
@@ -35,26 +42,46 @@ def restoredb(config,restorefs):
         db = engine.connect()
         metadata = models.get_metadata(engine)
         with gzip.open(restorefs,'rb') as rfs:
+            cache_datas = {}
             for line in rfs:
                 try:
-                    obj = json.loads(line)
-                    print "delete from %s"%obj['table']
-                    db.execute("delete from %s"%obj['table'])
-                    print 'insert datas into %s'%obj['table']
-                    objs =  obj['data']
-                    if len(objs) < 500:
-                        if objs:db.execute(metadata.tables[obj['table'] ].insert().values(objs))
+                    tabname, rdata = json.loads(line)
+
+                    if tabname == 'table_names' and rdata:
+                        for table_name in rdata:
+                            print "clean table %s" % table_name
+                            db.execute("delete from %s;" % table_name)
+                        continue
+
+                    print 'insert datas into %s' % tabname
+
+                    if tabname not in cache_datas:
+                        cache_datas[tabname] = [rdata]
                     else:
-                        while len(objs) > 0:
-                            _tmp_pbjs = objs[:500]
-                            objs = objs[500:]
-                            db.execute(metadata.tables[obj['table'] ].insert().values(_tmp_pbjs))
+                        cache_datas[tabname].append(rdata)
+
+                    objs = cache_datas.get(table_name)
+                    if objs and len(objs) >= 500:
+                        db.execute(metadata.tables[table_name].insert().values(objs))
+                        del cache_datas[tabname]
                         
                     # db.execute("commit;")
                 except:
-                    print 'error data %s ...'%line[:128] 
+                    print 'error data %s ...'% line
                     import traceback
                     traceback.print_exc()
+
+            print "insert last data"
+            for tname, tdata in cache_datas.iteritems():
+                try:
+                    db.execute(metadata.tables[tname].insert().values(tdata))
+                except:
+                    print 'error data %s ...' % tdata
+                    import traceback
+                    traceback.print_exc()
+
+            cache_datas.clear()
+
         db.close()
 
 
