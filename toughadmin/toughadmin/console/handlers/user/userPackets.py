@@ -4,7 +4,7 @@ import cyclone.auth
 import cyclone.escape
 import cyclone.httpclient as httpclient
 import cyclone.web
-from toughadmin.console.handlers.base import BaseHandler, MenuRes
+from toughadmin.console.handlers.base import BaseHandler, MenuUser
 from toughadmin.common.permit import permit
 import urllib
 from toughadmin.console import models
@@ -22,6 +22,8 @@ def mksign(secret, params=[]):
     mds = md5(strs.encode()).hexdigest()
     return mds.upper()
 
+
+@permit.route(r"/user/packets", u"用户消息查询", MenuUser, order=2.1000, is_menu=True)
 class UserPacketsHandler(BaseHandler):
 
 
@@ -59,4 +61,3 @@ class UserPacketsHandler(BaseHandler):
         self.render("userPackets.html",packets=packets)
 
 
-permit.add_route(UserPacketsHandler, r"/packets", u"用户消息查询", MenuRes, order=2.1000, is_menu=True)

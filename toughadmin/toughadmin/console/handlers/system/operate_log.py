@@ -21,15 +21,15 @@ class OpsListHandler(BaseHandler):
         query_begin_time = self.get_argument('query_begin_time', "")
         query_end_time = self.get_argument('query_end_time', "")
         keyword = self.get_argument('keyword', "")
-        _query = self.db.query(models.SysOpLog)
+        _query = self.db.query(models.TraOperateLog)
         if opr_name:
-            _query = _query.filter(models.SysOpLog.opr_name==opr_name)
+            _query = _query.filter(models.TraOperateLog.opr_name==opr_name)
         if keyword:
-            _query = _query.filter(models.SysOpLog.op_desc.like("%"+keyword+"%"))
+            _query = _query.filter(models.TraOperateLog.op_desc.like("%"+keyword+"%"))
         if query_begin_time:
-            _query = _query.filter(models.SysOpLog.op_time >= query_begin_time+' 00:00:00')
+            _query = _query.filter(models.TraOperateLog.op_time >= query_begin_time+' 00:00:00')
         if query_end_time:
-            _query = _query.filter(models.SysOpLog.op_time <= query_end_time+' 23:59:59')
+            _query = _query.filter(models.TraOperateLog.op_time <= query_end_time+' 23:59:59')
 
         return self.render('operate_log_list.html',page_data=self.get_page_data(_query),**self.get_params())
 

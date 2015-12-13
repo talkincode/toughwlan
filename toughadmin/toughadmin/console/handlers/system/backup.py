@@ -16,7 +16,7 @@ from toughadmin.common.config import find_config
 class BackupHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
-        backup_path = self.settings.get('backup_path', '/var/toughadmin/data')
+        backup_path = self.settings.config.database.backup_path
         try:
             if not os.path.exists(backup_path):
                 os.makedirs(backup_path)
@@ -30,8 +30,8 @@ class BackupHandler(BaseHandler):
 class DumpHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        backup_path = self.settings.backup_path
-        backup_file = "toughadmin_db_%s.json.gz" % utils.gen_backep_id()
+        backup_path = self.settings.config.database.backup_path
+        backup_file = "toughwlan_db_%s.json.gz" % utils.gen_backep_id()
         try:
             dumpdb(find_config(self.settings.cfgfile), os.path.join(backup_path, backup_file))
             return self.render_json(code=0, msg="backup done!")
@@ -43,8 +43,8 @@ class DumpHandler(BaseHandler):
 class RestoreHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        backup_path = self.settings.backup_path
-        backup_file = "toughradius_db_%s.before_restore.json.gz" % utils.gen_backep_id()
+        backup_path = self.settings.config.database.backup_path
+        backup_file = "toughwlan_db_%s.before_restore.json.gz" % utils.gen_backep_id()
         rebakfs = self.get_argument("bakfs")
         try:
             dumpdb(find_config(self.settings.cfgfile), os.path.join(backup_path, backup_file))
@@ -58,7 +58,7 @@ class RestoreHandler(BaseHandler):
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        backup_path = self.settings.backup_path
+        backup_path = self.settings.config.database.backup_path
         bakfs = self.get_argument("bakfs")
         try:
             os.remove(os.path.join(backup_path, bakfs))
@@ -73,7 +73,7 @@ class UploadHandler(BaseHandler):
     def post(self):
         try:
             f = self.request.files['Filedata'][0]
-            save_path = os.path.join(self.settings.backup_path, f['filename'])
+            save_path = os.path.join(self.settings.config.database.backup_path, f['filename'])
             tf = open(save_path, 'wb')
             tf.write(f['body'])
             tf.close()
