@@ -10,7 +10,6 @@ from toughadmin.common import utils
 from toughadmin.console.handlers.base import BaseHandler, MenuSys
 from toughadmin.common.permit import permit
 from toughadmin.common.backup import dumpdb,restoredb
-from toughadmin.common.config import find_config
 
 @permit.route(r"/backup", u"数据备份管理", MenuSys, order=5.0001, is_menu=True)
 class BackupHandler(BaseHandler):
@@ -33,7 +32,7 @@ class DumpHandler(BaseHandler):
         backup_path = self.settings.config.database.backup_path
         backup_file = "toughwlan_db_%s.json.gz" % utils.gen_backep_id()
         try:
-            dumpdb(find_config(self.settings.cfgfile), os.path.join(backup_path, backup_file))
+            dumpdb(self.settings.config, os.path.join(backup_path, backup_file))
             return self.render_json(code=0, msg="backup done!")
         except Exception as err:
             log.err()
@@ -47,8 +46,8 @@ class RestoreHandler(BaseHandler):
         backup_file = "toughwlan_db_%s.before_restore.json.gz" % utils.gen_backep_id()
         rebakfs = self.get_argument("bakfs")
         try:
-            dumpdb(find_config(self.settings.cfgfile), os.path.join(backup_path, backup_file))
-            restoredb(find_config(self.settings.cfgfile), os.path.join(backup_path, rebakfs))
+            dumpdb(self.settings.config, os.path.join(backup_path, backup_file))
+            restoredb(self.settings.config, os.path.join(backup_path, rebakfs))
             return self.render_json(code=0, msg="restore done!")
         except Exception as err:
             return self.render_json(code=1, msg="restore fail! %s" % (err))

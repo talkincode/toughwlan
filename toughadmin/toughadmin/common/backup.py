@@ -6,7 +6,7 @@ from toughadmin.common.dbengine import get_engine
 from toughadmin.console import models
 import json,os,gzip
 
-excludes = ['slc_rad_ticket','slc_rad_billing','slc_rad_online']
+excludes = ['tra_online']
 
 def dumpdb(config,dumpfs):
     _dir = os.path.split(dumpfs)[0]
@@ -57,4 +57,4 @@ def restoredb(config,restorefs):
                     traceback.print_exc()
         db.close()
 
-    
+
