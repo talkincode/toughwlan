@@ -13,7 +13,7 @@ from toughadmin.console.handlers.system import password_forms
 ###############################################################################
 # password update
 ###############################################################################
-
+@permit.route(r"/password", u"密码修改", MenuSys, order=1.0100, is_menu=False)
 class PasswordUpdateHandler(BaseHandler):
     def get(self):
         form = password_forms.password_update_form()
@@ -42,4 +42,3 @@ class PasswordUpdateHandler(BaseHandler):
         self.redirect("/")
 
 
-permit.add_route(PasswordUpdateHandler, r"/password", u"密码修改", MenuSys, order=1.0000, is_menu=False)

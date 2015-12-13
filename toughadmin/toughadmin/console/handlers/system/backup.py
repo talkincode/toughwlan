@@ -12,7 +12,7 @@ from toughadmin.common.permit import permit
 from toughadmin.common.backup import dumpdb,restoredb
 from toughadmin.common.config import find_config
 
-@permit.route(r"/backup", u"数据备份管理", MenuSys, order=1.0400, is_menu=True)
+@permit.route(r"/backup", u"数据备份管理", MenuSys, order=5.0001, is_menu=True)
 class BackupHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -26,7 +26,7 @@ class BackupHandler(BaseHandler):
         flist.sort(reverse=True)
         return self.render("backup_db.html", backups=flist[:30], backup_path=backup_path)
 
-@permit.route(r"/backup/dump", u"备份数据", MenuSys, order=1.0401, is_menu=False)
+@permit.route(r"/backup/dump", u"备份数据", MenuSys, order=5.0002)
 class DumpHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
@@ -39,7 +39,7 @@ class DumpHandler(BaseHandler):
             log.err()
             return self.render_json(code=1, msg="backup fail! %s" % (err))
 
-@permit.route(r"/backup/restore", u"恢复数据", MenuSys, order=1.0402, is_menu=False)
+@permit.route(r"/backup/restore", u"恢复数据", MenuSys, order=5.0003)
 class RestoreHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
@@ -54,7 +54,7 @@ class RestoreHandler(BaseHandler):
             return self.render_json(code=1, msg="restore fail! %s" % (err))
 
 
-@permit.route(r"/backup/delete", u"删除数据", MenuSys, order=1.0404, is_menu=False)
+@permit.route(r"/backup/delete", u"删除数据", MenuSys, order=5.0004)
 class DeleteHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
@@ -67,7 +67,7 @@ class DeleteHandler(BaseHandler):
             return self.render_json(code=1, msg="delete fail! %s" % (err))
 
 
-@permit.route(r"/backup/upload", u"上传数据", MenuSys, order=1.0403, is_menu=False)
+@permit.route(r"/backup/upload", u"上传数据", MenuSys, order=5.0004)
 class UploadHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):

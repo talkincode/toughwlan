@@ -12,7 +12,7 @@ from toughadmin.console.handlers.system import config_forms
 from toughadmin.console import models
 
 
-@permit.route(r"/config", u"参数配置管理", u"系统管理", order=1.0100, is_menu=True)
+@permit.route(r"/config", u"参数配置管理", u"系统管理", order=2.0000, is_menu=True)
 class ConfigHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -38,7 +38,7 @@ class ConfigHandler(BaseHandler):
                   admin_form=admin_form
               )
 
-@permit.route(r"/config/default/update", u"默认配置", u"系统管理", order=1.0101, is_menu=False)
+@permit.route(r"/config/default/update", u"默认配置", u"系统管理", order=2.0001, is_menu=False)
 class DefaultHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
@@ -47,7 +47,7 @@ class DefaultHandler(BaseHandler):
         self.settings.config.update()
         self.redirect("/config?active=default")
 
-@permit.route(r"/config/database/update", u"数据库配置", u"系统管理", order=1.0102, is_menu=False)
+@permit.route(r"/config/database/update", u"数据库配置", u"系统管理", order=2.0002, is_menu=False)
 class DatabaseHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):

@@ -15,7 +15,7 @@ from toughadmin.console.handlers.system import operator_form
 from toughadmin.console.handlers.system.operator_form import opr_status_dict
 
 
-@permit.route(r"/operator", u"操作员管理", MenuSys, order=1.0300, is_menu=True)
+@permit.route(r"/operator", u"操作员管理", MenuSys, order=3.0000, is_menu=True)
 class OperatorHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -23,7 +23,7 @@ class OperatorHandler(BaseHandler):
                       operator_list=self.db.query(models.TraOperator),opr_status=opr_status_dict)
 
 
-@permit.route(r"/operator/add", u"操作员新增", MenuSys, order=1.0301, is_menu=False, is_open=False)
+@permit.route(r"/operator/add", u"操作员新增", MenuSys, order=3.0001)
 class AddHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -68,7 +68,7 @@ class AddHandler(BaseHandler):
 
         self.redirect("/operator",permanent=False)
 
-@permit.route(r"/operator/update", u"操作员修改", MenuSys, order=1.0302, is_menu=False, is_open=False)
+@permit.route(r"/operator/update", u"操作员修改", MenuSys, order=3.0002)
 class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
@@ -122,7 +122,7 @@ class UpdateHandler(BaseHandler):
 
         self.redirect("/operator",permanent=False)
 
-@permit.route(r"/operator/delete", u"操作员删除", MenuSys, order=1.0303, is_menu=False, is_open=False)
+@permit.route(r"/operator/delete", u"操作员删除", MenuSys, order=3.0003)
 class DeleteHandler(BaseHandler):
 
     @cyclone.web.authenticated
