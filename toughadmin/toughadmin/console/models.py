@@ -129,7 +129,7 @@ class TraRadius(DeclarativeBase):
     secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
     auth_port = Column(u'auth_port', INTEGER(), nullable=False, doc=u"认证端口")
     acct_port = Column(u'acct_port', INTEGER(), nullable=False, doc=u"记账端口")
-    admin_url = Column(u'admin_url', INTEGER(), nullable=False, doc=u"管理地址")
+    admin_url = Column(u'admin_url', Unicode(length=255), nullable=False, doc=u"管理地址")
     last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
 
 class TraRadiusStatus(DeclarativeBase):
