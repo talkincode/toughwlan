@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #coding:utf-8
 from sqlalchemy import *
-from sqlalchemy.orm import scoped_session, sessionmaker
 from toughadmin.common.dbengine import get_engine
 from toughadmin.console import models
 import json,os,gzip
