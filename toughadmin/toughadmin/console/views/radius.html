@@ -22,7 +22,11 @@
         </div>
         <div class="box-body">
             <div class="container">
-
+                % if permit.match(current_user.username,'/radius/add'):
+                <div class="pull-right bottom10">
+                    <a href="/radius/add" class="btn btn-sm btn-info">新增Radius服务器</a>
+                </div>
+                % endif
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -49,6 +53,9 @@
                                 <td>${item.last_check}</td>
                                 </td>
                                 <td>
+                                    % if permit.match(current_user.username,'/radius/update'):
+                                    <a class="opt-btn btn-default" href="/radius/update?radius_id=${item.id}">修改</a>
+                                    % endif
                                     % if permit.match(current_user.username,'/radius/delete'):
                                     <a class="opt-btn btn-default" href="javascript:deleteRadius('${item.id}')">删除</a>
                                     % endif

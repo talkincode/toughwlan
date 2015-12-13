@@ -12,7 +12,7 @@ radius_add_form = pyforms.Form(
     pyforms.Textbox("secret", rules.len_of(1, 32),description=u"radius密钥", required="required", **input_style),
     pyforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     pyforms.Textbox("acct_port", rules.is_number, description=u"记账端口", required="required", **input_style),
-    title="radius",
+    title=u"新增radius",
     action="/radius/add"
 )
 
@@ -22,8 +22,8 @@ radius_update_form = pyforms.Form(
     pyforms.Textbox("secret", rules.len_of(1, 32), description=u"radius密钥", required="required", **input_style),
     pyforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     pyforms.Textbox("acct_port", rules.is_number, description=u"记账端口", required="required", **input_style),
-    title="radius",
-    action="/radius/add"
+    title=u"修改radius",
+    action="/radius/update"
 )
 
 

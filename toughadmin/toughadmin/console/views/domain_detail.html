@@ -15,6 +15,7 @@
     <div class="bar pull-right"><a href="javascript:history.go(-1);">返回</a></div>
     </div>
         <div class="panel-body">
+            <div class="container">
             % if permit.match(current_user.username,'/domain/attr/add'):
         <div class="pull-right bottom10">
             <a href="/domain/attr/add?domain_code=${domain.domain_code}" class="btn btn-sm btn-info">增加域属性</a>
@@ -69,6 +70,7 @@
             </tbody>
         </table>        
     </div>
+            </div>
 </div>
 </div>
     </section>

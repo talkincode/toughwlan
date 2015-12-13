@@ -23,9 +23,10 @@
             <h3 class="box-title">模板列表</h3>
         </div>
         <div class="box-body">
+            <div class="container">
             % if permit.match(current_user.username,'/template/add'):
             <div class="pull-right bottom10">
-                <a href="/template/add" class="btn btn-sm btn-default">添加模板</a>
+                <a href="/template/add" class="btn btn-sm btn-info">添加模板</a>
             </div>
             % endif
 
@@ -55,5 +56,6 @@
             </table>
         </div>
     </div>
+        </div>
 </section>
 </%def>

@@ -22,6 +22,11 @@
         </div>
         <div class="box-body">
             <div class="container">
+                % if permit.match(current_user.username,'/portal/add'):
+                <div class="pull-right bottom10">
+                    <a href="/portal/add" class="btn btn-sm btn-info">新增Portal服务器</a>
+                </div>
+                % endif
 
                 <table class="table table-hover">
                     <thead>
@@ -47,6 +52,9 @@
                         <td>${item.last_check}</td>
                         </td>
                         <td>
+                            % if permit.match(current_user.username,'/portal/update'):
+                            <a class="opt-btn btn-default" href="/portal/update?portal_id=${item.id}">修改</a>
+                            % endif
                             % if permit.match(current_user.username,'/portal/delete'):
                             <a class="opt-btn btn-default" href="javascript:deletePortal('${item.id}')">删除</a>
                             % endif

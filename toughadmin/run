@@ -3,12 +3,12 @@
 
 start()
 {
-    pypy toughctl --admin -c etc/toughadmin.conf
+    pypy toughctl --admin -c toughadmin.conf
 }
 
 initdb()
 {
-    pypy toughctl --initdb -c etc/toughadmin.conf
+    pypy toughctl --initdb -c toughadmin.conf
 }
 
 case "$1" in

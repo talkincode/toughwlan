@@ -17,11 +17,12 @@
             <div class="bar pull-right"><a href="javascript:history.go(-1);">返回</a></div>
         </div>
         <div class="box-body">
-            % if permit.match(current_user.username,'/template/attr/add'):
+            <div class="container">
+        % if permit.match(current_user.username,'/template/attr/add'):
         <div class="pull-right bottom10">
             <a href="/template/attr/add?tpl_name=${tpl.tpl_name}" class="btn btn-sm btn-info">增加模板属性</a>
         </div>
-            % endif
+        % endif
         <table class="table table-hover">
                 <thead>
                     <tr>
@@ -67,7 +68,8 @@
             </tr>
             % endfor
             </tbody>
-        </table>        
+        </table>
+                </div>
     </div>
 </div>
 </div>
