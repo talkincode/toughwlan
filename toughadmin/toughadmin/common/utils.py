@@ -204,7 +204,7 @@ def add_months(dt,months):
     return dt.replace(year=year, month=month, day=day)
 
 
-def is_connect(timestr, period=180):
+def is_connect(timestr, period=600):
     if not timestr:
         return False
     try:
