@@ -44,6 +44,7 @@ class Config():
 
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
         self.api = ConfigDict(**{k: v for k, v in self.config.items("api") if k not in self.defaults})
+        self.memcached = ConfigDict(**{k: v for k, v in self.config.items("memcached") if k not in self.defaults})
         self.portal = ConfigDict(**{k: v for k, v in self.config.items("portal") if k not in self.defaults})
 
         self.defaults.debug = self.defaults.debug in ("1", "true")
@@ -77,7 +78,11 @@ class Config():
 
         for k, v in self.api.iteritems():
             if k not in self.defaults:
-                self.config.set("admin", k, v)
+                self.config.set("api", k, v)
+
+        for k, v in self.memcached.iteritems():
+            if k not in self.defaults:
+                self.config.set("memcached", k, v)
 
         for k, v in self.portal.iteritems():
             if k not in self.defaults:

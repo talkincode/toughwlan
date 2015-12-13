@@ -11,7 +11,7 @@ from beaker.util import parse_cache_config_options
 from mako.lookup import TemplateLookup
 from toughportal.common import logger
 from toughportal.console.portal import base, login
-
+from txyam.client import YamClient
 
 class Application(cyclone.web.Application):
 
@@ -19,11 +19,14 @@ class Application(cyclone.web.Application):
 
         self.config = config
 
+        hosts = [h.split(":") for h in self.config.memcached.hosts.split(",")]
+        hosts = [(h, int(p)) for h, p in hosts]
+        self.mcache = YamClient(hosts)
+
         _handlers = [
             (r"/", base.HomeHandler),
             (r"/login", login.LoginHandler),
         ]
-
 
         try:
             if 'TZ' not in os.environ:

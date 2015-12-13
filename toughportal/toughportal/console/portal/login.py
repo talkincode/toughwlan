@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-#coding:utf-8
-import json
+# coding:utf-8
+
 import time
-import binascii
-from cyclone import httpclient
 from toughportal.common import utils
 from toughportal.console.portal.base import BaseHandler
 from toughportal.packet.client import vendors, PortalClient
@@ -20,6 +18,7 @@ class LoginHandler(BaseHandler):
         if self.settings.debug:
             self.syslog.debug("Open portal auth page, wlan params:{0}".format(utils.safestr(wlan_params)))
         tpl = yield self.get_template_attrs(wlan_params.get("ssid", "default"))
+        print tpl
         self.render(self.get_login_template(tpl['tpl_name']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
 
   

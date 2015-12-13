@@ -15,17 +15,17 @@ from twisted.python import log
 from cyclone.util import ObjectDict
 from cyclone import httpclient
 from twisted.internet import defer
-from toughportal.common import utils,mcache, requests
+from toughportal.common import utils, requests
 from toughportal.common.paginator import Paginator
-
-portal_cache = mcache.Mcache()
 
 class BaseHandler(cyclone.web.RequestHandler):
     
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)
         self.syslog = self.application.syslog
+        self.mcache = self.application.mcache
         self.cache_expirt = int(self.settings.config.portal.cache_expire)
+        self.get_cache_key = "toughwlan.toughportal.{0}".format
 
     def check_xsrf_cookie(self):
         pass
@@ -215,16 +215,14 @@ class BaseHandler(cyclone.web.RequestHandler):
         else:
             return "index.html"
 
-
     @defer.inlineCallbacks
     def get_template_attrs(self, ssid):
-        cache_key = '{0}{1}'.format('get_template_attrs', ssid)
-        _resp = portal_cache.get(cache_key)
+        cache_key = self.get_cache_key('{0}.{1}'.format('get_template_attrs', ssid))
+        _, _resp = yield self.mcache.getPickled(cache_key, uncompress=True)
         if _resp:
             if self.settings.debug:
                 self.syslog.debug("query template request hit cache; key=%s" % cache_key)
             defer.returnValue(_resp)
-            return
 
         sign = self.mksign(params=[ssid])
         reqdata = json.dumps(dict(ssid=ssid, sign=sign))
@@ -241,13 +239,13 @@ class BaseHandler(cyclone.web.RequestHandler):
 
         if jsonresp['code'] == 0:
             self.syslog.info("query template attrs success")
-            portal_cache.set(cache_key, jsonresp['attrs'], expire=self.cache_expirt)
+            self.mcache.setPickled(cache_key, jsonresp['attrs'], compress=True, expireTime=self.cache_expirt)
             defer.returnValue(jsonresp['attrs'])
 
     @defer.inlineCallbacks
     def get_nas(self, ipaddr):
-        cache_key = "get_nas_{0}".format(ipaddr)
-        _resp = portal_cache.get(cache_key)
+        cache_key = self.get_cache_key("get_nas_{0}".format(ipaddr))
+        _, _resp = yield self.mcache.getPickled(cache_key, uncompress=True)
         if _resp:
             if self.settings.debug:
                 self.syslog.debug("query nas server request hit cache; key=%s" % cache_key)
@@ -271,13 +269,13 @@ class BaseHandler(cyclone.web.RequestHandler):
 
         if jsonresp['code'] == 0:
             self.syslog.info("query policy server success,{0}".format(utils.safestr(jsonresp)))
-            portal_cache.set(cache_key, jsonresp, expire=self.cache_expirt)
+            self.mcache.setPickled(cache_key, jsonresp, compress=True, expireTime=self.cache_expirt)
             defer.returnValue(jsonresp)
 
     @defer.inlineCallbacks
     def get_domain(self, ssid):
-        cache_key = "get_domain"
-        _resp = portal_cache.get(cache_key)
+        cache_key = self.get_cache_key("get_domain")
+        _, _resp = yield self.mcache.getPickled(cache_key, uncompress=True)
         if _resp:
             if self.settings.debug:
                 self.syslog.debug("query domain request hit cache; key=%s" % cache_key)
@@ -298,13 +296,13 @@ class BaseHandler(cyclone.web.RequestHandler):
         if jsonresp['code'] == 0:
             if self.settings.debug:
                 self.syslog.debug("query domain success")
-            portal_cache.set(cache_key, jsonresp, expire=self.cache_expirt)
+            self.mcache.setPickled(cache_key, jsonresp, compress=True, expireTime=self.cache_expirt)
             defer.returnValue(jsonresp['domain'])
 
     @defer.inlineCallbacks
     def get_check_os_funs(self):
-        cache_key = "get_check_os_funs"
-        _resp = portal_cache.get(cache_key)
+        cache_key = self.get_cache_key("get_check_os_funs")
+        _, _resp = yield self.mcache.getPickled(cache_key, uncompress=True)
         if _resp:
             if self.settings.debug:
                 self.syslog.debug("get_check_os_funs request hit cache; key=%s" % cache_key)
@@ -335,7 +333,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         for os_name, dev_type, rule in jsonresp['rules']:
             check_os_funcs.append([dev_type, os_name, re.compile(r'{0}'.format(rule), re.IGNORECASE)])
 
-        portal_cache.set(cache_key, check_os_funcs, expire=self.cache_expirt)
+        self.mcache.setPickled(cache_key, check_os_funcs, compress=True, expireTime=self.cache_expirt)
         defer.returnValue(check_os_funcs)
 
 
