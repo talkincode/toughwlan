@@ -42,7 +42,7 @@ class Config():
             raise Exception("no config")
 
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
-        self.api = ConfigDict(**{k: v for k, v in self.config.items("api") if k not in self.defaults})
+        self.admin = ConfigDict(**{k: v for k, v in self.config.items("admin") if k not in self.defaults})
         self.radiusd = ConfigDict(**{k: v for k, v in self.config.items("radiusd") if k not in self.defaults})
 
         self.defaults.debug = self.defaults.debug in ("1","true")
@@ -51,18 +51,11 @@ class Config():
 
     def setup_env(self):
 
-        _nas_fetch_url = os.environ.get("NAS_FETCH_URL")
-        _nas_fetch_secret = os.environ.get("NAS_FETCH_SECRET")
         _syslog_enable = os.environ.get("SYSLOG_ENABLE")
         _syslog_server = os.environ.get("SYSLOG_SERVER")
         _syslog_port = os.environ.get("SYSLOG_PORT")
         _syslog_level = os.environ.get("SYSLOG_LEVEL")
         _timezone = os.environ.get("TIMEZONE")
-
-        if _nas_fetch_url:
-            self.radiusd.nas_fetch_url = _nas_fetch_url
-        if _nas_fetch_secret:
-            self.radiusd.nas_fetch_secret = _nas_fetch_secret
 
         if _syslog_enable:
             self.defaults.syslog_enable = _syslog_enable
@@ -81,9 +74,9 @@ class Config():
         for k,v in self.defaults.iteritems():
             self.config.set("DEFAULT", k, v)
 
-        for k, v in self.api.iteritems():
+        for k, v in self.admin.iteritems():
             if k not in self.defaults:
-                self.config.set("api", k, v)
+                self.config.set("admin", k, v)
 
         for k, v in self.radiusd.iteritems():
             if k not in self.defaults:

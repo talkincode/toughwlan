@@ -77,22 +77,6 @@ class TraBas(DeclarativeBase):
     # relation definiti
 
 
-class TraRadius(DeclarativeBase):
-    """radius节点表 """
-    __tablename__ = 'tra_radius'
-
-    __table_args__ = {}
-
-    #column definitions
-    id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"设备id")
-    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False,doc=u"IP地址")
-    name = Column(u'name', Unicode(length=64), nullable=False, doc=u"radius名称")
-    secret = Column(u'secret', Unicode(length=64), nullable=False,doc=u"共享密钥")
-    auth_port = Column(u'auth_port', INTEGER(), nullable=False, doc=u"认证端口")
-    acct_port = Column(u'acct_port', INTEGER(), nullable=False, doc=u"记账端口")
-    status = Column(u'status', INTEGER(), nullable=False, doc=u"状态,0/1")
-    last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
-
 
 class TraDomain(DeclarativeBase):
     """域属性表 """
@@ -132,6 +116,22 @@ class TraSsid(DeclarativeBase):
     ssid_desc = Column(u'ssid_desc', Unicode(length=64), nullable=False, doc=u"ssid描述")
 
 
+class TraRadius(DeclarativeBase):
+    """radius节点表 """
+    __tablename__ = 'tra_radius'
+
+    __table_args__ = {}
+
+    # column definitions
+    id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
+    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False, doc=u"IP地址")
+    name = Column(u'name', Unicode(length=64), nullable=False, doc=u"radius名称")
+    secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
+    auth_port = Column(u'auth_port', INTEGER(), nullable=False, doc=u"认证端口")
+    acct_port = Column(u'acct_port', INTEGER(), nullable=False, doc=u"记账端口")
+    admin_url = Column(u'admin_url', INTEGER(), nullable=False, doc=u"管理地址")
+    last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
+
 class TraRadiusStatus(DeclarativeBase):
     """radius状态信息表 """
     __tablename__ = 'tra_radius_status'
@@ -140,7 +140,8 @@ class TraRadiusStatus(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"id")
-    radius_ipaddr = Column(u'radius_ipaddr', Unicode(length=16), nullable=False,doc=u"radius地址")
+    ip_addr = Column(u'ip_addr', Unicode(length=16), nullable=False,doc=u"radius地址")
+    stat_time = Column(u'stat_time', Unicode(length=16), nullable=False, doc=u"统计时间")
     auth_all = Column(u'auth_all', INTEGER(), nullable=False, doc=u"认证总数")
     auth_accept = Column(u'auth_accept', INTEGER(), nullable=False, doc=u"认证成功数")
     auth_reject = Column(u'auth_reject', INTEGER(), nullable=False, doc=u"认证拒绝数")
@@ -163,10 +164,10 @@ class TraPortal(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
     ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False, doc=u"IP地址")
     name = Column(u'name', Unicode(length=64), nullable=False, doc=u"radius名称")
-    secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
-    http_port = Column(u'http_port', INTEGER(), nullable=False, doc=u"http认证端口")
     listen_port = Column(u'listen_port', INTEGER(), nullable=False, doc=u"监听端口")
-    status = Column(u'status', INTEGER(), nullable=False, doc=u"状态,0/1")
+    secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
+    auth_url = Column(u'auth_url', Unicode(length=255), nullable=False, doc=u"认证地址")
+    admin_url = Column(u'admin_url', Unicode(length=255), nullable=False, doc=u"管理地址")
     last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
 
 
@@ -211,7 +212,7 @@ class TraOperateLog(DeclarativeBase):
 
 class TraOssServer(DeclarativeBase):
     """操作日志表
-    服务类型 0:master, 2:slave
+    服务类型 1:master, 0:slave
     """
 
     __tablename__ = 'tra_oss_server'
@@ -219,13 +220,13 @@ class TraOssServer(DeclarativeBase):
     __table_args__ = {}
 
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"OSS服务器id")
-    ipaddr = Column(u'ipaddr', Unicode(15), nullable=False,doc=u"OSS服务器IP")
+    name = Column(u'name', Unicode(length=64), nullable=False,doc=u"OSS服务器IP")
     serv_type = Column(u'serv_type', INTEGER(),doc=u"OSS服务器类型，master/slave")
-    admin_port = Column(u'admin_port', INTEGER(),doc=u"OSS服务器服务管理端口")
-    auth_port = Column(u'auth_port', INTEGER(),doc=u"OSS服务器服务认证端口")
-    acct_port = Column(u'acct_port', INTEGER(), doc=u"OSS服务器服务记账端口")
+    auth_url = Column(u'auth_url', Unicode(length=255), doc=u"OSS服务器服务认证地址")
+    acct_url = Column(u'acct_url', Unicode(length=255), doc=u"OSS服务器服务记账地址")
+    admin_url = Column(u'admin_url', Unicode(length=255), doc=u"OSS服务器服务管理地址")
     secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
-    status = Column(u'status', INTEGER(), nullable=False, doc=u"状态")
+    last_check = Column(u'last_check', Unicode(length=19), nullable=False, doc=u"最后检测")
 
 class TraOSTypes(DeclarativeBase):
     """设备类型"""

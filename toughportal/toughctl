@@ -7,7 +7,6 @@ choosereactor.install_optimal_reactor(True)
 from twisted.internet import reactor
 from toughportal.console import portal_app
 from toughportal.server import portal_server
-from toughportal.tasks import ping_task
 from toughportal.common import config as iconfig
 import argparse
 
@@ -16,7 +15,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-listen', '--listen', action='store_true', default=False, dest='listen', help='listen option')
     parser.add_argument('-portal', '--portal', action='store_true', default=False, dest='portal', help='portal option')
-    parser.add_argument('-ping', '--ping', action='store_true', default=False, dest='ping', help='ping_task option')
     parser.add_argument('-port', '--port', type=int, default=0, dest='port', help='portal/listen port')
     parser.add_argument('-c', '--conf', type=str, default="/etc/toughportal.conf", dest='conf', help='config file')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -39,8 +37,6 @@ if __name__ == '__main__':
         portal_app.run(config)
         reactor.run()
 
-    if args.ping:
-        ping_task.run(config)
-        reactor.run()
+
 
 

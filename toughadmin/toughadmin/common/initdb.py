@@ -92,7 +92,7 @@ def init_db(db):
     radius.secret = "testing123"
     radius.acct_port = 1812
     radius.auth_port = 1813
-    radius.status = 0
+    radius.admin_url = "http://127.0.0.1:1815/admin"
     radius.last_check = utils.get_currtime()
     db.add(radius)
 
@@ -100,11 +100,21 @@ def init_db(db):
     portal.ip_addr = "127.0.0.1"
     portal.name = "local portal"
     portal.secret = "testing123"
-    portal.http_port = 1812
-    portal.listen_port = 1813
-    portal.status = 0
+    portal.auth_url = "http://127.0.0.1:1818/login"
+    portal.listen_port = 50100
+    portal.admin_url = "http://127.0.0.1:1818/admin"
     portal.last_check = utils.get_currtime()
     db.add(portal)
+
+    oss = models.TraOssServer()
+    oss.name = "local oss server"
+    oss.auth_url = "http://127.0.0.1:1810/api/authorize"
+    oss.acct_url = "http://127.0.0.1:1810/api/acctounting"
+    oss.serv_type = 1
+    oss.secret = 'LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920'
+    oss.admin_url = "http://127.0.0.1:1815/api/admin"
+    oss.last_check = utils.get_currtime()
+    db.add(oss)
 
     ssid = models.TraSsid()
     ssid.domain_code = domain.domain_code

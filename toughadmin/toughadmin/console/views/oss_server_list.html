@@ -13,20 +13,25 @@
                     return false;
                 }
                 else {
-                    window.location.href = "/policy";
+                    window.location.href = "/oss";
                 }
             }, "json");
         }
     }
 
-    function activatePolicy(policy_id)
+    function activateOss(oss_id)
     {
-        if(confirm("同一时间只有一台服务器能处于活动状态,确认激活策略服务器吗？"))
+        if(confirm("同一时间只有一台服务器能处于活主机状态,确认设置主服务器吗？"))
         {
-            window.location.href = "/oss/activate?oss_id="+policy_id;
+            window.location.href = "/oss/activate?oss_id="+oss_id;
         }
     }
 </script>
+<style type="text/css">
+    .break-all {
+        word-break: break-all; /*必須*/
+    }
+</style>
 </%def>
 
 <%def name="body()">
@@ -47,31 +52,35 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>OSS服务器IP</th>
-                            <th>OSS服务器认证端口</th>
-                            <th>OSS服务器记账端口</th>
-                            <th>状态</th>
+                            <th>名称</th>
+                            <th>认证地址</th>
+                            <th>记账地址</th>
+                            <th>类型</th>
                             <th>共享密钥</th>
+                            <th>状态</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        % for oss_server in oss_server_list:
+                        % for item in oss_server_list:
                             <tr>
-                                <td>${oss_server.policy_server_ip}</td>
-                                <td>${oss_server.policy_auth_port}</td>
-                                <td>${oss_server.policy_acct_port}</td>
-                                <td>${oss_status[policy_server.status]}</td>
-                                <td>${oss_server.secret}</td>
-                                <td>
+                                <td width="10%">${item.name}</td>
+                                <td width="22%" class="break-all">${item.auth_url}</td>
+                                <td width="23%" class="break-all">${item.acct_url}</td>
+                                <td width="5%">${serv_types[item.serv_type]}</td>
+                                <td width="15%" class="break-all">${item.secret}</td>
+                                <td width="5%">${utils.is_connect(item.last_check) and '<span \
+                                       class="label label-success">连接</span>' or '<span class="label label-default">失联</span>'}
+                                </td>
+                                <td width="20%">
                                     % if permit.match(current_user.username,'/oss/update'):
-                                    <a class="opt-btn btn-default" href="/policy/update?oss_id=${oss_server.id}">修改</a>
+                                    <a class="opt-btn btn-default" href="/oss/update?oss_id=${item.id}">修改</a>
                                     % endif
                                     % if permit.match(current_user.username,'/oss/delete'):
-                                    <a class="opt-btn btn-default" href="javascript:deletePolicy('${oss_server.id}')">删除</a>
+                                    <a class="opt-btn btn-default" href="javascript:deleteOss('${item.id}')">删除</a>
                                     % endif
                                     % if permit.match(current_user.username,'/oss/activate'):
-                                    <a class="opt-btn btn-default" href="javascript:activatePolicy('${oss_server.id}')">激活</a>
+                                    <a class="opt-btn btn-default" href="javascript:activateOss('${item.id}')">设为主机</a>
                                     % endif
                                 </td>
                             </tr>

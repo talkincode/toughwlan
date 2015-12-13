@@ -60,10 +60,10 @@
             <tbody>
             % for opslog in page_data.result:
             <tr>
-                <td>${opslog.opr_name}</td>
-                <td>${opslog.opr_ip}</td>
-                <td>${opslog.op_time}</td>
-                <td>${opslog.op_desc and opslog.op_desc[:512] or ''}</td>
+                <td>${opslog.operator_name}</td>
+                <td>${opslog.operate_ip}</td>
+                <td>${opslog.operate_time}</td>
+                <td>${opslog.operate_desc and opslog.operate_desc[:512] or ''}</td>
             </tr>
             % endfor
             </tbody>

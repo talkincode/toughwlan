@@ -6,6 +6,22 @@ start()
     pypy toughctl --admin -c toughadmin.conf
 }
 
+pp()
+{
+    pypy toughctl --ping portal -c toughadmin.conf
+}
+
+pr()
+{
+    pypy toughctl --ping radius -c toughadmin.conf
+}
+
+po()
+{
+    pypy toughctl --ping oss -c toughadmin.conf
+}
+
+
 initdb()
 {
     pypy toughctl --initdb -c toughadmin.conf
@@ -15,6 +31,18 @@ case "$1" in
 
   start)
     start
+  ;;
+
+  pp)
+    pp
+  ;;
+
+  pr)
+    pr
+  ;;
+
+  po)
+    po
   ;;
 
   initdb)

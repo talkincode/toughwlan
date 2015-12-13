@@ -10,7 +10,7 @@ from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
 from mako.lookup import TemplateLookup
 from toughportal.common import logger
-from toughportal.console.portal import base, login
+from toughportal.console.portal import base, login, admin
 from txyam.client import YamClient
 
 class Application(cyclone.web.Application):
@@ -26,6 +26,7 @@ class Application(cyclone.web.Application):
         _handlers = [
             (r"/", base.HomeHandler),
             (r"/login", login.LoginHandler),
+            (r"/admin", admin.AdminHandler),
         ]
 
         try:

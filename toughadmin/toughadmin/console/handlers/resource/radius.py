@@ -17,8 +17,7 @@ class RadiusHandler(BaseHandler):
     def get(self):
         radius_list = self.db.query(models.TraRadius)
         self.render("radius.html",
-                    radius_list=radius_list,
-                    radius_status=radius_form.radius_status)
+                    radius_list=radius_list)
 
 
 
@@ -27,7 +26,7 @@ class RadiusDetailHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         radius_name = self.get_argument("radius_name")
-        status = self.db.query(models.TraStatus).filter_by(radius_name=radius_name).first()
+        status = self.db.query(models.TraRadiusStatus).filter_by(radius_name=radius_name).first()
         self.render("radius_detail.html",status=status)
 
 @permit.route(r"/radius/add", u"Radius节点新增", MenuRes, order=2.0003)
@@ -50,7 +49,7 @@ class AddHandler(BaseHandler):
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
         radius.auth_port = form.d.auth_port
-        radius.status = 0
+        radius.admin_url = form.d.admin_url
         radius.last_check = utils.get_currtime()
         self.db.add(radius)
 
@@ -82,8 +81,9 @@ class UpdateHandler(BaseHandler):
         radius = self.db.query(models.TraRadius).get(form.d.id)
         radius.name = form.d.name
         radius.secret = form.d.secret
-        radius.auth_port = form.d.auth_port
         radius.acct_port = form.d.acct_port
+        radius.auth_port = form.d.auth_port
+        radius.admin_url = form.d.admin_url
 
         ops_log = models.TraOperateLog()
         ops_log.operator_name = self.get_secure_cookie("tra_user")
