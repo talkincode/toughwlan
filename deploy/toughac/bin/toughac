@@ -1,17 +1,17 @@
 #!/bin/sh
 
-appdir=/opt/toughadmin
-rundir=/var/toughadmin
+appdir=/opt/toughwlan
+rundir=/var/toughwlan
 
 usage ()
 {
         cat <<EOF
 Usage: $0 [OPTIONS]
-  start              start toughradius
-  stop               stop toughradius
-  restart            restart toughradius
-  status             show toughradius run status
-  upgrade            update toughradius version and restart
+  start              start toughac
+  stop               stop toughac
+  restart            restart toughac
+  status             show toughac run status
+  upgrade            update toughac version and restart
 
 All other options are passed to the toughrad program.
 EOF
@@ -25,7 +25,6 @@ initserv()
     if [ ! -f ${rundir}/.install ]; then
         mkdir -p ${rundir}/log
         mkdir -p ${rundir}/data
-        pypy /opt/toughadmin/toughctl --initdb
         echo "install ok" > ${rundir}/.install
         echo 'init done'
     else
@@ -106,12 +105,12 @@ case "$1" in
     status
   ;;
 
-  restart)
-    restart
-  ;;
-
   initserv)
     initserv
+  ;;
+
+  restart)
+    restart
   ;;
 
   upgrade)

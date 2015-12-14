@@ -1,19 +1,49 @@
-FROM index.alauda.cn/toughstruct/tough-pypy
+FROM talkincode/toughwlan:pypy
 MAINTAINER jamiesun <jamiesun.net@gmail.com>
 
-VOLUME ["/var/toughportal"]
+VOLUME ["/var/toughwlan"]
 
-RUN git clone -b master https://jamiesun@bitbucket.org/talkincode/toughwlan-portal.git /opt/toughportal
-RUN ln -s /opt/toughportal/toughctl /usr/bin/toughctl && chmod +x /usr/bin/toughctl
-RUN ln -s /opt/toughportal/etc/toughportal.conf /etc/toughportal.conf
-RUN ln -s /opt/toughportal/etc/supervisord.conf /etc/supervisord.conf
-RUN ln -s /opt/toughportal/etc/toughportal /usr/bin/toughportal && chmod +x /usr/bin/toughportal
-RUN rm -f /etc/nginx/nginx.conf && ln -s /opt/toughportal/etc/nginx.conf /etc/nginx/nginx.conf
-RUN ln -s /opt/toughportal/etc/toughportal-nginx.conf /etc/nginx/conf.d/toughportal-nginx.conf
+RUN git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwlan
 
+# etc link
 
+RUN ln -s /opt/toughwlan/toughac/toughac.conf /etc/toughac.conf
+RUN ln -s /opt/toughwlan/toughadmin/toughadmin.conf /etc/toughadmin.conf
+RUN ln -s /opt/toughwlan/toughportal/toughportal.conf /etc/toughportal.conf
+RUN ln -s /opt/toughwlan/toughengine/toughengine.conf /etc/toughengine.conf
+
+RUN ln -s /opt/toughwlan/deploy/standalone/etc/supervisord.conf /etc/supervisord.conf
+
+# nginx config link
+
+RUN rm -f /etc/nginx/nginx.conf
+RUN ln -s /opt/toughwlan/deploy/standalone/etc/nginx.conf /etc/nginx/nginx.conf
+RUN ln -s /opt/toughwlan/deploy/standalone/etc/toughadmin-nginx.conf /etc/nginx/conf.d/toughadmin-nginx.conf
+RUN ln -s /opt/toughwlan/deploy/standalone/etc/toughportal-nginx.conf /etc/nginx/conf.d/toughportal-nginx.conf
+
+# bin link
+RUN ln -s /opt/toughwlan/deploy/standalone/bin/toughwlan /usr/bin/toughwlan && chmod +x /usr/bin/toughwlan
+
+RUN chmod +x /opt/toughwlan/toughac/toughctl
+RUN chmod +x /opt/toughwlan/toughadmin/toughctl
+RUN chmod +x /opt/toughwlan/toughportal/toughctl
+RUN chmod +x /opt/toughwlan/toughengine/toughctl
+
+# admin
+EXPOSE 1810
+
+# ac
+EXPOSE 8088
+EXPOSE 2000/udp
+EXPOSE 3799/udp
+
+# radiusd
+EXPOSE 1812/udp
+EXPOSE 1813/udp
+
+# portal
 EXPOSE 1818
 EXPOSE 50100/udp
 
-ENTRYPOINT ["/usr/bin/toughportal","start"]
+ENTRYPOINT ["/usr/bin/toughwlan","start"]
 
