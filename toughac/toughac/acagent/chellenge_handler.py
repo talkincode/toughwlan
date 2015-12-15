@@ -25,7 +25,7 @@ class ChellengeHandler(base_handler.BasicHandler):
 
     @defer.inlineCallbacks
     def proc_huaweiv2(self,req):
-        resp = huawei.Portal.newMessageV2(
+        resp = huawei.PortalV2.newMessage(
             huawei.ACK_CHALLENGE,
             req.userIp,
             req.serialNo,

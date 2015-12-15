@@ -17,14 +17,6 @@ class Vendor:
         self.mod = mod
         self.proto = proto
 
-vendors = {
-    'cmccv1'  : Vendor('cmccv1', cmcc, cmcc.Portal),
-    'cmccv2'  : Vendor('cmccv2', cmcc, cmcc.Portal),
-    'huaweiv1': Vendor('huaweiv1', huawei, huawei.Portal),
-    'huaweiv2': Vendor('huaweiv2', huawei, huawei.PortalV2),
-}
-
-
 class Timeout(Exception):
     """Simple exception class which is raised when a timeout occurs
     while waiting for a ac server to respond."""
@@ -36,6 +28,13 @@ def sleep(secs):
     return d
 
 class PortalClient(protocol.DatagramProtocol):
+
+    vendors = {
+        'cmccv1'  : Vendor('cmccv1', cmcc, cmcc.Portal),
+        'cmccv2'  : Vendor('cmccv2', cmcc, cmcc.Portal),
+        'huaweiv1': Vendor('huaweiv1', huawei, huawei.Portal),
+        'huaweiv2': Vendor('huaweiv2', huawei, huawei.PortalV2),
+    }
     
     results = {}
     
@@ -45,7 +44,7 @@ class PortalClient(protocol.DatagramProtocol):
         self.retry = retry
         self.debug = debug
         self.syslog = syslog or logger.Logger(config.find_config())
-        self.vendor = vendors.get(vendor)
+        self.vendor = self.vendors.get(vendor)
         self.port = reactor.listenUDP(0, self)
         
     def close(self):

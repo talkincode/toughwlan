@@ -38,9 +38,9 @@ class AcServer(protocol.DatagramProtocol):
         if self.config.ac.vendor in ('cmccv1', 'cmccv2'):
             return cmcc.Portal(secret=self.config.ac.key, packet=datagram, source=(host, port))
         elif 'huaweiv1' in self.config.ac.vendor:
-            return huawei.Portal(ver=0x01, secret=self.config.ac.key, packet=datagram, source=(host, port))
+            return huawei.Portal(secret=self.config.ac.key, packet=datagram, source=(host, port))
         elif 'huaweiv2' in self.config.ac.vendor:
-            return huawei.Portal(ver=0x02, secret=self.config.ac.key, packet=datagram, source=(host, port))
+            return huawei.PortalV2(secret=self.config.ac.key, packet=datagram, source=(host, port))
         else:
             raise ACError("vendor {0} not support".format(self.config.ac.vendor))
 
