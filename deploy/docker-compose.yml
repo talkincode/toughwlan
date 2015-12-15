@@ -13,7 +13,7 @@ wlandb:
         - /home/var/mysql:/var/lib/mysql
 
 admin:
-    image: 'index.alauda.cn/toughstruct/toughwlan:admin'
+    build: ./toughadmin
     privileged: true
     ports:
         - "1810:1810"
@@ -32,7 +32,7 @@ admin:
         - /home/var/toughwlan:/var/toughwlan
 
 portal:
-    image: 'index.alauda.cn/toughstruct/toughwlan:portal'
+    build: ./toughportal
     privileged: true
     ports:
         - "1818:1818"
@@ -52,7 +52,7 @@ portal:
         - /home/var/toughwlan:/var/toughwlan
 
 radiusd:
-    image: 'index.alauda.cn/toughstruct/toughwlan:radiusd'
+    build: ./toughengine
     privileged: true
     ports:
         - "1812:1823/udp"
@@ -73,7 +73,7 @@ radiusd:
         - /home/var/toughwlan:/var/toughwlan
 
 acagent:
-    image: 'index.alauda.cn/toughstruct/toughwlan:acagent'
+    build: ./toughac
     privileged: true
     ports:
         - "2000:2000/udp"
