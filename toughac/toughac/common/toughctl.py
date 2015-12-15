@@ -9,15 +9,6 @@ import sys
 
 
 
-def run_cmcc(config):
-    from toughac.acagent import cmcc_agent
-    cmcc_agent.run(config)
-
-def run_huawei(config):
-    from toughac.acagent import huawei_agent
-    huawei_agent.run(config)
-
-
 def run_webauth(config):
     from toughac.portal import webauth
     webauth.run(config)
