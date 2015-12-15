@@ -42,6 +42,7 @@ class Config():
             raise Exception("no config")
 
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
+        self.api = ConfigDict(**{k: v for k, v in self.config.items("api") if k not in self.defaults})
         self.admin = ConfigDict(**{k: v for k, v in self.config.items("admin") if k not in self.defaults})
         self.radiusd = ConfigDict(**{k: v for k, v in self.config.items("radiusd") if k not in self.defaults})
 
@@ -56,6 +57,8 @@ class Config():
         _syslog_port = os.environ.get("SYSLOG_PORT")
         _syslog_level = os.environ.get("SYSLOG_LEVEL")
         _timezone = os.environ.get("TIMEZONE")
+        _api_url = os.environ.get("API_URL")
+        _api_key = os.environ.get("API_KEY")
 
         if _syslog_enable:
             self.defaults.syslog_enable = _syslog_enable
@@ -68,11 +71,21 @@ class Config():
         if _timezone:
             self.defaults.tz = _timezone
 
+        if _api_url:
+            self.api.api_url = _api_url
+        if _api_key:
+            self.api.api_key = _api_key
+
+
 
     def update(self):
         """ update config file"""
         for k,v in self.defaults.iteritems():
             self.config.set("DEFAULT", k, v)
+
+        for k, v in self.api.iteritems():
+            if k not in self.defaults:
+                self.config.set("api", k, v)
 
         for k, v in self.admin.iteritems():
             if k not in self.defaults:
