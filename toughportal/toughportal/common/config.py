@@ -57,7 +57,8 @@ class Config():
         _syslog_port = os.environ.get("SYSLOG_PORT")
         _syslog_level = os.environ.get("SYSLOG_LEVEL")
         _timezone = os.environ.get("TIMEZONE")
-
+        _api_url = os.environ.get("API_URL")
+        _api_key = os.environ.get("API_KEY")
 
 
         if _syslog_enable:
@@ -70,6 +71,11 @@ class Config():
             self.defaults.syslog_level = _syslog_level
         if _timezone:
             self.defaults.tz = _timezone
+
+        if _api_url:
+            self.api.api_url = _api_url
+        if _api_key:
+            self.api.api_key = _api_key
 
     def update(self):
         """ update config file"""
