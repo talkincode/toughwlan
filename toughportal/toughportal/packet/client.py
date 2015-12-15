@@ -9,10 +9,21 @@ from toughportal.packet.pktutils import hexdump
 import time
 import six
 
+
+class Vendor:
+
+    def __init__(self, name, mod, proto):
+        self.name = name
+        self.mod = mod
+        self.proto = proto
+
 vendors = {
-    'cmcc': cmcc,
-    'huawei': huawei
+    'cmccv1'  : Vendor('cmccv1', cmcc, cmcc.Portal),
+    'cmccv2'  : Vendor('cmccv2', cmcc, cmcc.Portal),
+    'huaweiv1': Vendor('huaweiv1', huawei, huawei.Portal),
+    'huaweiv2': Vendor('huaweiv2', huawei, huawei.PortalV2),
 }
+
 
 class Timeout(Exception):
     """Simple exception class which is raised when a timeout occurs
@@ -28,7 +39,7 @@ class PortalClient(protocol.DatagramProtocol):
     
     results = {}
     
-    def __init__(self,secret=six.b(''), timeout=10, retry=3, debug=True, syslog=None, vendor='cmcc'):
+    def __init__(self,secret=six.b(''), timeout=10, retry=3, debug=True, syslog=None, vendor='cmccv2'):
         self.secret = secret
         self.timeout = timeout
         self.retry = retry
@@ -76,9 +87,9 @@ class PortalClient(protocol.DatagramProtocol):
                 print ":: Hexdump > %s"%hexdump(datagram,len(datagram))
 
 
-            resp = self.vendor.Portal(packet=datagram,secret=self.secret)
+            resp = self.vendor.proto(packet=datagram,secret=self.secret)
             self.results[resp.sid] = resp
-            self.syslog.info(":: Received <%s> packet from AC %s >> %s " % (self.vendor, (host, port), repr(resp)))
+            self.syslog.info(":: Received <%s> packet from AC %s >> %s " % (self.vendor.name, (host, port), repr(resp)))
 
         except Exception as err:
-            self.syslog.error('Process <%s> packet error  %s >> %s' % (self.vendor, (host, port), utils.safestr(err)))
+            self.syslog.error('Process <%s> packet error  %s >> %s' % (self.vendor.name, (host, port), utils.safestr(err)))

@@ -141,7 +141,6 @@ class Portal(object):
         ('userPort', 'H', 0),
         ('errCode', 'B', 0),
         ('attrNum', 'B', 0),
-        # ('auth', '16s', '')
     )
     attrs = []
     
@@ -188,17 +187,7 @@ class Portal(object):
         l = [ '%s=%r' % (k, getattr(self, k)) for k in self.__hdr_defaults__ ]
         l.append("attrs=%s"%(self.attrs))        
         return '%s <%s> (%s)' % (self.__class__.__name__,PKT_TYPES.get(self.type), ', '.join(l))
-        
-    def auth_packet(self):pass
-        # _auth = md5_constructor(str(self)+self.secret).digest()
-        # self.auth = _auth
 
-    def check_resp_auth(self,req_auth):pass
-        # resp_auth = self.auth
-        # self.auth = req_auth
-        # _auth = md5_constructor(str(self)+self.secret).digest()
-        # self.auth = resp_auth
-        # return resp_auth == _auth
             
     def pack_hdr(self):
         """Return packed header string."""
@@ -447,17 +436,13 @@ class Portal(object):
         return ''
     
     @staticmethod           
-    def newMessage(typ, userIp, serialNo,reqId,secret,
-        auth='\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',chap=True):
-        isChap = 0x01
-        if chap:isChap = 0x00
+    def newMessage(typ, userIp, serialNo,reqId,secret, chap=False):
         return Portal(
             type = typ,
-            isChap = isChap,
+            isChap=chap and 0x00 or 0x01,
             userIp = pktutils.EncodeAddress(userIp),
             serialNo = serialNo,
             reqId = reqId,
-            # auth = auth,
             secret = six.b(secret)
         )
         
@@ -466,16 +451,14 @@ class Portal(object):
     def newReqChallenge(userIp,secret,serialNo=None,chap=True):
         """0x01"""
         pkt = Portal.newMessage(REQ_CHALLENGE,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
-        pkt.auth_packet()
         return pkt
     
     @staticmethod         
-    def newReqAuth(userIp,username,password,reqId,challenge,secret,basip,serialNo=None, chap=True,mac=None):
+    def newReqAuth(userIp,username,password,reqId,challenge,secret, serialNo=None, chap=True):
         """0x03"""
         pkt = Portal.newMessage(REQ_AUTH,userIp,(serialNo or CurrentSN()),reqId,secret, chap=chap)
         username = pktutils.EncodeString(username)
         password = pktutils.EncodeString(password)
-        bas_addr = pktutils.EncodeAddress(basip)
         if chap:
             _reqid = struct.pack('>H',reqId)
             chap_pwd = md5_constructor("%s%s%s"%(_reqid[1],password,challenge)).digest()
@@ -485,43 +468,27 @@ class Portal(object):
                 (0x03, challenge),
                 (0x04,chap_pwd)
             ]
-            # if mac:
-            #     pkt.attrs.append((0xff, mac))
         else:
             pkt.attrNum = 2
             pkt.attrs = [
                 (0x01, username),
                 (0x02, password),
             ]
-        pkt.auth_packet()
+
         return pkt
 
         
     @staticmethod        
-    def newReqLogout(userIp,secret,basip,serialNo=None, chap=True):
+    def newReqLogout(userIp, secret, serialNo=None, chap=True):
         """0x05"""
-        pkt = Portal.newMessage(
-            REQ_LOGOUT,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
-        pkt.auth_packet()
+        pkt = Portal.newMessage(REQ_LOGOUT,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
         return pkt
         
         
     @staticmethod        
-    def newAffAckAuth(userIp,secret,basip,serialNo=None,reqId=None, chap=True):
+    def newAffAckAuth(userIp,secret, serialNo=None,reqId=None, chap=True):
         """0x07"""
-        pkt = Portal.newMessage(
-            AFF_ACK_AUTH,userIp,(serialNo or CurrentSN()),(reqId or 0),secret, chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
-        pkt.auth_packet()
+        pkt = Portal.newMessage(AFF_ACK_AUTH,userIp,(serialNo or CurrentSN()),(reqId or 0),secret, chap=chap)
         return pkt
         
         
@@ -531,24 +498,15 @@ class Portal(object):
         pkt = Portal.newMessage(REQ_INFO,userIp,(serialNo or CurrentSN()),0,secret, chap=chap)
         pkt.attrNum = 1
         pkt.attrs = [(0x08,'\x00\x00')]
-        pkt.auth_packet()
         return pkt  
         
     @staticmethod        
-    def newNtfHeart(secret,basip, chap=True):
+    def newNtfHeart(secret, chap=True):
         """0x0f NTF_HEARTBEAT"""
         pkt = Portal.newMessage(NTF_HEARTBEAT,'0.0.0.0',CurrentSN(),0,secret, chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
-        pkt.auth_packet()
         return pkt
 
-        
 
-        
 if __name__ == '__main__':
     pkt = Portal(packet="\x02\x02\x00\x00\x1b@\x00\x00\xac\x10\x01*\x00\x00\x01\x01\x06\xf2\xc3\xa0\xfe\xf1\x0c8\xea\xfb\x9aM\x86\xb4E\x06&\x06S\xf7O\xf6")
     print repr(pkt)

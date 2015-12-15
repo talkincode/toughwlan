@@ -75,17 +75,17 @@ class LoginHandler(BaseHandler):
         def chapAuth():
             try:
                 cli = PortalClient(secret=secret, syslog=self.syslog)
-                rc_req = self.vendor.Portal.newReqChallenge(userIp,secret, chap=is_chap)
+                rc_req = self.vendor.proto.newReqChallenge(userIp,secret, chap=is_chap)
                 rc_resp = yield cli.sendto(rc_req,ac_addr)
 
                 if rc_resp.errCode > 0:
                     if rc_resp.errCode == 2:
                         self.redirect(firsturl)
                         return
-                    raise PortalError(self.vendor.AckChallengeErrs[rc_resp.errCode])
+                    raise PortalError(self.vendor.mod.AckChallengeErrs[rc_resp.errCode])
 
                 # req auth
-                ra_req = self.vendor.Portal.newReqAuth(
+                ra_req = self.vendor.proto.newReqAuth(
                     userIp,
                     username,
                     password,
@@ -102,11 +102,11 @@ class LoginHandler(BaseHandler):
                     if ra_resp.errCode == 2:
                         self.redirect(firsturl)
                         return
-                    _err_msg = "{0},{1}".format(self.vendor.AckAuthErrs[ra_resp.errCode], ra_resp.get_text_info()[0] or "")
+                    _err_msg = "{0},{1}".format(self.mod.AckAuthErrs[ra_resp.errCode], ra_resp.get_text_info()[0] or "")
                     raise PortalError(_err_msg)
 
                 # aff_ack
-                aa_req = self.vendor.Portal.newAffAckAuth(userIp,secret,ac_addr[0],ra_req.serialNo,rc_resp.reqId, chap=is_chap)
+                aa_req = self.vendor.proto.newAffAckAuth(userIp,secret,ac_addr[0],ra_req.serialNo,rc_resp.reqId, chap=is_chap)
                 yield cli.sendto(aa_req,ac_addr,recv=False)
 
                 self.syslog.info('Portal [username:{0}] chap auth success'.format(_username))
@@ -136,7 +136,7 @@ class LoginHandler(BaseHandler):
             try:
                 cli = PortalClient(secret=secret, syslog=self.syslog)
                 # req auth
-                ra_req = self.vendor.Portal.newReqAuth(
+                ra_req = self.vendor.proto.newReqAuth(
                     userIp,
                     username,
                     password,
@@ -152,11 +152,11 @@ class LoginHandler(BaseHandler):
                     if ra_resp.errCode == 2:
                         self.redirect(firsturl)
                         return
-                    _err_msg = "{0},{1}".format(self.vendor.AckAuthErrs[ra_resp.errCode], ra_resp.get_text_info()[0] or "")
+                    _err_msg = "{0},{1}".format(self.vendor.mod.AckAuthErrs[ra_resp.errCode], ra_resp.get_text_info()[0] or "")
                     raise PortalError(_err_msg)
 
                 # aff_ack
-                aa_req = self.vendor.Portal.newAffAckAuth(userIp, secret, ac_addr[0], ra_req.serialNo, 0, chap=False)
+                aa_req = self.vendor.proto.newAffAckAuth(userIp, secret, ac_addr[0], ra_req.serialNo, 0, chap=False)
                 yield cli.sendto(aa_req, ac_addr, recv=False)
 
                 self.syslog.info('Portal [username:%s] pap auth success' % _username)

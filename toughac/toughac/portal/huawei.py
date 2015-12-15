@@ -131,7 +131,7 @@ class PackError(Error): pass
 
 class Portal(object):
     
-    __hdr__ = (
+    __hdr__ = [
         ('ver', 'B', 0x01),
         ('type', 'B', 0),
         ('isChap', 'B', 0x00),
@@ -143,11 +143,14 @@ class Portal(object):
         ('errCode', 'B', 0),
         ('attrNum', 'B', 0),
         # ('auth', '16s', '')
-    )
+    ]
     attrs = []
     
     def __init__(self,**attributes):
         # init hdr
+        if attributes['ver'] == 0x02:
+            self.__hdr__.append(('auth', '16s', ''))
+
         self.__hdr_fmt__ = '>'+''.join([ x[1] for x in self.__hdr__ ])
         self.__hdr_fields__ = [ x[0] for x in self.__hdr__ ]
         self.__hdr_len__ = struct.calcsize(self.__hdr_fmt__)
@@ -190,17 +193,7 @@ class Portal(object):
         l.append("attrs=%s"%(self.attrs))        
         return '%s <%s> (%s)' % (self.__class__.__name__,PKT_TYPES.get(self.type), ', '.join(l))
         
-    def auth_packet(self):pass
-        # _auth = md5_constructor(str(self)+self.secret).digest()
-        # self.auth = _auth
 
-    def check_resp_auth(self,req_auth):pass
-        # resp_auth = self.auth
-        # self.auth = req_auth
-        # _auth = md5_constructor(str(self)+self.secret).digest()
-        # self.auth = resp_auth
-        # return resp_auth == _auth
-            
     def pack_hdr(self):
         """Return packed header string."""
         try:
@@ -239,7 +232,20 @@ class Portal(object):
             self.attrs.append((t, d))
             _count += 1
 
-            
+    def auth_packet(self):
+        if self.ver == 0x01:
+            pass
+        _auth = md5_constructor(str(self) + self.secret).digest()
+        self.auth = _auth
+
+    def check_resp_auth(self, req_auth):
+        if self.ver == 0x01:
+            pass
+        resp_auth = self.auth
+        self.auth = req_auth
+        _auth = md5_constructor(str(self) + self.secret).digest()
+        self.auth = resp_auth
+        return resp_auth == _auth
 
     def get_user_name(self):
         """
@@ -448,85 +454,144 @@ class Portal(object):
         return ''
     
     @staticmethod           
-    def newMessage(typ, userIp, serialNo,reqId,secret,
-        auth='\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',chap=True):
-        isChap = 0x01
-        if chap:isChap = 0x00
+    def newMessage(typ, userIp, serialNo, reqId, secret, chap=False):
         return Portal(
-            type = typ,
-            isChap = isChap,
-            userIp = pktutils.EncodeAddress(userIp),
-            serialNo = serialNo,
-            reqId = reqId,
-            # auth = auth,
-            secret = six.b(secret)
+            type=typ,
+            isChap=chap and 0x00 or 0x01,
+            userIp=pktutils.EncodeAddress(userIp),
+            serialNo=serialNo,
+            reqId=reqId,
+            secret=six.b(secret)
         )
-        
-         
+
+    @staticmethod
+    def newMessageV2(typ, userIp, serialNo, reqId, secret,
+        auth='\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', chap=False):
+        return Portal(
+            ver=0x02,
+            type=typ,
+            isChap=chap and 0x00 or 0x01,
+            userIp=pktutils.EncodeAddress(userIp),
+            serialNo=serialNo,
+            reqId=reqId,
+            auth=auth,
+            secret=six.b(secret)
+        )
+
     @staticmethod        
-    def newReqChallenge(userIp,secret,serialNo=None,chap=True):
+    def newReqChallenge(userIp, secret, serialNo=None, chap=False):
         """0x01"""
         pkt = Portal.newMessage(REQ_CHALLENGE,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
+        return pkt
+
+    @staticmethod
+    def newReqChallengeV2(userIp, secret, serialNo=None, chap=False):
+        """0x01"""
+        pkt = Portal.newMessageV2(REQ_CHALLENGE,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
         pkt.auth_packet()
         return pkt
-    
-    @staticmethod         
-    def newReqAuth(userIp,username,password,reqId,challenge,secret,basip,serialNo=None, chap=True,mac=None):
-        """0x03"""
-        pkt = Portal.newMessage(REQ_AUTH,userIp,(serialNo or CurrentSN()),reqId,secret, chap=chap)
+
+    @staticmethod
+    def __init_auth_packet(pkt, username, password, reqId, challenge, basip=None, chap=False):
         username = pktutils.EncodeString(username)
         password = pktutils.EncodeString(password)
-        bas_addr = pktutils.EncodeAddress(basip)
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
         if chap:
-            _reqid = struct.pack('>H',reqId)
-            chap_pwd = md5_constructor("%s%s%s"%(_reqid[1],password,challenge)).digest()
-            pkt.attrNum = 4
-            pkt.attrs = [
-                (0x01,username),
-                (0x03, challenge),
-                (0x04,chap_pwd)
-            ]
-            if mac:
-                pkt.attrs.append((0xff, mac))
-        else:
+            _reqid = struct.pack('>H', reqId)
+            chap_pwd = md5_constructor("%s%s%s" % (_reqid[1], password, challenge)).digest()
             pkt.attrNum = 3
+            pkt.attrs = [
+                (0x01, username),
+                (0x03, challenge),
+                (0x04, chap_pwd)
+            ]
+
+            if bas_addr:
+                pkt.attrNum += 1
+                pkt.attrs.append((0x0a, bas_addr))
+
+        else:
+            pkt.attrNum = 2
             pkt.attrs = [
                 (0x01, username),
                 (0x02, password),
             ]
-            if mac:
-                pkt.attrs.append((0xff, mac))
+
+            if bas_addr:
+                pkt.attrNum += 1
+                pkt.attrs.append((0x0a, bas_addr))
+
+        return pkt
+
+    @staticmethod         
+    def newReqAuth(userIp, username, password, reqId, challenge, secret, basip=None, serialNo=None, chap=False):
+        """0x03"""
+        pkt = Portal.newMessage(REQ_AUTH, userIp, (serialNo or CurrentSN()), reqId, secret, chap=chap)
+        pkt = Portal.__init_auth_packet(pkt, username, password, reqId, challenge, basip=basip, chap=chap)
+        return pkt
+
+    @staticmethod
+    def newReqAuthV2(userIp, username, password, reqId, challenge, secret, basip=None, serialNo=None, chap=False):
+        """0x03"""
+        pkt = Portal.newMessageV2(REQ_AUTH, userIp, (serialNo or CurrentSN()), reqId,secret, chap=chap)
+        pkt = Portal.__init_auth_packet(pkt, username, password, reqId, challenge, basip=basip, chap=chap)
         pkt.auth_packet()
         return pkt
 
-        
+
     @staticmethod        
     def newReqLogout(userIp,secret,basip,serialNo=None, chap=True):
         """0x05"""
         pkt = Portal.newMessage(
             REQ_LOGOUT,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a,bas_addr)
+            ]
+        return pkt
+
+    @staticmethod
+    def newReqLogoutV2(userIp,secret,basip,serialNo=None, chap=True):
+        """0x05"""
+        pkt = Portal.newMessageV2(
+            REQ_LOGOUT,userIp,(serialNo or CurrentSN()),0,secret,chap=chap)
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a,bas_addr)
+            ]
         pkt.auth_packet()
         return pkt
-        
+
         
     @staticmethod        
     def newAffAckAuth(userIp,secret,basip,serialNo=None,reqId=None, chap=True):
         """0x07"""
-        pkt = Portal.newMessage(
-            AFF_ACK_AUTH,userIp,(serialNo or CurrentSN()),(reqId or 0),secret, chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
+        pkt = Portal.newMessage(AFF_ACK_AUTH,userIp,(serialNo or CurrentSN()),(reqId or 0),secret, chap=chap)
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a, bas_addr)
+            ]
+        return pkt
+
+    @staticmethod
+    def newAffAckAuthV2(userIp,secret,basip,serialNo=None,reqId=None, chap=True):
+        """0x07"""
+        pkt = Portal.newMessageV2(AFF_ACK_AUTH, userIp, (serialNo or CurrentSN()), (reqId or 0),secret, chap=chap)
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a, bas_addr)
+            ]
         pkt.auth_packet()
         return pkt
-        
+
         
     @staticmethod        
     def newReqInfo(userIp,secret,serialNo=None, chap=True):
@@ -536,18 +601,49 @@ class Portal(object):
         pkt.attrs = [(0x08,'\x00\x00')]
         pkt.auth_packet()
         return pkt  
-        
+
+
+    @staticmethod
+    def newReqInfoV2(userIp,secret,serialNo=None, chap=True):
+        """0x09"""
+        pkt = Portal.newMessageV2(REQ_INFO,userIp,(serialNo or CurrentSN()),0,secret, chap=chap)
+        pkt.attrNum = 1
+        pkt.attrs = [(0x08,'\x00\x00')]
+        pkt.auth_packet()
+        return pkt
+
+
+
     @staticmethod        
     def newNtfHeart(secret,basip, chap=True):
         """0x0f NTF_HEARTBEAT"""
         pkt = Portal.newMessage(NTF_HEARTBEAT,'0.0.0.0',CurrentSN(),0,secret, chap=chap)
-        bas_addr = pktutils.EncodeAddress(basip)
-        pkt.attrNum = 1
-        pkt.attrs = [
-            (0x0a,bas_addr)
-        ]
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a,bas_addr)
+            ]
+        return pkt
+
+
+    @staticmethod
+    def newNtfHeartV2(secret, basip, chap=True):
+        """0x0f NTF_HEARTBEAT"""
+        pkt = Portal.newMessageV2(NTF_HEARTBEAT,'0.0.0.0',CurrentSN(),0,secret, chap=chap)
+        bas_addr = basip and pktutils.EncodeAddress(basip) or None
+        if bas_addr:
+            pkt.attrNum = 1
+            pkt.attrs = [
+                (0x0a, bas_addr)
+            ]
         pkt.auth_packet()
         return pkt
+
+
+class PortalV1(Portal):
+    pass
+
 
 
 if __name__ == '__main__':
