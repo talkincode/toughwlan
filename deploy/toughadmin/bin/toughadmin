@@ -22,14 +22,18 @@ EOF
 initserv()
 {
     echo 'init server...'
-    if [ ! -f ${rundir}/.install ]; then
+    if [ ! -f ${rundir}/log ]; then
         mkdir -p ${rundir}/log
+    fi
+    if [ ! -f ${rundir}/data ]; then
         mkdir -p ${rundir}/data
+    fi
+    if [ ! -f ${rundir}/.install ]; then
         pypy /opt/toughwlan/toughadmin/toughctl --initdb
-        echo "install ok" > ${rundir}/.install
-        echo 'init done'
+        echo "install db ok" > ${rundir}/.install
+        echo 'init db done'
     else
-        echo "already init done"
+        echo "already init db done"
     fi
 }
 

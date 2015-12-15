@@ -22,13 +22,11 @@ EOF
 initserv()
 {
     echo 'init server...'
-    if [ ! -f ${rundir}/.install ]; then
+    if [ ! -f ${rundir}/log ]; then
         mkdir -p ${rundir}/log
+    fi
+    if [ ! -f ${rundir}/data ]; then
         mkdir -p ${rundir}/data
-        echo "install ok" > ${rundir}/.install
-        echo 'init done'
-    else
-        echo "already init done"
     fi
 }
 

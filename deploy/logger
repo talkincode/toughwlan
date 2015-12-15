@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+usage ()
+{
+        cat <<EOF
+Usage: $0 [OPTIONS]
+  admin              tail admin log
+  admin_ping         tail admin ping log
+  acp                tail ac portal log
+  acw                tail ac webauth log
+  radauth            tail radiusd auth log
+  radacct            tail radiusd acct log
+  radadmin           tail radiusd admin log
+  portal             tail portal log
+  portald            tail portald log
+
+All other options are passed to the logger program.
+EOF
+        exit 1
+}
+
+admin()
+{
+    tail -f /home/var/toughwlan/log/admin.log
+}
+admin_ping()
+{
+    tail -f /home/var/toughwlan/log/admin_ping.log
+}
+
+acp()
+{
+    tail -f /home/var/toughwlan/log/ac_portal.log
+}
+
+acw()
+{
+    tail -f /home/var/toughwlan/log/ac_webauth.log
+}
+
+radauth()
+{
+    tail -f /home/var/toughwlan/log/radiusd_auth.log
+}
+
+radacct()
+{
+    tail -f /home/var/toughwlan/log/radiusd_acct.log
+}
+
+radadm()
+{
+    tail -f /home/var/toughwlan/log/radiusd_admin.log
+}
+
+portal()
+{
+    tail -f /home/var/toughwlan/log/portal_webauth.log
+}
+portald()
+{
+    tail -f /home/var/toughwlan/log/portal_listen.log
+}
+
+
+case "$1" in
+
+  admin)
+    admin
+  ;;
+
+  admin_ping)
+    admin_ping
+  ;;
+
+  acp)
+    acp
+  ;;
+
+  acw)
+    acw
+  ;;
+
+  radauth)
+    radauth
+  ;;
+
+  radacct)
+    radacct
+  ;;
+
+  radadm)
+    radadm
+  ;;
+
+  portal)
+    portal
+  ;;
+
+  portald)
+    portald
+  ;;
+
+esac
