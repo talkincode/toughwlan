@@ -17,6 +17,7 @@ portal:
     privileged: true
     ports:
         - "1810:1810"
+        - "1815:1815"
         - "1818:1818"
         - "1819:1819"
         - "1812:1812/udp"
@@ -30,11 +31,6 @@ portal:
         - DB_TYPE=mysql
         - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
         - TIMEZONE=CST-8
-        - AC_SERVER=127.0.0.1:2000
-        - ADMIN_URL=http://127.0.0.1:1810/api
-        - ADMIN_SECRET=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
-        - PORTAL_NAME=portal_default
-        - PORTAL_ADDR=127.0.0.1
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99
         - SYSLOG_PORT=514

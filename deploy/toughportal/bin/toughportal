@@ -1,30 +1,43 @@
 #!/bin/sh
 
-appdir=/opt/toughengine
-rundir=/var/toughengine
+appdir=/opt/toughwlan
+rundir=/var/toughwlan
 
 usage ()
 {
         cat <<EOF
 Usage: $0 [OPTIONS]
-  start              start toughengine
-  stop               stop toughengine
-  restart            restart toughengine
-  status             show toughengine run status
-  upgrade            update toughengine version and restart
+  start              start toughportal
+  stop               stop toughportal
+  restart            restart toughportal
+  status             show toughportal run status
+  upgrade            update toughportal version and restart
 
 All other options are passed to the toughrad program.
 EOF
         exit 1
 }
 
+# init server
+initserv()
+{
+    echo 'init server...'
+    if [ ! -f ${rundir}/.install ]; then
+        mkdir -p ${rundir}/log
+        mkdir -p ${rundir}/data
+        echo "install ok" > ${rundir}/.install
+        echo 'init done'
+    else
+        echo "already init done"
+    fi
+}
+
+
 # support docker start
 start()
 {
-    if [ ! -d ${rundir} ]; then
-        mkdir -p ${rundir}/log
-    fi
-     # toughengine not running, start it
+    initserv
+     # toughradius not running, start it
     if [ ! $( pgrep -f supervisord | wc -l ) -gt 0 ]
     then
         supervisord -n -c /etc/supervisord.conf
@@ -70,7 +83,8 @@ restart()
 upgrade()
 {
     echo 'starting upgrade...'
-    cd ${appdir} && git pull origin master
+
+    cd ${appdir} && git checkout master && git pull origin master
     supervisorctl restart all
     supervisorctl status
     echo 'upgrade done'
@@ -89,6 +103,10 @@ case "$1" in
 
   status)
     status
+  ;;
+
+  initserv)
+    initserv
   ;;
 
   restart)

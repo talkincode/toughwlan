@@ -1,17 +1,17 @@
 #!/bin/sh
 
-appdir=/opt/toughportal
-rundir=/var/toughportal
+appdir=/opt/toughwlan
+rundir=/var/toughwlan
 
 usage ()
 {
         cat <<EOF
 Usage: $0 [OPTIONS]
-  start              start toughportal
-  stop               stop toughportal
-  restart            restart toughportal
-  status             show toughportal run status
-  upgrade            update toughportal version and restart
+  start              start toughwlan
+  stop               stop toughwlan
+  restart            restart toughwlan
+  status             show toughwlan run status
+  upgrade            update toughwlan version and restart
 
 All other options are passed to the toughrad program.
 EOF
@@ -25,6 +25,7 @@ initserv()
     if [ ! -f ${rundir}/.install ]; then
         mkdir -p ${rundir}/log
         mkdir -p ${rundir}/data
+        pypy /opt/toughwlan/toughadmin/toughctl --initdb
         echo "install ok" > ${rundir}/.install
         echo 'init done'
     else
@@ -37,7 +38,7 @@ initserv()
 start()
 {
     initserv
-     # toughradius not running, start it
+     # toughwlan not running, start it
     if [ ! $( pgrep -f supervisord | wc -l ) -gt 0 ]
     then
         supervisord -n -c /etc/supervisord.conf
@@ -83,8 +84,8 @@ restart()
 upgrade()
 {
     echo 'starting upgrade...'
-
-    cd ${appdir} && git checkout master && git pull origin master
+    cd ${appdir}
+    git pull origin master
     supervisorctl restart all
     supervisorctl status
     echo 'upgrade done'
@@ -105,12 +106,12 @@ case "$1" in
     status
   ;;
 
-  initserv)
-    initserv
-  ;;
-
   restart)
     restart
+  ;;
+
+  initserv)
+    initserv
   ;;
 
   upgrade)

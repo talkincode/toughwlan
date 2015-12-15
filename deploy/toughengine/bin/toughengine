@@ -1,22 +1,23 @@
 #!/bin/sh
 
-appdir=/opt/toughwlan/toughac
-rundir=/var/toughwlan/toughac
+appdir=/opt/toughwlan
+rundir=/var/toughwlan
 
 usage ()
 {
         cat <<EOF
 Usage: $0 [OPTIONS]
-  start              start toughac
-  stop               stop toughac
-  restart            restart toughac
-  status             show toughac run status
-  upgrade            update toughac version and restart
+  start              start toughengine
+  stop               stop toughengine
+  restart            restart toughengine
+  status             show toughengine run status
+  upgrade            update toughengine version and restart
 
 All other options are passed to the toughrad program.
 EOF
         exit 1
 }
+
 
 # init server
 initserv()
@@ -37,7 +38,7 @@ initserv()
 start()
 {
     initserv
-     # toughradius not running, start it
+     # toughengine not running, start it
     if [ ! $( pgrep -f supervisord | wc -l ) -gt 0 ]
     then
         supervisord -n -c /etc/supervisord.conf
@@ -83,8 +84,7 @@ restart()
 upgrade()
 {
     echo 'starting upgrade...'
-    cd ${appdir}
-    git pull origin master
+    cd ${appdir} && git pull origin master
     supervisorctl restart all
     supervisorctl status
     echo 'upgrade done'
@@ -105,12 +105,12 @@ case "$1" in
     status
   ;;
 
-  initserv)
-    initserv
-  ;;
-
   restart)
     restart
+  ;;
+
+  initserv)
+    initserv
   ;;
 
   upgrade)
