@@ -34,4 +34,4 @@ RUN pypy -m pip install txyam
 RUN echo "set nocompatible" >> /root/.vimrc && echo "set backspace=2" >> /root/.vimrc
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-
+EXPOSE 22

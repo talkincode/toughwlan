@@ -3,5 +3,5 @@ sshd:
     command: /usr/sbin/sshd -D
     privileged: true
     ports:
-        - "1022:1022"
+        - "1022:22"
     restart: always
