@@ -4,7 +4,9 @@ acagent:
     ports:
         - "2000:2000/udp"
         - "1819:1819"
+        - "10222:22"
     environment:
+        - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99

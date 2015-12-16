@@ -1,8 +1,8 @@
 wlandb:
     image: "index.alauda.cn/toughstruct/mysql"
     privileged: true
-    ports:
-        - "3306:3306"
+    expose:
+        - "3306"
     environment:
         - MYSQL_USER=wlanadm
         - MYSQL_PASSWORD=wlanpwd
@@ -17,9 +17,11 @@ admin:
     privileged: true
     ports:
         - "1810:1810"
+        - "10122:22"
     links:
         - wlandb
     environment:
+        - ROOT_PASSWORD=toughstruct
         - DB_TYPE=mysql
         - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
         - TIMEZONE=CST-8

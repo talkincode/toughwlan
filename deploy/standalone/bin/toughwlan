@@ -1,5 +1,7 @@
 #!/bin/sh
 
+ROOT_PASSWORD=${ROOT_PASSWORD:-"toughstruct"}
+
 appdir=/opt/toughwlan
 rundir=/var/toughwlan
 
@@ -38,6 +40,7 @@ initserv()
 start()
 {
     initserv
+    echo "root:${ROOT_PASSWORD}" | chpasswd
      # toughwlan not running, start it
     if [ ! $( pgrep -f supervisord | wc -l ) -gt 0 ]
     then

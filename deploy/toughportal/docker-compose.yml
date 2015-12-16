@@ -1,11 +1,10 @@
-radiusd:
+portal:
     build: ./toughengine
     privileged: true
     ports:
-        - "1812:1823/udp"
-        - "1813:1813/udp"
-        - "1815:1815"
-        - "10322:22"
+        - "50100:50100/udp"
+        - "1818:1818"
+        - "10422:22"
     environment:
         - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8

@@ -1,8 +1,8 @@
 wlandb:
     image: "index.alauda.cn/toughstruct/mysql"
     privileged: true
-    ports:
-        - "3306:3306"
+    expose:
+        - "3306"
     environment:
         - MYSQL_USER=wlanadm
         - MYSQL_PASSWORD=wlanpwd
@@ -17,9 +17,11 @@ admin:
     privileged: true
     ports:
         - "1810:1810"
+        - "10122:22"
     links:
         - wlandb
     environment:
+        - ROOT_PASSWORD=toughstruct
         - DB_TYPE=mysql
         - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
         - TIMEZONE=CST-8
@@ -31,18 +33,18 @@ admin:
     volumes:
         - /home/var/toughwlan:/var/toughwlan
 
-portal:
-    build: ./toughportal
+acagent:
+    build: ./toughac
     privileged: true
     ports:
-        - "1818:1818"
-        - "50100:50100/udp"
+        - "2000:2000/udp"
+        - "1819:1819"
+        - "10222:22"
     links:
         - admin
     environment:
+        - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
-        - API_URL=http://127.0.0.1:1810/api
-        - API_KEY=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99
         - SYSLOG_PORT=514
@@ -58,9 +60,11 @@ radiusd:
         - "1812:1823/udp"
         - "1813:1813/udp"
         - "1815:1815"
+        - "10322:22"
     links:
         - admin
     environment:
+        - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
         - API_URL=http://127.0.0.1:1810/api
         - API_KEY=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
@@ -72,16 +76,21 @@ radiusd:
     volumes:
         - /home/var/toughwlan:/var/toughwlan
 
-acagent:
-    build: ./toughac
+
+portal:
+    build: ./toughportal
     privileged: true
     ports:
-        - "2000:2000/udp"
-        - "1819:1819"
+        - "1818:1818"
+        - "10422:22"
+        - "50100:50100/udp"
     links:
         - admin
     environment:
+        - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
+        - API_URL=http://127.0.0.1:1810/api
+        - API_KEY=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99
         - SYSLOG_PORT=514
@@ -89,3 +98,6 @@ acagent:
     restart: always
     volumes:
         - /home/var/toughwlan:/var/toughwlan
+
+
+
