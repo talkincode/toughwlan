@@ -18,6 +18,7 @@ RUN chmod +x /opt/toughwlan/toughengine/toughctl
 
 
 # radiusd
+EXPOSE 22
 EXPOSE 1812/udp
 EXPOSE 1813/udp
 EXPOSE 1815

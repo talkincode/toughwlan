@@ -23,6 +23,7 @@ RUN ln -s /opt/toughwlan/deploy/toughportal/bin/toughportal /usr/bin/toughportal
 RUN chmod +x /opt/toughwlan/toughportal/toughctl
 
 # portal
+EXPOSE 22
 EXPOSE 1818
 EXPOSE 50100/udp
 

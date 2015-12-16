@@ -23,6 +23,7 @@ RUN chmod +x /opt/toughwlan/toughadmin/toughctl
 
 
 # admin
+EXPOSE 22
 EXPOSE 1810
 
 ENTRYPOINT ["/usr/bin/toughadmin","start"]

@@ -16,6 +16,7 @@ RUN ln -s /opt/toughwlan/deploy/toughac/bin/toughac /usr/bin/toughac && chmod +x
 RUN chmod +x /opt/toughwlan/toughac/toughctl
 
 # ac
+EXPOSE 22
 EXPOSE 1819
 EXPOSE 2000/udp
 EXPOSE 3799/udp
