@@ -1,5 +1,5 @@
 wlandb:
-    image: "index.alauda.cn/toughstruct/mysql"
+    image: "index.alauda.cn/toughstruct/mysql:M1"
     privileged: true
     expose:
         - "3306"
@@ -38,6 +38,7 @@ acagent:
     privileged: true
     ports:
         - "2000:2000/udp"
+        - "3799:3799/udp"
         - "1819:1819"
         - "10222:22"
     links:
@@ -51,9 +52,9 @@ acagent:
         - SYSLOG_LEVEL=INFO
     restart: always
     volumes:
-        - /home/var/toughwlan:/var/toughwlan
+        - /home/var/toughac:/var/toughac
 
-radiusd:
+engine:
     build: ./toughengine
     privileged: true
     ports:
@@ -66,7 +67,7 @@ radiusd:
     environment:
         - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
-        - API_URL=http://127.0.0.1:1810/api
+        - API_URL=http://admin:1810/api
         - API_KEY=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99
@@ -74,7 +75,7 @@ radiusd:
         - SYSLOG_LEVEL=INFO
     restart: always
     volumes:
-        - /home/var/toughwlan:/var/toughwlan
+        - /home/var/toughengine:/var/toughengine
 
 
 portal:
@@ -89,7 +90,7 @@ portal:
     environment:
         - ROOT_PASSWORD=toughstruct
         - TIMEZONE=CST-8
-        - API_URL=http://127.0.0.1:1810/api
+        - API_URL=http://admin:1810/api
         - API_KEY=LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920
         - SYSLOG_ENABLE=1
         - SYSLOG_SERVER=121.201.15.99
@@ -97,7 +98,7 @@ portal:
         - SYSLOG_LEVEL=INFO
     restart: always
     volumes:
-        - /home/var/toughwlan:/var/toughwlan
+        - /home/var/toughportal:/var/toughportal
 
 
 
