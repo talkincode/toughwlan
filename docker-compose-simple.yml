@@ -1,0 +1,32 @@
+wlandb:extends:
+    file: ./deploy/mysql.yml
+    service: db512
+
+admin:
+    build: ./toughwlan
+    privileged: true
+    ports:
+        - "1810:1810"
+    links:
+        - wlandb
+    environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
+        - TIMEZONE=CST-8
+        - SYSLOG_ENABLE=1
+        - SYSLOG_SERVER=121.201.15.99
+        - SYSLOG_PORT=514
+        - SYSLOG_LEVEL=INFO
+    restart: always
+    volumes:
+        - /home/toughrun/toughwlan:/var/toughwlan
+
+
+
+
+
+
+
+
+
+
