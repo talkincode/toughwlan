@@ -3,8 +3,6 @@
 import os
 import subprocess
 import os.path
-import cyclone.auth
-import cyclone.escape
 import cyclone.web
 from toughwlan.console.handlers.base import BaseHandler, MenuSys
 from toughlib.permit import permit

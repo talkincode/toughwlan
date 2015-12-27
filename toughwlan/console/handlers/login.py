@@ -32,21 +32,13 @@ class LoginHandler(BaseHandler):
         if opr.operator_status == 1:
             return self.render_json(code=1, msg=u"该操作员账号已被停用")
 
-        self.set_secure_cookie("tra_user", uname, expires_days=None)
-        self.set_secure_cookie("tra_login_time", utils.get_currtime(), expires_days=None)
-        self.set_secure_cookie("tra_login_ip", self.request.remote_ip, expires_days=None)
-        self.set_secure_cookie("tra_opr_type", str(opr.operator_type), expires_days=None)
+        self.set_session_user(uname, self.request.remote_ip, opr.operator_type, utils.get_currtime())
 
         if opr.operator_type == 1:
             for rule in self.db.query(models.TraOperatorRule).filter_by(operator_name=uname):
                 permit.bind_opr(rule.operator_name, rule.rule_path)
 
-        ops_log = models.TraOperateLog()
-        ops_log.operator_name = uname
-        ops_log.operate_ip = self.request.remote_ip
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)登陆' % (uname,)
-        self.db.add(ops_log)
+        self.add_oplog( u'操作员(%s)登陆' % (uname,))
         self.db.commit()
 
         self.render_json(code=0, msg="ok")

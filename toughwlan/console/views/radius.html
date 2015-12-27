@@ -31,11 +31,10 @@
                     <thead>
                         <tr>
                             <th>Radius名称</th>
-                            <th>Radius地址</th>
+                            <th>认证地址</th>
                             <th>共享密钥</th>
                             <th>认证端口</th>
                             <th>计费端口</th>
-                            <th>连接状态</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,9 +45,8 @@
                                 <td>${item.secret}</td>
                                 <td>${item.auth_port}</td>
                                 <td>${item.acct_port}</td>
-                                <td>${utils.is_connect(item.last_check) and '<span class="label label-success">连接</span>' or '<span class="label label-default">失联</span>'}
-                                </td>
                                 <td>
+                                   <a class="opt-btn btn-default" href="${item.admin_url}">进入管理</a>
                                     % if permit.match(current_user.username,'/radius/update'):
                                     <a class="opt-btn btn-default" href="/radius/update?radius_id=${item.id}">修改</a>
                                     % endif

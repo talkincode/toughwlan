@@ -15,20 +15,17 @@ from toughlib import logger
 from toughwlan.console import models
 from toughlib.dbengine import get_engine
 from toughlib.permit import permit, load_handlers
+from toughlib import db_session as session
+from toughlib import db_cache as cache
 
 
 
 class Application(cyclone.web.Application):
-    def __init__(self, config=None, **kwargs):
+    def __init__(self, config=None, log=None, **kwargs):
 
         self.config = config
 
-        try:
-            if 'TZ' not in os.environ:
-                os.environ["TZ"] = config.system.tz
-            time.tzset()
-        except:
-            pass
+        self.syslog = log or logger.Logger(config)
 
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -56,12 +53,11 @@ class Application(cyclone.web.Application):
 
         self.db_engine = get_engine(config)
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
+        self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
+        self.mcache = cache.CacheManager(self.db_engine)
 
-        self.syslog = logger.Logger(config)
+        self.aes = utils.AESCipher(key=self.config.system.secret)
 
-        aescipher = utils.AESCipher(key=self.config.system.secret)
-        self.encrypt = aescipher.encrypt
-        self.decrypt = aescipher.decrypt
 
 
         permit.add_route(cyclone.web.StaticFileHandler,
@@ -88,10 +84,7 @@ class Application(cyclone.web.Application):
                 permit.bind_super(opr.operator_name)
 
 
-def run(config):
-    log.startLogging(sys.stdout)
-    log.msg('admin web server listen %s' % config.admin.host)
-    app = Application(config)
+def run(config, log=None):
+    app = Application(config, log=log)
     reactor.listenTCP(config.admin.port, app, interface=config.admin.host)
-    reactor.run()
 

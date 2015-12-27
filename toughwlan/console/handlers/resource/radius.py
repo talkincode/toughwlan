@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
-import cyclone.auth
-import cyclone.escape
-import cyclone.web
 
+import cyclone.web
 from toughlib import utils
 from toughwlan.console.handlers.base import BaseHandler, MenuRes
 from toughlib.permit import permit
@@ -16,10 +14,7 @@ class RadiusHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         radius_list = self.db.query(models.TraRadius)
-        self.render("radius.html",
-                    radius_list=radius_list)
-
-
+        self.render("radius.html",radius_list=radius_list)
 
 @permit.route(r"/radius/detail", u"Radius节点详情", MenuRes, order=2.0001)
 class RadiusDetailHandler(BaseHandler):
@@ -40,6 +35,7 @@ class AddHandler(BaseHandler):
         form = radius_form.radius_add_form([])
         if not form.validates(source=self.get_params()):
             return self.render("base_form.html", form=form)
+
         if self.db.query(models.TraRadius.id).filter_by(ip_addr=form.d.ip_addr).count() > 0:
             return self.render("base_form.html", form=form, msg=u"ip地址已经存在")
 
@@ -53,13 +49,7 @@ class AddHandler(BaseHandler):
         radius.last_check = utils.get_currtime()
         self.db.add(radius)
 
-        ops_log = models.TraOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)新增Radius信息:%s' % (ops_log.operator_name, radius.ip_addr)
-        self.db.add(ops_log)
-
+        self.add_oplog(u'新增Radius信息:%s' % (radius.ip_addr))
         self.db.commit()
         self.redirect("/radius", permanent=False)
 
@@ -78,20 +68,16 @@ class UpdateHandler(BaseHandler):
         form = radius_form.radius_update_form([])
         if not form.validates(source=self.get_params()):
             return self.render("base_form.html", form=form)
+
         radius = self.db.query(models.TraRadius).get(form.d.id)
+        radius.dns_name = form.d.dns_name
         radius.name = form.d.name
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
         radius.auth_port = form.d.auth_port
         radius.admin_url = form.d.admin_url
 
-        ops_log = models.TraOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)修改Radius信息:%s' % (ops_log.operator_name, radius.ip_addr)
-        self.db.add(ops_log)
-
+        self.add_oplog(u'修改Radius信息:%s' % (radius.ip_addr))
         self.db.commit()
         self.redirect("/radius", permanent=False)
 
@@ -102,15 +88,9 @@ class RadiusDeleteHandler(BaseHandler):
 
     def get(self):
         radius_id = self.get_argument("radius_id")
+        ip_addr = self.db.query(models.TraRadius.ip_addr).filter_by(id=radius_id).scalar()
         self.db.query(models.TraRadius).filter_by(id=radius_id).delete()
-
-        ops_log = models.TraOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)删除radius信息:%s' % (ops_log.operator_name, radius_id)
-        self.db.add(ops_log)
-
+        self.add_oplog(u'删除radius信息:%s' % (ip_addr))
         self.db.commit()
         self.redirect("/radius",permanent=False)
 

@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-
-import cyclone.auth
-import cyclone.escape
 import cyclone.web
-
 from toughwlan.console import models
 from toughwlan.console.handlers.base import BaseHandler, MenuSys
 from toughlib.permit import permit

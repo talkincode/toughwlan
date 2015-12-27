@@ -5,7 +5,7 @@ from toughlib.btforms import rules
 from toughlib.btforms.rules import button_style, input_style
 
 radius_add_form = btforms.Form(
-    btforms.Textbox("ip_addr", rules.is_ip, description=u"radius地址", required="required", **input_style),
+    btforms.Textbox("ip_addr", rules.is_ip, description=u"认证IP地址", **input_style),
     btforms.Textbox("name", rules.len_of(1, 32), description=u"radius名称", required="required", **input_style),
     btforms.Textbox("secret", rules.len_of(1, 32),description=u"radius密钥", required="required", **input_style),
     btforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),
@@ -18,7 +18,7 @@ radius_add_form = btforms.Form(
 
 radius_update_form = btforms.Form(
     btforms.Hidden("id", description=u"编号"),
-    btforms.Textbox("ip_addr", rules.is_ip, description=u"radius地址", required="required", **input_style),
+    btforms.Textbox("ip_addr", rules.is_ip, description=u"认证IP地址", **input_style),
     btforms.Textbox("name", rules.len_of(1, 32), description=u"radius名称", required="required", **input_style),
     btforms.Textbox("secret", rules.len_of(1, 32), description=u"radius密钥", required="required", **input_style),
     btforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),

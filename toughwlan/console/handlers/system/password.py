@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-
 from hashlib import md5
-
 from toughlib import utils
 from toughwlan.console.handlers.base import BaseHandler, MenuSys
 from toughlib.permit import permit

@@ -1,6 +1,5 @@
 {
     "admin": {
-        "api_addr": "127.0.0.1", 
         "host": "0.0.0.0", 
         "port": 1810
     }, 
@@ -24,5 +23,16 @@
         "debug": 1, 
         "secret": "LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920", 
         "tz": "CST-8"
+    },
+    "portal":{
+        "host": "0.0.0.0",
+        "port": 1818,
+        "vendor": "huaweiv2",
+        "chap": 0,
+        "listen": 50100,
+        "secret": "123456",
+        "ntf_heart": 120,
+        "user_ntf_heart": 120
     }
 }
+

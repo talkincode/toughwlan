@@ -4,7 +4,6 @@ from toughlib import btforms
 from toughlib.btforms import rules
 from toughlib.btforms.rules import button_style, input_style
 
-
 def tpl_add_form():
     return btforms.Form(
         btforms.Textbox("tpl_name", rules.len_of(4, 64), description=u"模版名称", required="required", **input_style),

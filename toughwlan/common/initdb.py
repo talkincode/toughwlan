@@ -96,16 +96,6 @@ def init_db(db):
     radius.last_check = utils.get_currtime()
     db.add(radius)
 
-    portal = models.TraPortal()
-    portal.ip_addr = "127.0.0.1"
-    portal.name = "local portal"
-    portal.secret = "testing123"
-    portal.auth_url = "http://127.0.0.1:1818/login"
-    portal.listen_port = 50100
-    portal.admin_url = "http://127.0.0.1:1818/admin"
-    portal.last_check = utils.get_currtime()
-    db.add(portal)
-
     oss = models.TraOssServer()
     oss.name = "local oss server"
     oss.auth_url = "http://127.0.0.1:1810/api/authorize"

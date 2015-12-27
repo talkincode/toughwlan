@@ -18,6 +18,32 @@ def get_metadata(db_engine):
     return metadata
 
 
+class SystemSession(DeclarativeBase):
+    """session表"""
+    __tablename__ = 'system_session'
+
+    __table_args__ = {
+        'mysql_engine' : 'MEMORY'
+    }
+
+    key = Column(u'_key', Unicode(length=512), primary_key=True, nullable=False,doc=u"session key")
+    value = Column(u'_value', Unicode(length=2048), nullable=False,doc=u"session value")
+    time = Column(u'_time', INTEGER(), nullable=False,doc=u"session timeout")
+
+class SystemCache(DeclarativeBase):
+    """cache表"""
+    __tablename__ = 'system_cache'
+
+    __table_args__ = {
+        'mysql_engine' : 'MEMORY'
+    }
+
+    key = Column(u'_key', Unicode(length=512), primary_key=True, nullable=False,doc=u"cache key")
+    value = Column(u'_value', Unicode(length=4096), nullable=False,doc=u"cache value")
+    time = Column(u'_time', INTEGER(), nullable=False,doc=u"cache timeout")
+
+
+
 class TraOperator(DeclarativeBase):
     """操作员表 操作员类型 0 系统管理员 1 普通操作员"""
     __tablename__ = 'tra_operator'
@@ -65,7 +91,8 @@ class TraBas(DeclarativeBase):
 
     # column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
-    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False, index=True,  doc=u"IP地址")
+    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=True, doc=u"IP地址")
+    dns_name = Column(u'dns_name', Unicode(length=128), nullable=True, doc=u"DNS名称")
     bas_name = Column(u'bas_name', Unicode(length=64), nullable=False, doc=u"bas名称")
     bas_secret = Column(u'bas_secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
     vendor_id = Column(u'vendor_id', SMALLINT(), nullable=False, doc=u"bas类型")
@@ -151,24 +178,6 @@ class TraRadiusStatus(DeclarativeBase):
     acct_update = Column(u'acct_update', INTEGER(), nullable=False, doc=u"记账更新数")
     acct_on = Column(u'acct_on', INTEGER(), nullable=False, doc=u"记账上线数")
     acct_off = Column(u'acct_off', INTEGER(), nullable=False, doc=u"记账下线数")
-
-
-
-class TraPortal(DeclarativeBase):
-    """portal节点表 """
-    __tablename__ = 'tra_portal'
-
-    __table_args__ = {}
-
-    # column definitions
-    id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
-    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=False, doc=u"IP地址")
-    name = Column(u'name', Unicode(length=64), nullable=False, doc=u"radius名称")
-    listen_port = Column(u'listen_port', INTEGER(), nullable=False, doc=u"监听端口")
-    secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
-    auth_url = Column(u'auth_url', Unicode(length=255), nullable=False, doc=u"认证地址")
-    admin_url = Column(u'admin_url', Unicode(length=255), nullable=False, doc=u"管理地址")
-    last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
 
 
 class TraTemplate(DeclarativeBase):
@@ -262,51 +271,3 @@ class TraOnline(DeclarativeBase):
     start_source = Column(u'start_source', Unicode(length=64), nullable=False, doc=u"上线来源")
 
 
-class TraAccount(DeclarativeBase):
-    """
-    account_number 为每个套餐对应的上网账号，每个上网账号全局唯一
-    用户状态 1:"正常", 2:"停机"
-    """
-
-    __tablename__ = 'tra_account'
-
-    __table_args__ = {}
-
-    account_number = Column('account_number', Unicode(length=32), primary_key=True, nullable=False, doc=u"上网账号")
-    password = Column('password', Unicode(length=128), nullable=False, doc=u"上网密码")
-    status = Column('status', INTEGER(), nullable=False, doc=u"用户状态")
-    realname = Column('realname', Unicode(length=64), nullable=False, doc=u"")
-    idcard = Column('idcard', Unicode(length=32), doc=u"用户证件号码")
-    sex = Column('sex', SMALLINT(), nullable=True, doc=u"用户性别0/1")
-    age = Column('age', INTEGER(), nullable=True, doc=u"用户年龄")
-    email = Column('email', Unicode(length=255), nullable=True, doc=u"用户邮箱")
-    mobile = Column('mobile', Unicode(length=16), nullable=True, index=True, doc=u"用户手机")
-    address = Column('install_address', Unicode(length=128), nullable=False, doc=u"装机地址")
-    balance = Column('balance', INTEGER(), nullable=False, doc=u"用户余额-分")
-    time_length = Column('time_length', INTEGER(), nullable=False, default=0, doc=u"用户时长-秒")
-    flow_length = Column('flow_length', INTEGER(), nullable=False, default=0, doc=u"用户流量-kb")
-    expire_date = Column('expire_date', Unicode(length=10), nullable=False, index=True, doc=u"过期时间- ####-##-##")
-    concur_number = Column('concur_number', INTEGER(), nullable=False, doc=u"用户并发数")
-    bind_mac = Column('bind_mac', SMALLINT(), nullable=False, doc=u"是否绑定mac")
-    bind_vlan = Column('bind_vlan', SMALLINT(), nullable=False, doc=u"是否绑定vlan")
-    mac_addr = Column('mac_addr', Unicode(length=17), doc=u"mac地址")
-    vlan_id = Column('vlan_id', INTEGER(), doc=u"内层vlan")
-    vlan_id2 = Column('vlan_id2', INTEGER(), doc=u"外层vlan")
-    ip_addr = Column('ip_addr', Unicode(length=15), index=True, doc=u"静态IP地址")
-    up_limit = Column('up_limit', INTEGER(), nullable=False, doc=u"上行速率限制 bps")
-    down_limit = Column('down_limit', INTEGER(), nullable=False, doc=u"下行速率限制 bps")
-    account_desc = Column('account_desc', Unicode(255), doc=u"用户描述")
-    create_time = Column('create_time', Unicode(length=19), nullable=False, index=True, doc=u"创建时间")
-    update_time = Column('update_time', Unicode(length=19), nullable=False, doc=u"更新时间")
-
-
-class TraAccountAttr(DeclarativeBase):
-    """上网账号扩展策略属性表"""
-    __tablename__ = 'tra_account_attr'
-    __table_args__ = {}
-
-    id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"属性id")
-    account_number = Column('account_number', Unicode(length=32), nullable=False, index=True, doc=u"上网账号")
-    attr_name = Column('attr_name', Unicode(length=255), nullable=False, index=True, doc=u"属性名")
-    attr_value = Column('attr_value', Unicode(length=255), nullable=False, doc=u"属性值")
-    attr_desc = Column('attr_desc', Unicode(length=255), doc=u"属性描述")

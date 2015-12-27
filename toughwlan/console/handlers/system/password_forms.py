@@ -5,7 +5,6 @@ from toughlib import btforms
 from toughlib.btforms import rules
 from toughlib.btforms.rules import button_style, input_style
 
-
 password_update_form = btforms.Form(
     btforms.Textbox("tra_user", description=u"管理员名", size=32, readonly="readonly", **input_style),
     btforms.Password("tra_user_pass", rules.len_of(6, 32), description=u"管理员新密码", size=32,value="", required="required", **input_style),

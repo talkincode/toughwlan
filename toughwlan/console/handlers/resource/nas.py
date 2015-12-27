@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-import cyclone.auth
-import cyclone.escape
 import cyclone.web
-
 from toughlib import utils
 from toughwlan.console.handlers.base import BaseHandler,MenuRes
 from toughlib.permit import permit
@@ -32,13 +29,17 @@ class AddHandler(BaseHandler):
     def post(self):
         form = nas_forms.bas_add_form()
         if not form.validates(source=self.get_params()):
-            self.render("base_form.html", form=form)
-            return
+            return self.render("base_form.html", form=form)
+            
+        if not any([form.d.ip_addr,form.d.dns_name]):
+            return self.render("base_form.html", form=form, msg=u"ip地址或域名至少填写一项")
+
         if self.db.query(models.TraBas.id).filter_by(ip_addr=form.d.ip_addr).count() > 0:
-            self.render("base_form.html", form=form, msg=u"Bas地址已经存在")
-            return
+            return self.render("base_form.html", form=form, msg=u"Bas地址已经存在")
+            
         bas = models.TraBas()
         bas.ip_addr = form.d.ip_addr
+        bas.dns_name = form.d.dns_name
         bas.bas_name = form.d.bas_name
         bas.time_type = form.d.time_type
         bas.vendor_id = form.d.vendor_id
@@ -70,10 +71,11 @@ class UpdateHandler(BaseHandler):
     def post(self):
         form = nas_forms.bas_update_form()
         if not form.validates(source=self.get_params()):
-            self.render("base_form.html", form=form)
-            return
+            return self.render("base_form.html", form=form)
+            
         bas = self.db.query(models.TraBas).get(form.d.id)
         bas.bas_name = form.d.bas_name
+        bas.dns_name = form.d.dns_name
         bas.time_type = form.d.time_type
         bas.vendor_id = form.d.vendor_id
         bas.portal_vendor = form.d.portal_vendor
