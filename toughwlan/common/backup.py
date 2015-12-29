@@ -2,7 +2,7 @@
 #coding:utf-8
 from sqlalchemy import *
 from toughlib.dbengine import get_engine
-from toughwlan.console import models
+from toughwlan import models
 import json,os,gzip
 
 excludes = ['tra_online']

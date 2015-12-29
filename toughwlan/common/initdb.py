@@ -5,7 +5,7 @@ import os
 sys.path.insert(0,os.path.split(__file__)[0])
 sys.path.insert(0,os.path.abspath(os.path.pardir))
 from toughlib import utils
-from toughwlan.console import models
+from toughwlan import models
 from sqlalchemy.orm import scoped_session, sessionmaker
 from toughlib.dbengine import get_engine
 from hashlib import md5
@@ -22,7 +22,7 @@ def init_db(db):
     ]
 
     for p in params:
-        param = models.TraParam()
+        param = models.TrwParam()
         param.param_name = p[0]
         param.param_desc = p[1]
         param.param_value = p[2]
@@ -52,14 +52,14 @@ def init_db(db):
 
 
     for dev_type,os_name,match_rule in ostypes:
-        otp = models.TraOSTypes()
+        otp = models.TrwOSTypes()
         otp.os_name = os_name
         otp.dev_type = dev_type
         otp.match_rule = match_rule
         db.add(otp)
 
 
-    opr = models.TraOperator()
+    opr = models.TrwOperator()
     opr.id = 1
     opr.operator_name = u'admin'
     opr.operator_type = 0
@@ -68,69 +68,62 @@ def init_db(db):
     opr.operator_status = 0
     db.add(opr)
 
-    domain = models.TraDomain()
+    domain = models.TrwDomain()
     domain.id = 1
     domain.domain_code = 'default'
     domain.domain_desc = u'默认域'
     domain.tpl_name = 'default'
     db.add(domain)
 
-    nas = models.TraBas()
+    nas = models.TrwBas()
     nas.ip_addr = "127.0.0.1"
     nas.bas_name = "local ac"
     nas.bas_secret = "testing123"
     nas.ac_port = 2000
     nas.coa_port = 3799
-    nas.portal_vendor = "cmccv1"
+    nas.portal_vendor = "huaweiv2"
     nas.time_type = 0
     nas.vendor_id = 3902
     db.add(nas)
 
-    radius = models.TraRadius()
+    radius = models.TrwRadius()
     radius.ip_addr = "127.0.0.1"
     radius.name = "local radius"
     radius.secret = "testing123"
     radius.acct_port = 1812
     radius.auth_port = 1813
+    radius.serv_type = 1
     radius.admin_url = "http://127.0.0.1:1815/admin"
     radius.last_check = utils.get_currtime()
     db.add(radius)
 
-    oss = models.TraOssServer()
-    oss.name = "local oss server"
-    oss.auth_url = "http://127.0.0.1:1810/api/authorize"
-    oss.acct_url = "http://127.0.0.1:1810/api/acctounting"
-    oss.serv_type = 1
-    oss.secret = 'LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920'
-    oss.admin_url = "http://127.0.0.1:1815/api/admin"
-    oss.last_check = utils.get_currtime()
-    db.add(oss)
 
-    ssid = models.TraSsid()
+
+    ssid = models.TrwSsid()
     ssid.domain_code = domain.domain_code
     ssid.ssid = 'default'
     ssid.ssid_desc = u'默认SSID'
     db.add(ssid)
 
-    tpl = models.TraTemplate()
+    tpl = models.TrwTemplate()
     tpl.id = 1
     tpl.tpl_name = 'default'
     tpl.tpl_desc = u'默认模版'
     db.add(tpl)
 
-    tplattr1 = models.TraTemplateAttr()
+    tplattr1 = models.TrwTemplateAttr()
     tplattr1.tpl_name = 'default'
     tplattr1.attr_name = 'page_title'
     tplattr1.attr_value = u'无线认证'
     tplattr1.attr_desc = u'页面标题'
 
-    tplattr2 = models.TraTemplateAttr()
+    tplattr2 = models.TrwTemplateAttr()
     tplattr2.tpl_name = 'default'
     tplattr2.attr_name = 'logo_url'
     tplattr2.attr_value = u'/static/img/plogin.png'
     tplattr2.attr_desc = u'logo地址'
 
-    tplattr3 = models.TraTemplateAttr()
+    tplattr3 = models.TrwTemplateAttr()
     tplattr3.tpl_name = 'default'
     tplattr3.attr_name = 'home_page'
     tplattr3.attr_value = u'http://www.baidu.com'

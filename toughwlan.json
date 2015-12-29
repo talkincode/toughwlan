@@ -25,6 +25,7 @@
         "tz": "CST-8"
     },
     "portal":{
+        "debug": 1,
         "host": "0.0.0.0",
         "port": 1818,
         "vendor": "huaweiv2",
@@ -33,6 +34,24 @@
         "secret": "123456",
         "ntf_heart": 120,
         "user_ntf_heart": 120
+    },
+    "acagent":{
+        "debug": 1,
+        "host": "0.0.0.0",
+        "port": 2000,
+        "nasaddr": "127.0.0.1",
+        "auth_port": 1819,
+        "vendor": "huaweiv2",
+        "secret": "123456",
+        "portal_login": "http://127.0.0.1:1818/portal/login",
+        "radius": {
+            "authorize_port": 3799,
+            "interim_update": 300
+        }
     }
 }
+
+
+
+
 
