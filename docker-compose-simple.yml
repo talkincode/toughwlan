@@ -1,5 +1,5 @@
 wlandb:
-    image: "index.alauda.cn/toughstruct/mysql:M512"
+    image: "index.alauda.cn/toughstruct/mysql:512M"
     privileged: true
     expose:
         - "3306"
@@ -10,7 +10,7 @@ wlandb:
         - MYSQL_ROOT_PASSWORD=wlanroot
     restart: always
     volumes:
-        - /home/toughrun/mysql:/var/lib/mysql
+        - /home/toughrun/twmysql:/var/lib/mysql
 
 wlan:
     build: .
