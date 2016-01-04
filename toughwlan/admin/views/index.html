@@ -12,45 +12,9 @@
         }
     }
 
-
-    function update() {
-        busy(true);
-        $.post("/dashboard/update", {_xsrf: '${handler.xsrf_token}'}, function (data) {
-            $("#status_line").html(data.value)
-            busy(false);
-        },"json");
-    }
-
-
-    function restart() {
-        busy(true);
-        $.ajax({
-            url: '/dashboard/restart',
-            data:{_xsrf: '${handler.xsrf_token}'},
-            dataType:"json",
-            type: 'POST',
-            timeout: 9000,
-            error: function (xhr, textStatus) {
-                busy(false);
-                update()
-            },
-        });
-        setTimeout("update()", 9000);
-    }
-
     $(document).ready(function () {
         $("#loading").hide();
         $("#inbox").hide();
-
-        $("#restart").click(function () {
-            restart();
-        });
-
-        $("#refresh").click(function () {
-            update()
-        });
-
-        update();
     });
 
 </script>
@@ -66,10 +30,10 @@
         </div>
         <div class="box-body">
             <div class="container">
-            <table class="table table-hover">
+            <table class="table">
                 <thead>
                 <tr>
-                    <th colspan="4"> 当前登录管理员</th>
+                    <th colspan="4"> <i class="fa fa-user"></i> 当前登录管理员</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -86,32 +50,70 @@
                     <td>${sys_version or '1.0'}</td>
                 </tr>
                 </tbody>
-
-            </table>
-            <hr/>
-            <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th width="15%">服务名</th>
-                    <th>服务状态</th>
-                    <th width="20%"></th>
+                    <th colspan="4"> <i class="fa fa-laptop"></i> 管理服务信息</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>系统控制台</td>
-                    <td><span id="status_line"></span></td>
-                    <td>
-                        % if permit.match(current_user.username,'/dashboard/restart'):
-                        <button type="button" id="restart" class="btn btn-sm btn-info">重启服务</button>
-                        % endif
-                        % if permit.match(current_user.username,'/dashboard/update'):
-                        <button type="button" id="refresh" class="btn btn-sm btn-info">刷新状态</button>
-                        % endif
-                    </td>
+                    <td>监听地址</td>
+                    <td>${config.admin.host}</td>
+                    <td>WEB管理端口</td>
+                    <td>${config.admin.port}</td>                    
+                </tr>
+                </tbody>
+                <thead>
+                <tr>
+                    <th colspan="4"><i class="fa fa-laptop"></i>  Portal 服务信息</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>监听地址</td>
+                    <td>${config.portal.host}</td>
+                    <td>Web 认证端口</td>
+                    <td>${config.portal.port}</td>                    
+                </tr>
+                <tr>
+                    <td>Portal 协议</td>
+                    <td>${config.portal.vendor}</td>
+                    <td>下线监听端口</td>
+                    <td>${config.portal.listen}</td>                    
+                </tr>
+                </tbody>
+                <thead>
+                <tr>
+                    <th colspan="4"><i class="fa fa-laptop"></i>  AcAgent 服务信息</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>监听地址</td>
+                    <td>${config.acagent.host}</td>
+                    <td>Web 认证端口</td>
+                    <td>${config.acagent.port}</td>                    
+                </tr>
+                <tr>
+                    <td>Web 认证端口</td>
+                    <td>${config.acagent.auth_port}</td>
+                    <td>Portal 协议</td>
+                    <td>${config.acagent.vendor}</td>                    
+                </tr>
+                <tr>
+                    <td>Portal 重定向地址</td>
+                    <td colspan="3">${config.acagent.portal_login}</td>                  
+                </tr>
+                <tr>
+                    <td>Radius 授权端口</td>
+                    <td>${config.acagent.radius.authorize_port}</td>
+                    <td>Radius 记账间隔(秒)</td>
+                    <td>${config.acagent.radius.interim_update}</td>                    
                 </tr>
                 </tbody>
             </table>
+
+
 
             <hr>
             <div id="loading" style="display: none;"><img style="max-height: 90px;width: auto;"

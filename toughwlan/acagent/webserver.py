@@ -12,14 +12,14 @@ class LoginHandler(cyclone.web.RequestHandler):
         wlan_params = {
             "wlanuserip": self.get_argument("userip", self.request.remote_ip),
             "wlanusername": self.get_argument("username","test"),
-            "wlanacip": self.settings.config.ac.nasaddr,
+            "wlanacip": self.settings.config.acagent.nasaddr,
             "ssid": "default",
             "wlanusermac": self.get_argument("usermac","00:00:00:00:00"),
             "wlanapmac": "00:00:00:00:00",
             "wlanuserfirsturl": self.get_argument("firsturl","https://www.baidu.com")
         }
         url = "{0}?{1}".format(self.settings.config.acagent.portal_login, urlencode(wlan_params))
-        self.application.syslog.info(url)
+        print url
         self.redirect(url, permanent=False)
 
     @defer.inlineCallbacks

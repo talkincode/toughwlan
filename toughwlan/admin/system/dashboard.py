@@ -68,7 +68,7 @@ class DashboardHandler(BaseHandler):
 
     @cyclone.web.authenticated
     def get(self):
-        self.render("index.html")
+        self.render("index.html", config=self.settings.config)
 
 @permit.route(r"/dashboard/initdb", u"初始化数据库", MenuSys, order=1.0001, is_menu=False)
 class InitdbHandler(BaseHandler):

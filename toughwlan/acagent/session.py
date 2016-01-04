@@ -6,7 +6,8 @@ from txradius.radius import packet
 from twisted.internet import defer
 from twisted.internet import task
 from twisted.python import log
-
+from twisted.internet import reactor
+from txradius import message
 
 class RadiusSession:
 
@@ -19,12 +20,13 @@ class RadiusSession:
         self.session_start = int(time.time())
         self.session_id = uuid.uuid1().hex.upper()
         self.session_data = {}
+        self.interim_update = self.config.acagent.radius.interim_update
 
 
     @defer.inlineCallbacks
     def start(self, username, password, challenge=None, chap_pwd=None, userip=None, usermac=None):
         auth_req = {'User-Name' : username}
-        auth_req["NAS-IP-Address"]     =  config.acagent.nasaddr
+        auth_req["NAS-IP-Address"]     =  self.config.acagent.nasaddr
         auth_req["NAS-Port"]           = 0
         auth_req["Service-Type"]       = "Login-User"
         auth_req["NAS-Identifier"]     = "toughac"
@@ -37,31 +39,33 @@ class RadiusSession:
             auth_resp = yield self.radius.send_auth(**auth_req)
         else:
             auth_req['User-Password'] = password
-            auth_resp = yield self.radius.send_acct(**auth_req)
+            auth_resp = yield self.radius.send_auth(**auth_req)
 
-        if auth_resp['code'] == packet.AccessReject:
+        if auth_resp.code== packet.AccessReject:
             defer.returnValue(dict(code=1, msg=auth_resp.get("Reply-Message", "auth reject")))
 
-        if auth_resp['code'] == packet.AccessAccept:
+        if auth_resp.code== packet.AccessAccept:
             self.session_data['User-Name'] = username
             self.session_data['Acct-Session-Time'] = 0
             self.session_data['Acct-Status-Type'] = 1
-            self.session_data['Session-Timeout'] = auth_resp.get("Session-Timeout",86400)
+            self.session_data['Session-Timeout'] = message.get_session_timeout(auth_resp)
             self.session_data['Acct-Session-Id'] = self.session_id
-            self.session_data["NAS-IP-Address"]     =  config.acagent.nasaddr
+            self.session_data["NAS-IP-Address"]     =  self.config.acagent.nasaddr
             self.session_data["NAS-Port"]           = 0
-            self.session_data["NAS-Identifier"]     = "toughac"
+            self.session_data["NAS-Identifier"]     = self.config.acagent.nasid
             self.session_data["Called-Station-Id"]  = usermac or "00-00-00-00-00-00"
             self.session_data["Framed-IP-Address"]  =  userip
             self.session_data["Acct-Output-Octets"]  =  0
             self.session_data["Acct-Input-Octets"]  =  0
             self.session_data["NAS-Port-Id"]  =  '3/0/1:0.0'
+            if 'Acct-Interim-Interval' in auth_resp:
+                self.interim_update = message.get_interim_update(auth_resp)
 
             acct_resp = yield self.radius.send_acct(**self.session_data)
-            if acct_resp.code == AccountingResponse:
+            if acct_resp.code == packet.AccountingResponse:
                 self.log.msg('Start session  %s' % self.session_id)
                 RadiusSession.sessions[self.session_id] = self
-                self.run_session_task()
+                reactor.callLater(self.interim_update,self.check_session)
                 defer.returnValue(dict(code=0,msg=u"success"))
             else:
                 defer.returnValue(dict(code=1,msg=u"error"))
@@ -89,10 +93,9 @@ class RadiusSession:
             self.stop().addCallbacks(self.log.msg,self.log.err)
         else:
             self.update().addCallbacks(self.log.msg,self.log.err)
+            reactor.callLater(self.interim_update,self.check_session)
 
-    def run_session_task(self):
-        _task = task.LoopingCall(self.update_session)
-        _task.start(self.config.acagent.radius.get('interim_update',300.0))
+
 
 
 

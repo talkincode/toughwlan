@@ -78,7 +78,7 @@ def init_db(db):
     nas = models.TrwBas()
     nas.ip_addr = "127.0.0.1"
     nas.bas_name = "local ac"
-    nas.bas_secret = "testing123"
+    nas.bas_secret = "secret"
     nas.ac_port = 2000
     nas.coa_port = 3799
     nas.portal_vendor = "huaweiv2"
@@ -89,11 +89,11 @@ def init_db(db):
     radius = models.TrwRadius()
     radius.ip_addr = "127.0.0.1"
     radius.name = "local radius"
-    radius.secret = "testing123"
-    radius.acct_port = 1812
-    radius.auth_port = 1813
+    radius.secret = "secret"
+    radius.acct_port = 1813
+    radius.auth_port = 1812
     radius.serv_type = 1
-    radius.admin_url = "http://127.0.0.1:1815/admin"
+    radius.admin_url = "http://127.0.0.1:1816/admin"
     radius.last_check = utils.get_currtime()
     db.add(radius)
 

@@ -10,7 +10,6 @@ RUN pypy -m pip install https://github.com/talkincode/txradius/archive/master.zi
 RUN git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwlan
 
 RUN ln -s /opt/toughwlan/toughwlan.json /etc/toughwlan.json
-RUN ln -s /opt/toughwlan/toughwlan.json /var/toughwlan/toughwlan.json
 
 RUN chmod +x /opt/toughwlan/toughctl
 
@@ -32,5 +31,5 @@ EXPOSE 3799/udp
 # portal listen port
 EXPOSE 50100/udp
 
-CMD ["pypy", "/opt/toughwlan/toughctl", "--admin"]
+CMD ["pypy", "/opt/toughwlan/toughctl", "--standalone"]
 

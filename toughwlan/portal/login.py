@@ -6,7 +6,8 @@ from toughlib import utils
 from toughwlan.portal.base import BaseHandler
 from twisted.internet import defer
 from toughlib.permit import permit
-
+from txportal import client
+import functools
 
 @permit.route(r"/portal/login")
 class LoginHandler(BaseHandler):
@@ -32,13 +33,28 @@ class LoginHandler(BaseHandler):
             return
 
         start_time = time.time()
-        nas = self.get_nas(wlan_params.get("wlanacip"))
+        nas = self.get_nas(wlan_params.get("wlanacip",'127.0.0.1'))
         if not nas:
             self.render_error(msg=u"AC server {0} didn't  register ".format(wlan_params.get("wlanacip")))
             return
 
         ac_addr = nas['ip_addr']
         ac_port = int(nas['ac_port'])
+        secret = utils.safestr(nas['bas_secret'])
+        _vendor= utils.safestr(nas['portal_vendor'])
+        if _vendor not in ('cmccv1','cmccv2','huaweiv1','huaweiv2'):
+            self.render_error(msg=u"AC server portal_vendor {0} not support ".format(_vendor))
+            return
+
+        send_portal = functools.partial(
+            client.send,
+            secret,
+            log=self.syslog,
+            debug=self.settings.debug,
+            vendor=_vendor
+        )
+        vendor = client.PortalClient.vendors.get(_vendor)
+
         is_chap=self.settings.config.portal.chap in (1, "1", "chap")
         userIp=wlan_params.get('wlanuserip', '')
         username=self.get_argument("username", None)
@@ -65,42 +81,43 @@ class LoginHandler(BaseHandler):
         # username = "%s#%s#%s@%s" % (username, cli_dev, cli_os, domain)
 
         try:
+            challenge_resp = None
             if is_chap:
                 ## req challenge ################################
-                challenge_req=self.vendor.proto.newReqChallenge(userIp, secret, chap = is_chap)
-                challenge_resp = yield self.send_portal(data = challenge_req, host=ac_addr, port=ac_port)
+                challenge_req=vendor.proto.newReqChallenge(userIp, secret, chap = is_chap)
+                challenge_resp = yield send_portal(data = challenge_req, host=ac_addr, port=ac_port)
 
                 if challenge_resp.errCode > 0:
                     if challenge_resp.errCode == 2:
                         self.redirect(firsturl)
                         return
-                    raise Exception(self.vendor.mod.AckChallengeErrs[challenge_resp.errCode])
+                    raise Exception(vendor.mod.AckChallengeErrs[challenge_resp.errCode])
 
             if challenge_resp:
                 ## req auth ################################
-                auth_req = self.vendor.proto.newReqAuth(
+                auth_req = vendor.proto.newReqAuth(
                     userIp, username, password, challenge_resp.reqId, challenge_resp.get_challenge(), 
                     secret, ac_addr, serialNo=challenge_req.serialNo, chap=is_chap)
             else:
-                auth_req = self.vendor.proto.newReqAuth(userIp, username,password,0,None,secret,ac_addr,chap=is_chap)
+                auth_req = vendor.proto.newReqAuth(userIp, username,password,0,None,secret,ac_addr,chap=is_chap)
 
-            auth_resp = yield self.send_portal(data=auth_req, host=ac_addr, port=ac_port)
+            auth_resp = yield send_portal(data=auth_req, host=ac_addr, port=ac_port)
 
             if auth_resp.errCode > 0:
                 if auth_resp.errCode == 2:
                     self.redirect(firsturl)
                     return
                 _err_msg=u"{0},{1}".format(
-                    self.vendor.mod.AckAuthErrs[auth_resp.errCode], 
+                    vendor.mod.AckAuthErrs[auth_resp.errCode], 
                     utils.safeunicode(auth_resp.get_text_info()[0] or "")
                 )
                 raise Exception(_err_msg)
 
             ### aff_ack ################################
-            affack_req = self.vendor.proto.newAffAckAuth(
+            affack_req = vendor.proto.newAffAckAuth(
                 userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, chap = is_chap)
 
-            yield self.send_portal(data=affack_req, host=ac_addr, port=ac_port)
+            send_portal(data=affack_req, host=ac_addr, port=ac_port)
 
             self.syslog.info(u'Portal [username:{0}] auth success'.format(username))
 
@@ -111,6 +128,8 @@ class LoginHandler(BaseHandler):
             self.redirect(firsturl)
 
         except Exception as err:
+            import traceback
+            traceback.print_exc()
             back_login(msg = u"Portal auth error,%s" % utils.safeunicode(err.message))
 
 

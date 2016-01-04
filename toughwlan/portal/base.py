@@ -12,7 +12,6 @@ from mako.template import Template
 from cyclone.util import ObjectDict
 from twisted.internet import defer
 from toughlib import utils, apiutils
-from txportal import client
 from toughwlan import models
 from toughlib import db_session as session
 
@@ -23,14 +22,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.syslog = self.application.syslog
         self.cache = self.application.mcache
         self.session = session.Session(self.application.session_manager, self)
-        self.send_portal = functools.partial(
-            client.send,
-            self.settings.config.portal.secret,
-            log=self.syslog,
-            debug=self.settings.debug,
-            vendor=self.settings.config.portal.vendor
-        )
-        self.vendor = client.PortalClient.vendors.get(self.settings.config.portal.vendor)
+
 
     def check_xsrf_cookie(self):
         pass

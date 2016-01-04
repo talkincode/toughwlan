@@ -49,12 +49,7 @@ class AddHandler(BaseHandler):
         bas.ac_port = form.d.ac_port
         self.db.add(bas)
 
-        ops_log = models.TrwOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)新增BAS信息:%s' % (ops_log.operator_name, bas.ip_addr)
-        self.db.add(ops_log)
+        self.add_oplog(u'新增BAS信息:%s' % ( bas.ip_addr))
         self.db.commit()
 
         self.redirect("/bas",permanent=False)
@@ -83,13 +78,7 @@ class UpdateHandler(BaseHandler):
         bas.coa_port = form.d.coa_port
         bas.ac_port = form.d.ac_port
 
-        ops_log = models.TrwOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)修改BAS信息:%s' % (ops_log.operator_name, bas.ip_addr)
-        self.db.add(ops_log)
-
+        self.add_oplog(u'修改BAS信息:%s' % (bas.ip_addr))
         self.db.commit()
 
         self.redirect("/bas",permanent=False)
@@ -100,16 +89,8 @@ class DeleteHandler(BaseHandler):
     def get(self):
         bas_id = self.get_argument("bas_id")
         self.db.query(models.TrwBas).filter_by(id=bas_id).delete()
-
-        ops_log = models.TrwOperateLog()
-        ops_log.operator_name = self.get_secure_cookie("tra_user")
-        ops_log.operate_ip = self.get_secure_cookie("tra_login_ip")
-        ops_log.operate_time = utils.get_currtime()
-        ops_log.operate_desc = u'操作员(%s)删除BAS信息:%s' % (ops_log.operator_name, bas_id)
-        self.db.add(ops_log)
-
+        self.add_oplog(u'删除BAS信息:%s' % (bas.bas_id))
         self.db.commit()
-
         self.redirect("/bas",permanent=False)
 
 

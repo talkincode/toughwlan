@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
+import os
 from toughlib import mcache, storage
 from toughlib.dbengine import get_engine
 from sqlalchemy.sql import text as _sql
@@ -24,21 +25,22 @@ class RadiusLoader:
             radius.acct_port = result['acct_port']
             radius.dict = dictionary.Dictionary(
                     os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
-
             radius.send_auth = functools.partial(
                 client.send_auth,
-                radius.ip_addr,
-                radius.dict,
                 radius.secret,
-                authport=radius.auth_port
+                radius.dict,
+                radius.ip_addr,
+                authport=int(radius.auth_port),
+                debug=True
             )
 
             radius.send_acct = functools.partial(
                 client.send_acct,
-                radius.ip_addr,
-                radius.dict,
                 radius.secret,
-                acctport=radius.acct_port,
+                radius.dict,
+                radius.ip_addr,
+                acctport=int(radius.acct_port),
+                debug=True
             )
             return radius
 

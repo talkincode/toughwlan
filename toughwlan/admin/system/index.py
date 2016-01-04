@@ -11,7 +11,7 @@ from toughlib.permit import permit
 class HomeHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
-        self.render("index.html")
+        self.render("index.html", config=self.settings.config)
 
 @permit.route(r"/cache/clean")
 class CacheCleanHandler(BaseHandler):

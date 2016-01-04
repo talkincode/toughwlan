@@ -1,4 +1,19 @@
 {
+    "acagent": {
+        "auth_port": 1819, 
+        "debug": 1, 
+        "host": "0.0.0.0", 
+        "nasaddr": "127.0.0.1", 
+        "nasid": "toughac", 
+        "port": 2000, 
+        "portal_login": "http://127.0.0.1:1818/portal/login", 
+        "radius": {
+            "authorize_port": 3799, 
+            "interim_update": 300
+        }, 
+        "secret": "123456", 
+        "vendor": "huaweiv2"
+    }, 
     "admin": {
         "host": "0.0.0.0", 
         "port": 1810
@@ -12,8 +27,19 @@
         "pool_recycle": 300, 
         "pool_size": 120
     }, 
+    "portal": {
+        "chap": 1, 
+        "debug": 1, 
+        "host": "0.0.0.0", 
+        "listen": 50100, 
+        "ntf_heart": 120, 
+        "port": 1818, 
+        "secret": "123456", 
+        "user_ntf_heart": 120, 
+        "vendor": "huaweiv2"
+    }, 
     "syslog": {
-        "enable": 1, 
+        "enable": 0, 
         "level": "INFO", 
         "port": 514, 
         "server": "127.0.0.1", 
@@ -23,35 +49,5 @@
         "debug": 1, 
         "secret": "LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920", 
         "tz": "CST-8"
-    },
-    "portal":{
-        "debug": 1,
-        "host": "0.0.0.0",
-        "port": 1818,
-        "vendor": "huaweiv2",
-        "chap": 0,
-        "listen": 50100,
-        "secret": "123456",
-        "ntf_heart": 120,
-        "user_ntf_heart": 120
-    },
-    "acagent":{
-        "debug": 1,
-        "host": "0.0.0.0",
-        "port": 2000,
-        "nasaddr": "127.0.0.1",
-        "auth_port": 1819,
-        "vendor": "huaweiv2",
-        "secret": "123456",
-        "portal_login": "http://127.0.0.1:1818/portal/login",
-        "radius": {
-            "authorize_port": 3799,
-            "interim_update": 300
-        }
     }
 }
-
-
-
-
-

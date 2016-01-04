@@ -1,22 +1,32 @@
-wlandb:extends:
-    file: ./deploy/mysql.yml
-    service: db512
+wlandb:
+    image: "index.alauda.cn/toughstruct/mysql:M512"
+    privileged: true
+    expose:
+        - "3306"
+    environment:
+        - MYSQL_USER=wlanadm
+        - MYSQL_PASSWORD=wlanpwd
+        - MYSQL_DATABASE=toughwlan
+        - MYSQL_ROOT_PASSWORD=wlanroot
+    restart: always
+    volumes:
+        - /home/toughrun/mysql:/var/lib/mysql
 
-admin:
-    build: ./toughwlan
+wlan:
+    build: .
     privileged: true
     ports:
         - "1810:1810"
+        - "1818:1818"
+        - "1819:1819"
+        - "2000:2000/udp"
+        - "3799:3799/udp"
+        - "50100:50100/udp"
     links:
         - wlandb
     environment:
         - DB_TYPE=mysql
         - DB_URL=mysql://wlanadm:wlanpwd@wlandb:3306/toughwlan?charset=utf8
-        - TIMEZONE=CST-8
-        - SYSLOG_ENABLE=1
-        - SYSLOG_SERVER=121.201.15.99
-        - SYSLOG_PORT=514
-        - SYSLOG_LEVEL=INFO
     restart: always
     volumes:
         - /home/toughrun/toughwlan:/var/toughwlan

@@ -28,7 +28,7 @@ class PortalWebServer(cyclone.web.Application):
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             login_url="/login",
-            template_path=os.path.join(os.path.dirname(__file__), "portal/views"),
+            template_path=os.path.join(os.path.dirname(__file__), "views"),
             static_path=os.path.join(os.path.dirname(toughwlan.__file__), "static"),
             xsrf_cookies=True,
             debug=self.config.system.debug,

@@ -6,6 +6,7 @@ from twisted.internet import reactor, defer
 from txportal.packet import cmcc, huawei, pktutils
 from toughlib import logger
 from toughwlan.acagent.handlers import auth_handler, chellenge_handler, base_handler
+from toughwlan.acagent import radius_loader
 from txradius.radius import dictionary
 import toughwlan
 
@@ -17,10 +18,13 @@ class AcPortald(protocol.DatagramProtocol):
         self.log = log or logger.Logger(self.config)
         self.radius_dict = dictionary.Dictionary(
             os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
+        self.radloader = radius_loader.RadiusLoader(config)
 
         self.ac_handlers = {
             cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config, self.log),
-            cmcc.REQ_AUTH      : auth_handler.AuthHandler(self.config, self.log, radius_dict=self.radius_dict),
+            cmcc.REQ_AUTH      : auth_handler.AuthHandler(
+                                            self.config, self.log, 
+                                            radius_dict=self.radius_dict,radius_loader=self.radloader ),
             cmcc.REQ_INFO      : auth_handler.AuthHandler(self.config, self.log),
             cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config, self.log),
             cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config, self.log),
@@ -47,10 +51,11 @@ class AcPortald(protocol.DatagramProtocol):
     def datagramReceived(self, datagram, (host, port)):
         try:
             request = self.parse(datagram, (host, port))
-            if self.config.defaults.debug:
+            if self.config.system.debug:
                 self.log.debug(":: Received portal packet from %s:%s: %s" % (host, port, repr(request)))
-
-            resp = yield self.ac_handlers[request.type].process(request)
+            # import pdb;pdb.set_trace()
+            handler = self.ac_handlers[request.type]
+            resp = yield handler.process(request)
 
             if resp:
                 self.transport.write(str(resp), (host, port))
@@ -59,6 +64,8 @@ class AcPortald(protocol.DatagramProtocol):
 
         except Exception as err:
             self.log.error(':: Dropping invalid packet from %s: %s' % ((host, port), str(err)))
+            import traceback
+            traceback.print_exc()
 
 
 def run(config, log=None):
