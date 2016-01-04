@@ -148,7 +148,7 @@ def update(config):
         db = scoped_session(sessionmaker(bind=db_engine, autocommit=False, autoflush=True))()
         init_db(db)
     except:
-        time.sleep(5.0)
+        time.sleep(1.0)
         update(config)
 
 
