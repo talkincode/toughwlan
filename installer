@@ -207,6 +207,7 @@ remove()
 {
     cd ${rundir}/$instance
     read -p "remove database [y/n](n): " rmdata
+    rmdata=${rmdata:-n}
     if [ rmdata == 'y' ]; then
         docker-compose stop wlandb
         docker-compose rm wlandb
