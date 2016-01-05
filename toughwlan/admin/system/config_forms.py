@@ -72,7 +72,7 @@ acagent_form = btforms.Form(
     btforms.Textbox("secret", description=u"共享密钥" , **input_style),
     btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
     title=u"AcAgentl配置管理",
-    action="/config/portal/update"
+    action="/config/acagent/update"
 )
 
 
