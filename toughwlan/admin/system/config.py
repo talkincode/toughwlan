@@ -77,11 +77,11 @@ class AcAgentHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
         config = self.settings.config
-        config['acagent']['nasid'] = int(self.get_argument("nasid"))
+        config['acagent']['nasid'] = self.get_argument("nasid")
         config['acagent']['nasaddr'] = self.get_argument("nasaddr")
         config['acagent']['portal_login'] = self.get_argument("portal_login")
-        config['acagent']['vendor'] = int(self.get_argument("vendor"))
-        config['acagent']['secret'] = int(self.get_argument("secret"))
+        config['acagent']['vendor'] = self.get_argument("vendor")
+        config['acagent']['secret'] = self.get_argument("secret")
         config.save()
         self.redirect("/config?active=acagent")
 
