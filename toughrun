@@ -1,7 +1,7 @@
 #!/bin/sh
 # toughwlan docker install script
 # author: jamiesun.net@gmail.com
-# version: 0.0.5
+# version: 0.0.6
 
 set -e
 
@@ -18,6 +18,7 @@ install()
     ln -s /opt/toughwlan/toughwlan.json /etc/toughwlan.json
 
     chmod +x /opt/toughwlan/toughctl
+    chmod +x /opt/toughwlan/toughrun
 }
 
 initserv()
@@ -69,7 +70,7 @@ acagent()
 
 upgrade()
 {
-    /opt/toughwlan
+    cd /opt/toughwlan
     git pull origin master
 }
 
