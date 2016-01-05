@@ -24,9 +24,6 @@ def check_env(config):
             os.system("mkdir -p  %s" % backup_path)
         if not os.path.exists("/var/toughwlan"):
             os.system("mkdir -p /var/toughwlan")
-        if not os.path.exists("/var/toughwlan/.install"):
-            start_initdb(config)
-            os.system("touch /var/toughwlan/.install ")
     except Exception as err:
         import traceback
         traceback.print_exc()
