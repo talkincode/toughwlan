@@ -58,7 +58,8 @@ with_mysql()
     radius_coa_port=${radius_coa_port:-3799}
 
     cat <<EOF
-    toughwlan instance config:
+
+    toughwlan instance config(with mysql):
 
     instance name: $instance
     mysql_user: ${mysql_user}
@@ -71,11 +72,13 @@ with_mysql()
     ac_port: ${ac_port}
     ac_redirect_port: ${ac_redirect_port}
     radius_coa_port: ${radius_coa_port}
+
 EOF
 
-    cat > ${rundir}/$instance/docker-compose.yml <<EOF 
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml <<EOF
 wlandb:
-    image: "index.alauda.cn/toughstruct/mysql:512M"
+    image: "index.alauda.cn/toughstruct/mysql"
     privileged: true
     expose:
         - "3306"
@@ -87,7 +90,6 @@ wlandb:
     restart: always
     volumes:
         - ${rundir}/$instance/twmysql:/var/lib/mysql
-
 wlan:
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
@@ -99,14 +101,14 @@ wlan:
         - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
     links:
-        - wlandb
+        - wlandb:wlandb
     environment:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
     restart: always
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-EOF 
+EOF
 
     cd ${rundir}/$instance
 
@@ -163,7 +165,8 @@ standalone()
     acct_port=${acct_port:-1813}
 
     cat <<EOF
-ToughRADIUS instance config:
+
+    toughwlan instance config (standalone):
 
     instance name: $instance
     mysql_host: ${mysql_host}
@@ -177,8 +180,10 @@ ToughRADIUS instance config:
     ac_port: ${ac_port}
     ac_redirect_port: ${ac_redirect_port}
     radius_coa_port: ${radius_coa_port}
+
 EOF
 
+    rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 wlan:
     image: "index.alauda.cn/toughstruct/toughwlan"
@@ -190,8 +195,6 @@ wlan:
         - "${ac_port}:2000/udp"
         - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
-    links:
-        - wlandb
     environment:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
