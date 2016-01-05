@@ -1,0 +1,357 @@
+#!/bin/sh
+# toughwlan v1.0 install script
+# author: jamiesun.net@gmail.com
+
+rundir=/home/toughrun
+
+
+usage ()
+{
+    cat <<EOF
+    Usage: $0 [OPTIONS] instance
+
+    docker_setup       install docker, docker-compose
+    pull               toughwlan docker images pull
+    standalone         install toughwlan with already exists mysql
+    with_mysql         install toughwlan with new docker mysql instance
+    remove             uninstall toughwlan and database
+    status             toughwlan instance status
+    restart            toughwlan instance restart
+    stop               toughwlan instance stop
+    upgrade            toughwlan instance upgrade
+    logs               toughwlan instance logs
+    dsh                toughwlan instance bash term
+
+    All other options are passed to the twshell program.
+EOF
+        exit 1
+}
+
+with_mysql()
+{
+    instance=${$1:-toughwlan}    
+
+    mkdir -p ${rundir}/$instance
+    cd ${rundir}/$instance
+
+    read -p "mysql user [wlanuser]: " mysql_user
+    mysql_user=${mysql_user:-wlanuser}
+
+    read -p "mysql user password [wlanpwd]: " mysql_password
+    mysql_password=${mysql_password:-wlanpwd}
+
+    read -p "mysql database [wlandb]: " mysql_database
+    mysql_database=${mysql_database:-wlandb}
+
+    read -p "mysql root password [wlanroot]: " mysql_root_password
+    mysql_root_password=${mysql_root_password:-wlanroot}
+
+    read -p "toughwlan admin port [1810]: " admin_port
+    admin_port=${admin_port:-1810}
+
+    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
+    portal_auth_port=${portal_auth_port:-1818}
+    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
+    portal_listen_port=${portal_listen_port:-50100}
+
+    read -p "toughwlan ac port [2000]: " ac_port
+    ac_port=${ac_port:-2000}
+
+    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
+    ac_redirect_port=${ac_redirect_port:-1819}
+
+    read -p "toughwlan radius coa port [3799]: " radius_coa_port
+    radius_coa_port=${radius_coa_port:-3799}
+
+    cat <<EOF
+
+    toughwlan instance config(with mysql):
+
+    instance name: $instance
+    mysql_user: ${mysql_user}
+    mysql_password: ${mysql_password}
+    mysql_database: ${mysql_database}
+    mysql_root_password: ${mysql_root_password}
+    admin_port: ${admin_port}
+    portal_auth_port: ${portal_auth_port}
+    portal_listen_port: ${portal_listen_port}
+    ac_port: ${ac_port}
+    ac_redirect_port: ${ac_redirect_port}
+    radius_coa_port: ${radius_coa_port}
+
+EOF
+
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml <<EOF
+wlandb:
+    container_name: wlandb_${instance}
+    image: "index.alauda.cn/toughstruct/mysql"
+    privileged: true
+    expose:
+        - "3306"
+    environment:
+        - MYSQL_USER=$mysql_user
+        - MYSQL_PASSWORD=$mysql_password
+        - MYSQL_DATABASE=$mysql_database
+        - MYSQL_ROOT_PASSWORD=$mysql_root_password
+    restart: always
+    volumes:
+        - ${rundir}/$instance/twmysql:/var/lib/mysql
+wlan:
+    container_name: wlan_${instance}
+    image: "index.alauda.cn/toughstruct/toughwlan"
+    privileged: true
+    ports:
+        - "${admin_port}:1810"
+        - "${portal_auth_port}:1818"
+        - "${ac_redirect_port}:1819"
+        - "${ac_port}:2000/udp"
+        - "${radius_coa_port}:3799/udp"
+        - "${portal_listen_port}:50100/udp"
+    links:
+        - wlandb:wlandb
+    environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
+    restart: always
+    volumes:
+        - /home/toughrun/$instance:/var/toughwlan
+EOF
+
+    cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
+
+    docker-compose up -d wlandb
+
+    echo 3
+    sleep 1
+    echo 2
+    sleep 1
+    echo 1
+    sleep 1
+
+    docker-compose up -d wlan
+
+    docker-compose ps
+
+    exit 0
+}
+
+standalone()
+{
+    instance=${$1:-toughwlan}
+
+    mkdir -p ${rundir}/$instance
+
+    read -p "mysql host (must): " mysql_host
+    if [ -z $mysql_host ]; then
+        echo "mysql host is empty"
+        exit 1
+    fi
+
+    read -p "mysql user [raduser]: " mysql_user
+    mysql_user=${mysql_user:-raduser}
+
+    read -p "mysql user password [radpwd]: " mysql_password
+    mysql_password=${mysql_password:-radpwd}
+
+    read -p "mysql database [radiusd]: " mysql_database
+    mysql_database=${mysql_database:-radiusd}
+
+    read -p "mysql root password [radroot]: " mysql_root_password
+    mysql_root_password=${mysql_root_password:-radroot}
+
+    read -p "toughwlan web port [1816]: " web_port
+    web_port=${web_port:-1816}
+
+    read -p "toughwlan auth port [1812]: " auth_port
+    auth_port=${auth_port:-1812}
+
+    read -p "toughwlan acct port [1813]: " acct_port
+    acct_port=${acct_port:-1813}
+
+    cat <<EOF
+
+    toughwlan instance config (standalone):
+
+    instance name: $instance
+    mysql_host: ${mysql_host}
+    mysql_user: ${mysql_user}
+    mysql_password: ${mysql_password}
+    mysql_database: ${mysql_database}
+    mysql_root_password: ${mysql_root_password}
+    admin_port: ${admin_port}
+    portal_auth_port: ${portal_auth_port}
+    portal_listen_port: ${portal_listen_port}
+    ac_port: ${ac_port}
+    ac_redirect_port: ${ac_redirect_port}
+    radius_coa_port: ${radius_coa_port}
+
+EOF
+
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+wlan:
+    image: "index.alauda.cn/toughstruct/toughwlan"
+    privileged: true
+    ports:
+        - "${admin_port}:1810"
+        - "${portal_auth_port}:1818"
+        - "${ac_redirect_port}:1819"
+        - "${ac_port}:2000/udp"
+        - "${radius_coa_port}:3799/udp"
+        - "${portal_listen_port}:50100/udp"
+    environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
+    restart: always
+    volumes:
+        - /home/toughrun/$instance:/var/toughwlan
+EOF
+
+    cd ${rundir}/$instance
+
+    docker-compose up -d
+
+    docker-compose ps
+
+    exit 0
+}
+
+
+docker_setup()
+{
+    curl -sSL https://get.daocloud.io/docker | sh
+
+    curl -L https://get.daocloud.io/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
+    ln -s /usr/local/bin/docker-compose /usr/local/bin/docp
+}
+
+remove()
+{
+    instance=${$1:-toughwlan}
+
+    cd ${rundir}/$instance
+    read -p "remove database [y/n](n): " rmdata
+    rmdata=${rmdata:-n}
+    if [ rmdata == 'y' ]; then
+        docker-compose kill wlandb
+        docker-compose rm wlandb
+        rm -fr ${rundir}/$instance/twmysql
+    fi 
+    
+    docker-compose kill wlan
+    docker-compose rm wlan
+    rm -f ${rundir}/$instance/.install
+}
+
+
+status()
+{
+    instance=${$1:-toughwlan}
+    cd ${rundir}/$instance
+    docker-compose ps
+}
+
+restart()
+{
+    instance=${$1:-toughwlan}
+
+    cd ${rundir}/$instance
+    docker-compose restart
+    docker-compose ps
+}
+
+stop()
+{
+    instance=${$1:-toughwlan}
+
+    cd ${rundir}/$instance
+    docker-compose stop
+    docker-compose ps
+}
+
+logs()
+{
+    instance=${$1:-toughwlan}
+    cd ${rundir}/$instance
+    docker-compose logs
+}
+
+upgrade()
+{
+    instance=${$1:-toughwlan}    
+    cd ${rundir}/$instance
+    docker exec -it wlan_$instance /usr/local/bin/toughrun upgrade
+    docker-compose restart wlan
+    docker-compose ps
+}
+
+dsh()
+{
+    instance=${$1:-toughwlan}    
+    cd ${rundir}/$instance
+    docker exec -it wlan_$instance bash
+}
+
+pull()
+{
+    docker pull index.alauda.cn/toughstruct/mysql
+    docker pull index.alauda.cn/toughstruct/toughwlan
+}
+
+
+case "$1" in
+
+  docker_setup)
+    docker_setup
+  ;;
+
+  standalone)
+    standalone
+  ;;
+
+  with_mysql)
+    with_mysql
+  ;;
+
+  remove)
+    remove
+  ;;
+
+  status)
+    status
+  ;;
+
+  restart)
+    restart
+  ;;
+
+  stop)
+    stop
+  ;;
+
+  logs)
+    logs
+  ;;
+
+  upgrade)
+    upgrade
+  ;;
+
+  dsh)
+    dsh
+  ;;
+
+  pull)
+    pull
+  ;;
+
+  *)
+   usage
+  ;;
+
+esac
