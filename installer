@@ -4,9 +4,6 @@
 
 rundir=/home/toughrun
 
-read -p "instance name [toughwlan]: " instance
-instance=${instance:-toughwlan}
-
 
 usage ()
 {
@@ -25,6 +22,9 @@ EOF
 
 with_mysql()
 {
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}    
+
     mkdir -p ${rundir}/$instance
     cd ${rundir}/$instance
 
@@ -108,7 +108,20 @@ wlan:
         - /home/toughrun/$instance:/var/toughwlan
 EOF 
 
-    docker-compose up -d
+    cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
+
+    docker-compose up -d wlandb
+
+    echo 3
+    sleep 1
+    echo 2
+    sleep 1
+    echo 1
+    sleep 1
+
+    docker-compose up -d wlan
 
     docker-compose ps
 
@@ -117,8 +130,10 @@ EOF
 
 standalone()
 {
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+
     mkdir -p ${rundir}/$instance
-    cd ${rundir}/$instance
 
     read -p "mysql host (must): " mysql_host
     if [ -z $mysql_host ]; then
@@ -185,6 +200,8 @@ wlan:
         - /home/toughrun/$instance:/var/toughwlan
 EOF
 
+    cd ${rundir}/$instance
+
     docker-compose up -d
 
     docker-compose ps
@@ -205,16 +222,19 @@ docker()
 
 remove()
 {
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+
     cd ${rundir}/$instance
     read -p "remove database [y/n](n): " rmdata
     rmdata=${rmdata:-n}
     if [ rmdata == 'y' ]; then
-        docker-compose stop wlandb
+        docker-compose kill wlandb
         docker-compose rm wlandb
         rm -fr ${rundir}/$instance/trmysql
     fi 
     
-    docker-compose stop wlan
+    docker-compose kill wlan
     docker-compose rm wlan
     rm -f ${rundir}/$instance/.install
 }
@@ -222,13 +242,38 @@ remove()
 
 status()
 {
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+    
     cd ${rundir}/$instance
     docker-compose ps
 }
 
+restart()
+{
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+
+    cd ${rundir}/$instance
+    docker-compose restart
+    docker-compose ps
+}
+
+stop()
+{
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+
+    cd ${rundir}/$instance
+    docker-compose stop
+    docker-compose ps
+}
 
 logs()
 {
+    read -p "instance name [toughwlan]: " instance
+    instance=${instance:-toughwlan}  
+
     cd ${rundir}/$instance
     docker-compose logs
 }
@@ -254,6 +299,14 @@ case "$1" in
 
   status)
     status
+  ;;
+
+  restart)
+    restart
+  ;;
+
+  stop)
+    stop
   ;;
 
   logs)
