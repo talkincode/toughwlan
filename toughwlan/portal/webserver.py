@@ -19,7 +19,7 @@ import toughwlan
 
 class PortalWebServer(cyclone.web.Application):
 
-    def __init__(self, config=None, log=None, **kwargs):
+    def __init__(self, config=None, dbengine=None, log=None, **kwargs):
 
         self.config = config
 
@@ -36,7 +36,7 @@ class PortalWebServer(cyclone.web.Application):
             config=self.config
         )
         
-        self.db_engine = get_engine(config)
+        self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
         self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
         self.mcache = cache.CacheManager(self.db_engine)
@@ -60,7 +60,7 @@ class PortalWebServer(cyclone.web.Application):
         handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "portal")
         load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.portal",excludes=['views','webserver','portald'])
 
-def run(config, log=log):
-    app = PortalWebServer(config, log)
+def run(config, dbengine=None, log=None):
+    app = PortalWebServer(config, dbengine,log)
     reactor.listenTCP(int(config.portal.port), app, interface=config.portal.host)
 

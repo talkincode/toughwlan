@@ -8,34 +8,32 @@ from twisted.internet import task
 from twisted.internet import protocol
 from twisted.internet import reactor
 from txportal.packet import cmcc, huawei
-from toughlib import utils, logger
+from toughlib import utils, logger, mcache
+from toughwlan import models
 
-class Vendor:
-    def __init__(self, name, mod, proto):
-        self.name = name
-        self.mod = mod
-        self.proto = proto
+ac_cache_key = 'toughwlan.cache.ac.{0}'.format
 
 class PortalListen(protocol.DatagramProtocol):
 
-    vendors = {
-        'cmccv1': Vendor('cmccv1', cmcc, cmcc.Portal),
-        'cmccv2': Vendor('cmccv2', cmcc, cmcc.Portal),
-        'huaweiv1': Vendor('huaweiv1', huawei, huawei.Portal),
-        'huaweiv2': Vendor('huaweiv2', huawei, huawei.PortalV2),
-    }
-    
     actions = {}
     
-    def __init__(self, config, log=None):
+    def __init__(self, config, dbengine=None, log=None):
         self.syslog = log or logger.Logger(config)
+        self.dbengine = dbengine
         self.config = config
-        self.vendor = PortalListen.vendors.get(config.portal.vendor)
-        self.actions = {
-            self.vendor.mod.NTF_LOGOUT : self.doAckNtfLogout
-        }
+        self.mcache = mcache.Mcache()
+        # self.vendor = PortalListen.vendors.get(config.portal.vendor)
+        # self.actions = {
+        #     self.vendor.mod.NTF_LOGOUT : self.doAckNtfLogout
+        # }
         reactor.callLater(3.0,self.init_task)
-        
+       
+    def get_nas(self,ip_addr):
+        def fetch_result():
+            table = models.TrwBas.__table__
+            with self.db_engine.begin() as conn:
+                return conn.execute(table.select().where(table.c.ip_addr==ip_addr)).first()
+        return self.mcache.aget(ac_cache_key(ip_addr),fetch_result, expire=600) 
         
     def init_task(self):
         _task = task.LoopingCall(self.send_ntf_heart)
@@ -53,15 +51,14 @@ class PortalListen(protocol.DatagramProtocol):
         # except:
         #     pass
             
-    def doAckNtfLogout(self,req,(host, port)):
-        resp = self.vendor.proto.newMessage(
-            self.vendor.ACK_NTF_LOGOUT,
+    def doAckNtfLogout(self, req, vendor, secret,  (host, port)):
+        resp = vendor.proto.newMessage(
+            vendor.ACK_NTF_LOGOUT,
             req.userIp,
             req.serialNo,
             req.reqId,
-            secret =self.config.portal.secret
+            secret=secret
         )
-
         try:
             self.syslog.info("Send portal packet to %s:%s: %s"%(host,port, utils.safestr(req)))
             self.transport.write(str(resp), (host, port))
@@ -71,23 +68,34 @@ class PortalListen(protocol.DatagramProtocol):
     
     def datagramReceived(self, datagram, (host, port)):
         try:
-            req = self.vendor.proto(
-                secret=self.secret,
+            nas = self.get_nas(host)
+            ac_addr = nas['ip_addr']
+            ac_port = int(nas['ac_port'])
+            secret = utils.safestr(nas['bas_secret'])
+            _vendor= utils.safestr(nas['portal_vendor'])
+            if _vendor not in ('cmccv1','cmccv2','huaweiv1','huaweiv2'):
+                self.render_error(msg=u"AC server portal_vendor {0} not support ".format(_vendor))
+                return
+
+            vendor = client.PortalClient.vendors.get(_vendor)
+            req = vendor.proto(
+                secret=secret,
                 packet=datagram,
                 source=(host, port)
             )
+
             self.syslog.info("Received portal packet from %s:%s: %s"%(host,port,utils.safestr(req)))
             if req.type in self.actions:
-                self.actions[req.type](req,(host, port))
+                self.actions[req.type](req, vendor, secret, (host, port))
             else:
                 self.syslog.error('Not support packet from ac host ' + host)
-                
+
         except Exception as err:
             self.syslog.error('Dropping invalid packet from %s: %s' % ((host, port), utils.safestr(err)))
 
         
-def run(config, log=None):
-    app = PortalListen(config, log=log)
+def run(config, dbengine=None, log=None):
+    app = PortalListen(config, dbengine=dbengine, log=log)
     reactor.listenUDP(int(config.portal.listen), app,interface=config.portal.host)
 
 

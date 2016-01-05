@@ -34,9 +34,7 @@
         "listen": 50100, 
         "ntf_heart": 120, 
         "port": 1818, 
-        "secret": "123456", 
-        "user_ntf_heart": 120, 
-        "vendor": "huaweiv2"
+        "user_ntf_heart": 120
     }, 
     "syslog": {
         "enable": 0, 

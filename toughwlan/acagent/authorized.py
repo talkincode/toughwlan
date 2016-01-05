@@ -12,9 +12,10 @@ from toughwlan.acagent.radius_loader import RadiusLoader
 import toughwlan
 
 class AcRadiusAuthorize(protocol.DatagramProtocol):
-    def __init__(self, config, log=None):
+    def __init__(self, config, dbengine=None,log=None):
         self.config = config
-        self.radloader = RadiusLoader(config)
+        self.dbengine = dbengine
+        self.radloader = RadiusLoader(config,dbengine)
         self.log = log or logger.Logger(config)
 
     def processPacket(self, coareq, (host,port)):
@@ -50,8 +51,8 @@ class AcRadiusAuthorize(protocol.DatagramProtocol):
             self.log.error(errstr)
 
 
-def run(config,log=None):
-    authorize_protocol = AcRadiusAuthorize(config, log=log)
+def run(config, dbengine=None,log=None):
+    authorize_protocol = AcRadiusAuthorize(config, dbengine=dbengine, log=log)
     reactor.listenUDP(
         int(config.acagent.radius.authorize_port), authorize_protocol, interface=config.acagent.host)
 

@@ -29,7 +29,7 @@ class LoginHandler(cyclone.web.RequestHandler):
 
 class AcWebAuth(cyclone.web.Application):
 
-    def __init__(self, config=None, log=None, **kwargs):
+    def __init__(self, config=None, dbengine=None, log=None, **kwargs):
 
         self.config = config
         self.log = log or logger.Logger(config)
@@ -43,6 +43,6 @@ class AcWebAuth(cyclone.web.Application):
         cyclone.web.Application.__init__(self, [(r"/", LoginHandler),],  **settings)
 
 
-def run(config, log=None):
-    app = AcWebAuth(config, log=log)
+def run(config, dbengine=None,log=None):
+    app = AcWebAuth(config,dbengine, log=log)
     reactor.listenTCP(int(config.acagent.auth_port), app, interface=config.acagent.host)

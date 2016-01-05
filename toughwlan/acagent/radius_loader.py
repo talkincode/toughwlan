@@ -2,7 +2,6 @@
 # coding=utf-8
 import os
 from toughlib import mcache, storage
-from toughlib.dbengine import get_engine
 from sqlalchemy.sql import text as _sql
 from txradius.radius import dictionary
 from txradius import client
@@ -11,9 +10,9 @@ import toughwlan
 
 class RadiusLoader:
 
-    def __init__(self, config):
+    def __init__(self, config, dbengine):
         self.config = config
-        self.dbengine = get_engine(config)
+        self.dbengine = dbengine
         self.cache = mcache.Mcache()
 
     def warp(self, result):

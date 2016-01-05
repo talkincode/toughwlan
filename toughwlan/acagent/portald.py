@@ -13,12 +13,13 @@ import toughwlan
 ACError = base_handler.ACError
 
 class AcPortald(protocol.DatagramProtocol):
-    def __init__(self, config, log=None):
+    def __init__(self, config,dbengine=None, log=None):
         self.config = config
+        self.dbengine = dbengine
         self.log = log or logger.Logger(self.config)
         self.radius_dict = dictionary.Dictionary(
             os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
-        self.radloader = radius_loader.RadiusLoader(config)
+        self.radloader = radius_loader.RadiusLoader(config,dbengine)
 
         self.ac_handlers = {
             cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config, self.log),
@@ -68,8 +69,8 @@ class AcPortald(protocol.DatagramProtocol):
             traceback.print_exc()
 
 
-def run(config, log=None):
-    portald = AcPortald(config,log=log)
+def run(config, dbengine=None,log=None):
+    portald = AcPortald(config,dbengine=dbengine, log=log)
     reactor.listenUDP(int(config.acagent.port), portald)
 
 

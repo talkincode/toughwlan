@@ -11,10 +11,10 @@ from twisted.names import client, dns
 
 class DDNSProc:
 
-    def __init__(self, config, log=None):
+    def __init__(self, config, dbengine=None, log=None):
         self.config = config
         self.log = log or logger.Logger(config)
-        self.db = scoped_session(sessionmaker(bind=get_engine(config), autocommit=False, autoflush=True))
+        self.db = scoped_session(sessionmaker(bind=dbengine, autocommit=False, autoflush=True))
 
     @defer.inlineCallbacks
     def process(self):
@@ -44,9 +44,7 @@ class DDNSProc:
 
         reactor.callLater(60, self.process, )
 
-def run(config,log=None):
-    app = DDNSProc(config,log)
+def run(config,dbengine=None, log=None):
+    app = DDNSProc(config,dbengine,log)
     deferd = app.process()
-
-
 
