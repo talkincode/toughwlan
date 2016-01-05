@@ -56,9 +56,7 @@ portal_form = btforms.Form(
     btforms.Textbox("host", description=u"监听地址", readonly="readonly", **input_style),
     btforms.Textbox("port", description=u"认证监听端口", readonly="readonly", **input_style),
     btforms.Textbox("listen", description=u"下线监听端口", readonly="readonly", **input_style),
-    btforms.Dropdown("vendor",args=portaltype.items(), description=u"portal协议" , **input_style),
-    btforms.Textbox("secret", description=u"共享密钥" , **input_style),
-    btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
+    # btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
     title=u"Portal配置管理",
     action="/config/portal/update"
 )
@@ -73,7 +71,7 @@ acagent_form = btforms.Form(
     btforms.Dropdown("vendor",args=portaltype.items(), description=u"portal协议" , **input_style),
     btforms.Textbox("secret", description=u"共享密钥" , **input_style),
     btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
-    title=u"Portal配置管理",
+    title=u"AcAgentl配置管理",
     action="/config/portal/update"
 )
 
