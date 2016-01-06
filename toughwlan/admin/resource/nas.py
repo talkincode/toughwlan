@@ -89,7 +89,7 @@ class DeleteHandler(BaseHandler):
     def get(self):
         bas_id = self.get_argument("bas_id")
         self.db.query(models.TrwBas).filter_by(id=bas_id).delete()
-        self.add_oplog(u'删除BAS信息:%s' % (bas.bas_id))
+        self.add_oplog(u'删除BAS信息:%s' % (bas_id))
         self.db.commit()
         self.redirect("/bas",permanent=False)
 
