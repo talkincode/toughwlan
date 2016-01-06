@@ -71,6 +71,7 @@ class UpdateHandler(BaseHandler):
             return self.render("base_form.html", form=form)
 
         radius = self.db.query(models.TrwRadius).get(form.d.id)
+        radius.ip_addr = form.d.ip_addr
         radius.name = form.d.name
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
