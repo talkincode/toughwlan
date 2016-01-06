@@ -6,6 +6,11 @@
             window.location.href = "/domain/attr/delete?attr_id=" +attr_id;
         }
     }
+    function deleteSsid(ssid_id) {
+        if (confirm("确认删除吗？")) {
+            window.location.href = "/domain/ssid/delete?ssid_id=" +ssid_id;
+        }
+    }
 </script>
 </%def>
 <%def name="body()">
@@ -16,12 +21,19 @@
     </div>
         <div class="panel-body">
             <div class="container">
+            <div class="pull-right">
+           <div class="btn-group" role="group" aria-label="...">
             % if permit.match(current_user.username,'/domain/attr/add'):
-        <div class="pull-right bottom10">
-            <a href="/domain/attr/add?domain_code=${domain.domain_code}" class="btn btn-sm btn-info">增加域属性</a>
-        </div>
+            <a href="/domain/attr/add?domain_code=${domain.domain_code}&isp_code=${domain.isp_code}" 
+            class="btn btn-sm btn-info">增加模板属性</a>
             % endif
-        <table class="table table-hover">
+            % if permit.match(current_user.username,'/domain/ssid/add'):
+            <a href="/domain/ssid/add?domain_code=${domain.domain_code}&isp_code=${domain.isp_code}" 
+            class="btn btn-sm btn-info">增加SSID</a>
+            % endif
+            </div>
+        </div>
+        <table class="table">
                 <thead>
                     <tr>
                         <th colspan="6">基本信息</th>
@@ -38,16 +50,13 @@
                     </tr>
             </tbody>
         </table>
-
-        <table class="table table-hover ">
-                <thead>
-                    <tr>
-                        <th colspan="4">域属性列表</th>
-                    </tr>
+        <hr>
+        <table class="table">
+            <thead>
             <tr class="active">
-                <th>属性名称</th>
-                <th>属性值</th>
-                <th>属性描述</th>
+                <th>模板属性名称</th>
+                <th>模板属性值</th>
+                <th>模板属性描述</th>
                 <th></th>
             </tr>
             </thead>
@@ -68,7 +77,36 @@
             </tr>
             % endfor
             </tbody>
+        </table>   
+
+        <hr>
+        <table class="table  ">
+                <thead>
+                    <tr>
+                        <th colspan="4">SSID列表</th>
+                    </tr>
+            <tr class="active">
+                <th>SSID名称</th>
+                <th>SSID描述</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            % for ssid in ssids:
+            <tr>
+                <td>${ssid.ssid}</td>
+                <td>${ssid.ssid_desc}</td>
+                <td>
+                    % if permit.match(current_user.username,'/domain/ssid/delete'):
+                <a class="opt-btn btn-default" href="javascript:deleteSsid('${ssid.id}');">删除</a>
+                    % endif
+                </td>
+            </tr>
+            % endfor
+            </tbody>
         </table>        
+
+     
     </div>
             </div>
 </div>

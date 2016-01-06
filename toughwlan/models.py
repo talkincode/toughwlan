@@ -91,8 +91,9 @@ class TrwIsp(DeclarativeBase):
     isp_code = Column('isp_code', Unicode(length=8), primary_key=True,nullable=False)
     isp_name = Column('isp_name', Unicode(length=128), nullable=False)
     isp_desc = Column('isp_desc', Unicode(length=255))   
-    isp_email = Column('isp_email',Unicode(length=255))
+    isp_email = Column('isp_email',Unicode(length=128))
     isp_phone = Column('isp_phone',Unicode(length=64))
+    isp_idcard = Column('isp_idcard',Unicode(length=64))
     user_total = Column(u'user_total', INTEGER(), nullable=False, doc=u"用户数")
     status = Column('status', SMALLINT(), nullable=False)
 
@@ -104,7 +105,6 @@ class TrwBas(DeclarativeBase):
 
     # column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
-    isp_code = Column('isp_code', Unicode(length=8),index=True, nullable=False)
     ip_addr = Column(u'ip_addr', Unicode(length=15), index=True, nullable=True, doc=u"IP地址")
     dns_name = Column(u'dns_name', Unicode(length=128), nullable=True, doc=u"DNS名称")
     bas_name = Column(u'bas_name', Unicode(length=64), nullable=False, doc=u"bas名称")
@@ -212,6 +212,7 @@ class TrwTemplate(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"模版id")
     tpl_name = Column(u'tpl_name', Unicode(length=64), nullable=False, doc=u"模版名称")
     tpl_desc = Column(u'tpl_desc', Unicode(length=512), nullable=False, doc=u"模版描述")
+    UniqueConstraint('isp_code', 'tpl_name', name='unique_isp_tempalte')
 
 
 

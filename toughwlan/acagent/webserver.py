@@ -11,6 +11,7 @@ class LoginHandler(cyclone.web.RequestHandler):
     def get(self, *args, **kwargs):
         wlan_params = {
             "wlanuserip": self.get_argument("userip", self.request.remote_ip),
+            "ispcode": self.get_argument("ispcode", "default"),
             "wlanusername": self.get_argument("username","test"),
             "wlanacip": self.settings.config.acagent.nasaddr,
             "ssid": "default",

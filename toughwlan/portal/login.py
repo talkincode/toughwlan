@@ -15,18 +15,22 @@ class LoginHandler(BaseHandler):
     def get(self):
         qstr = self.request.query
         wlan_params = self.get_wlan_params(qstr)
+        ssid = wlan_params.get("ssid", "default")
+        ispcode = wlan_params.get("ispcode", "default")
 
         if self.settings.debug:
             self.syslog.info(u"Open portal auth page, wlan params:{0}".format(utils.safeunicode(wlan_params)))
 
-        tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
-        self.render(self.get_login_template(tpl['tpl_name']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
+        tpl = self.get_template_attrs(ssid,ispcode)
+        self.render(self.get_login_template(tpl['tpl_path']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
 
 
     @defer.inlineCallbacks
     def post(self):
         qstr = self.get_argument("qstr", "")
         wlan_params = self.get_wlan_params(qstr)
+        ssid = wlan_params.get("ssid", "default")
+        ispcode = wlan_params.get("ispcode", "default")
 
         if not wlan_params:
             self.render_error(msg=u"Missing parameter: ssid,wlanuserip,wlanacip")
@@ -65,11 +69,11 @@ class LoginHandler(BaseHandler):
                 username, utils.safeunicode(wlan_params)))
 
         
-        tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
-        firsturl=tpl.get("home_page", "/?tpl_name=%s" % tpl.get('tpl_name', 'default'))
+        tpl = self.get_template_attrs(ssid, ispcode)
+        firsturl=tpl.get("home_page", "/?tpl_path=%s" % tpl.get('tpl_path', 'default'))
 
         def back_login(msg = u''):
-            self.render(self.get_login_template(tpl['tpl_name']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
+            self.render(self.get_login_template(tpl['tpl_path']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
 
         if not username or not password:
             back_login(msg = u"username and password cannot be empty")

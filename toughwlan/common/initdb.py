@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import time
 sys.path.insert(0,os.path.split(__file__)[0])
 sys.path.insert(0,os.path.abspath(os.path.pardir))
 from toughlib import utils
@@ -68,8 +69,19 @@ def init_db(db):
     opr.operator_status = 0
     db.add(opr)
 
+    isp = models.TrwIsp()
+    isp.isp_code = 'default'
+    isp.isp_name = u"测试服务商"
+    isp.isp_desc = u"测试服务商"
+    isp.isp_email = "test@qq.com"
+    isp.isp_phone = "888888"
+    isp.user_total = 0
+    isp.status = 0
+    db.add(isp)
+
     domain = models.TrwDomain()
     domain.id = 1
+    domain.isp_code = 'default'
     domain.domain_code = 'default'
     domain.domain_desc = u'默认域'
     domain.tpl_name = 'default'
@@ -101,29 +113,37 @@ def init_db(db):
 
     ssid = models.TrwSsid()
     ssid.domain_code = domain.domain_code
+    ssid.isp_code = 'default'
     ssid.ssid = 'default'
     ssid.ssid_desc = u'默认SSID'
     db.add(ssid)
 
     tpl = models.TrwTemplate()
+    tpl.isp_code = 'default'
     tpl.id = 1
     tpl.tpl_name = 'default'
     tpl.tpl_desc = u'默认模版'
     db.add(tpl)
 
-    tplattr1 = models.TrwTemplateAttr()
+    tplattr1 = models.TrwDomainAttr()
+    tplattr1.isp_code = 'default'
+    tplattr1.domain_code = 'default'
     tplattr1.tpl_name = 'default'
     tplattr1.attr_name = 'page_title'
     tplattr1.attr_value = u'无线认证'
     tplattr1.attr_desc = u'页面标题'
 
-    tplattr2 = models.TrwTemplateAttr()
+    tplattr2 = models.TrwDomainAttr()
+    tplattr2.isp_code = 'default'
+    tplattr2.domain_code = 'default'
     tplattr2.tpl_name = 'default'
     tplattr2.attr_name = 'logo_url'
     tplattr2.attr_value = u'/static/img/plogin.png'
     tplattr2.attr_desc = u'logo地址'
 
-    tplattr3 = models.TrwTemplateAttr()
+    tplattr3 = models.TrwDomainAttr()
+    tplattr3.isp_code = 'default'
+    tplattr3.domain_code = 'default'
     tplattr3.tpl_name = 'default'
     tplattr3.attr_name = 'home_page'
     tplattr3.attr_value = u'http://www.baidu.com'
@@ -148,6 +168,8 @@ def update(config):
         db = scoped_session(sessionmaker(bind=db_engine, autocommit=False, autoflush=True))()
         init_db(db)
     except:
+        import traceback
+        traceback.print_exc()
         print 'initdb error, retry wait 5 second'
         time.sleep(5.0)
         update(config)
