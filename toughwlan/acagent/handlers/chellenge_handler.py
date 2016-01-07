@@ -27,7 +27,8 @@ class ChellengeHandler(base_handler.BasicHandler):
             req.userIp,
             req.serialNo,
             cmcc.CurrentSN(),
-            secret=str(self.config.acagent.secret)
+            secret=str(self.config.acagent.secret),
+            auth=req.auth
         )
         resp.attrNum = 1
         resp.attrs = [
