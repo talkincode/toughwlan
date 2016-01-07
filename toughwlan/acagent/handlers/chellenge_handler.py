@@ -29,10 +29,11 @@ class ChellengeHandler(base_handler.BasicHandler):
             huawei.CurrentSN(),
             str(self.config.acagent.secret),
             auth=req.auth,
-            chap=True #(req.isChap==0x00)
+            chap=(req.isChap==0x00)
         )
         resp.attrNum = 1
         resp.attrs = [
             (0x03, '\x01\x02\x03\x04\x05\x06\x07\x08\x01\x02\x03\x04\x05\x06\x07\x08')
         ]
+        resp.auth_packet()
         return  defer.succeed(resp)
