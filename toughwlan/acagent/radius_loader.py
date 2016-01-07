@@ -26,7 +26,7 @@ class RadiusLoader:
                     os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
             radius.send_auth = functools.partial(
                 client.send_auth,
-                radius.secret,
+                str(radius.secret),
                 radius.dict,
                 radius.ip_addr,
                 authport=int(radius.auth_port),
@@ -35,7 +35,7 @@ class RadiusLoader:
 
             radius.send_acct = functools.partial(
                 client.send_acct,
-                radius.secret,
+                str(radius.secret),
                 radius.dict,
                 radius.ip_addr,
                 acctport=int(radius.acct_port),

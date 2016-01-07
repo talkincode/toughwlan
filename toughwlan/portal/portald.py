@@ -57,7 +57,7 @@ class PortalListen(protocol.DatagramProtocol):
             req.userIp,
             req.serialNo,
             req.reqId,
-            secret=secret
+            str(secret)
         )
         try:
             self.syslog.info("Send portal packet to %s:%s: %s"%(host,port, utils.safestr(req)))
