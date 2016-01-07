@@ -14,11 +14,11 @@ class LoginHandler(cyclone.web.RequestHandler):
             "wlanusername": self.get_argument("username","test"),
             "wlanacip": self.settings.config.acagent.nasaddr,
             "ssid": "default",
-            "wlanusermac": self.get_argument("usermac","00:00:00:00:00"),
+            "wlanusermac": self.get_argument("usermac","00:00:00:00:00").replace(':','-'),
             "wlanapmac": "00:00:00:00:00",
             "wlanuserfirsturl": self.get_argument("firsturl","https://www.baidu.com")
         }
-        url = "{0}?{1}".format(self.settings.config.acagent.portal_login, urlencode(wlan_params))
+        url = self.settings.config.acagent.portal_login.format(**wlan_params)
         print url
         self.redirect(url, permanent=False)
 
