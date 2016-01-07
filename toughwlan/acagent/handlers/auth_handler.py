@@ -69,7 +69,7 @@ class AuthHandler(base_handler.BasicHandler):
                 req.userIp,
                 req.serialNo,
                 req.reqId,
-                str(self.config.acagent.secret)
+                str(self.config.acagent.secret),
                 auth=req.auth,
                 chap=(req.isChap==0x00)
             )
@@ -85,7 +85,7 @@ class AuthHandler(base_handler.BasicHandler):
                 req.userIp,
                 req.serialNo,
                 req.reqId,
-                str(self.config.acagent.secret)
+                str(self.config.acagent.secret),
                 auth=req.auth,
                 chap=(req.isChap==0x00)
             )
