@@ -69,8 +69,9 @@ class AuthHandler(base_handler.BasicHandler):
                 req.userIp,
                 req.serialNo,
                 req.reqId,
+                str(self.config.acagent.secret)
                 auth=req.auth,
-                secret=str(self.config.acagent.secret)
+                chap=(req.isChap==0x00)
             )
             resp.attrNum = 1
             resp.attrs = [
@@ -84,8 +85,9 @@ class AuthHandler(base_handler.BasicHandler):
                 req.userIp,
                 req.serialNo,
                 req.reqId,
+                str(self.config.acagent.secret)
                 auth=req.auth,
-                secret=str(self.config.acagent.secret)
+                chap=(req.isChap==0x00)
             )
             resp.errCode=4
             resp.attrNum = 1
