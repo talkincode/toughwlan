@@ -26,7 +26,7 @@ class ChellengeHandler(base_handler.BasicHandler):
             huawei.ACK_CHALLENGE,
             req.userIp,
             req.serialNo,
-            req.reqId,
+            huawei.CurrentSN(),
             str(self.config.acagent.secret),
             auth=req.auth,
             chap=(req.isChap==0x00)
