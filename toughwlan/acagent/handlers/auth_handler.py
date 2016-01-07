@@ -87,7 +87,7 @@ class AuthHandler(base_handler.BasicHandler):
                 req.reqId,
                 str(self.config.acagent.secret),
                 auth=req.auth,
-                chap=(req.isChap==0x00)
+                chap=True #(req.isChap==0x00)
             )
             resp.errCode=4
             resp.attrNum = 1

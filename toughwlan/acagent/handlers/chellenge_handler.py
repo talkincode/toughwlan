@@ -29,7 +29,7 @@ class ChellengeHandler(base_handler.BasicHandler):
             huawei.CurrentSN(),
             str(self.config.acagent.secret),
             auth=req.auth,
-            chap=(req.isChap==0x00)
+            chap=True #(req.isChap==0x00)
         )
         resp.attrNum = 1
         resp.attrs = [
