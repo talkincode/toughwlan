@@ -9,7 +9,7 @@ from txradius.radius.tools import DecodeAddress
 
 class AuthHandler(base_handler.BasicHandler):
 
-    def proc_cmccv1(self, req):
+    def proc_cmccv1(self, req, rundata):
         resp = cmcc.Portal.newMessage(
             cmcc.ACK_AUTH,
             req.userIp,
@@ -24,7 +24,7 @@ class AuthHandler(base_handler.BasicHandler):
 
         return  defer.succeed(resp)
 
-    def proc_cmccv2(self, req):
+    def proc_cmccv2(self, req, rundata):
         resp = cmcc.Portal.newMessage(
             cmcc.ACK_AUTH,
             req.userIp,
@@ -38,7 +38,7 @@ class AuthHandler(base_handler.BasicHandler):
         ]
         return  defer.succeed(resp)
 
-    def proc_huaweiv1(self, req):
+    def proc_huaweiv1(self, req, rundata):
         resp = huawei.Portal.newMessage(
             huawei.ACK_AUTH,
             req.userIp,
@@ -53,10 +53,10 @@ class AuthHandler(base_handler.BasicHandler):
         return  defer.succeed(resp)
 
     @defer.inlineCallbacks
-    def proc_huaweiv2(self, req):
+    def proc_huaweiv2(self, req, rundata):
         username = req.get_user_name()
         password = req.get_password()
-        challenge = req.get_challenge()
+        challenge = rundata['challenges'].get(req.sid)
         chap_pwd = req.get_chap_pwd()
         userip = DecodeAddress(req.userIp)
 

@@ -20,6 +20,7 @@ class AcPortald(protocol.DatagramProtocol):
         self.radius_dict = dictionary.Dictionary(
             os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
         self.radloader = radius_loader.RadiusLoader(config,dbengine)
+        self.rundata = {"challenges":{}}
 
         self.ac_handlers = {
             cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config, self.log),
@@ -56,7 +57,7 @@ class AcPortald(protocol.DatagramProtocol):
                 self.log.debug(":: Received portal packet from %s:%s: %s" % (host, port, repr(request)))
             # import pdb;pdb.set_trace()
             handler = self.ac_handlers[request.type]
-            resp = yield handler.process(request)
+            resp = yield handler.process(request,self.rundata)
 
             if resp:
                 self.transport.write(str(resp), (host, port))
