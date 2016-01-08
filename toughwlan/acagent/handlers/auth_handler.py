@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-
+import struct
 from twisted.internet import defer
 from txportal.packet import cmcc, huawei
 from toughwlan.acagent.handlers import base_handler
