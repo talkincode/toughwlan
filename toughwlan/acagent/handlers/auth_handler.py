@@ -58,6 +58,8 @@ class AuthHandler(base_handler.BasicHandler):
         password = req.get_password()
         challenge = rundata['challenges'].get(req.sid)
         chap_pwd = req.get_chap_pwd()
+        if chap_pwd and len(chap_pwd) == 16:
+            chap_pwd = '%s%s' % (struct.pack('>H', req.reqId)[1],chap_pwd)
         userip = DecodeAddress(req.userIp)
 
         # import pdb;pdb.set_trace()
