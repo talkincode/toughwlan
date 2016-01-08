@@ -26,7 +26,6 @@ class RadiusSession:
     @defer.inlineCallbacks
     def start(self, username, password, challenge=None, chap_pwd=None, userip=None, usermac=None):
         auth_req = {'User-Name' : username}
-        auth_req['pap_length'] = self.config.acagent.radius.get('pap_length',16)
         auth_req["NAS-IP-Address"]     =  self.config.acagent.nasaddr
         auth_req["NAS-Port"]           = 0
         auth_req["Service-Type"]       = "Login-User"
