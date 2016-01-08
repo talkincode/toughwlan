@@ -24,7 +24,7 @@ class RadiusSession:
 
     @staticmethod
     def find_session(ipaddr):
-        return (s for s in RadiusSession.sessions.itervalues() if s.session_data['Framed-IP-Address'] == ipaddr)
+        return [s for s in RadiusSession.sessions.itervalues() if s.session_data['Framed-IP-Address'] == ipaddr]
 
 
     @defer.inlineCallbacks

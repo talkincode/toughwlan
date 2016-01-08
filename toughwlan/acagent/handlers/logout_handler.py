@@ -47,11 +47,12 @@ class LogoutHandler(base_handler.BasicHandler):
             req.reqId,
             str(self.config.acagent.secret),
             auth=req.auth,
+            chap=(req.isChap==0x00)
         )
         resp.auth_packet()
 
         for session in RadiusSession.find_session(pktutils.DecodeAddress(req.userIp)):
-            session.stop().addCallback(self.syslog.info).addErrback(self.syslog.error)
+            session.stop().addCallbacks(self.syslog.info, self.syslog.error)
 
         return  defer.succeed(resp, rundata)
 
