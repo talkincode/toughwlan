@@ -9,7 +9,8 @@
         "portal_login": "http://127.0.0.1:1818/portal/login", 
         "radius": {
             "authorize_port": 3799, 
-            "interim_update": 300
+            "interim_update": 300,
+            "pap_length": 32
         }, 
         "secret": "123456", 
         "vendor": "huaweiv2"
