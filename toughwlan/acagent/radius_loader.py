@@ -56,7 +56,7 @@ class RadiusLoader:
                 ip_addr=host,
                 serv_type=serv_type)
             radius = self.warp(cur.fetchone())
-            self.cache.set(cache_key,radius, expire=600)
+            self.cache.set(cache_key,radius, expire=60)
             return radius
 
     def getMasterRadius(self):
@@ -67,7 +67,7 @@ class RadiusLoader:
         with self.dbengine.begin() as conn:
             cur = conn.execute(_sql("select * from trw_radius where serv_type = 1"))
             radius = self.warp(cur.fetchone())
-            self.cache.set(cache_key,radius, expire=600)
+            self.cache.set(cache_key,radius, expire=60)
             return radius
 
             

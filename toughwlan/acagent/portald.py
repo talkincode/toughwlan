@@ -31,6 +31,7 @@ class AcPortald(protocol.DatagramProtocol):
             cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config, self.log),
             cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config, self.log),
             cmcc.NTF_HEARTBEAT : base_handler.EmptyHandler(self.config, self.log),
+            cmcc.REQ_LOGOUT : base_handler.EmptyHandler(self.config, self.log),
         }
 
     def sendtoPortald(self, msg):
