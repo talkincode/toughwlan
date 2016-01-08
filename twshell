@@ -201,6 +201,7 @@ EOF
     rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 wlan:
+    container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
@@ -268,6 +269,7 @@ EOF
     rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 wlan:
+    container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
