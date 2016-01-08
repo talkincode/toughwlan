@@ -74,6 +74,13 @@ upgrade()
     git pull origin master
 }
 
+uplib()
+{
+    pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps
+}
+
 case "$1" in
 
   install)
@@ -102,6 +109,10 @@ case "$1" in
 
   upgrade)
     upgrade
+  ;;
+
+  uplib)
+    uplib
   ;;
 
 esac

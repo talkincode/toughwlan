@@ -285,7 +285,7 @@ upgrade()
 {
     instance=${1:-toughwlan}    
     cd ${rundir}/$instance
-    docker exec -it wlan_$instance /opt/toughwlan/toughrun upgrade
+    docker exec -it wlan_$instance /usr/local/bin/toughrun upgrade
     docker-compose restart wlan
     docker-compose ps
 }
@@ -340,6 +340,10 @@ case "$1" in
 
   upgrade)
     upgrade $2
+  ;;
+
+  uplib)
+    uplib $2
   ;;
 
   dsh)
