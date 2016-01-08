@@ -22,6 +22,10 @@ class RadiusSession:
         self.session_data = {}
         self.interim_update = self.config.acagent.radius.interim_update
 
+    @staticmethod
+    def find_session(ipaddr):
+        return (s for s in RadiusSession.sessions.itervalues() if s.session_data['Framed-IP-Address'] == ipaddr)
+
 
     @defer.inlineCallbacks
     def start(self, username, password, challenge=None, chap_pwd=None, userip=None, usermac=None):

@@ -5,7 +5,9 @@ from twisted.internet import protocol
 from twisted.internet import reactor, defer
 from txportal.packet import cmcc, huawei, pktutils
 from toughlib import logger
-from toughwlan.acagent.handlers import auth_handler, chellenge_handler, base_handler
+from toughwlan.acagent.handlers import (
+    auth_handler, chellenge_handler, base_handler, logout_handler
+)
 from toughwlan.acagent import radius_loader
 from txradius.radius import dictionary
 import toughwlan
@@ -31,7 +33,7 @@ class AcPortald(protocol.DatagramProtocol):
             cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config, self.log),
             cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config, self.log),
             cmcc.NTF_HEARTBEAT : base_handler.EmptyHandler(self.config, self.log),
-            cmcc.REQ_LOGOUT : base_handler.EmptyHandler(self.config, self.log),
+            cmcc.REQ_LOGOUT    : logout_handler.LogoutHandler(self.config, self.log),
         }
 
     def sendtoPortald(self, msg):
