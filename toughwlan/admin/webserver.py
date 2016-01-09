@@ -17,6 +17,7 @@ from toughlib.dbengine import get_engine
 from toughlib.permit import permit, load_handlers
 from toughlib import db_session as session
 from toughlib import db_cache as cache
+from toughlib.db_backup import DBBackup
 import toughwlan
 
 
@@ -56,6 +57,9 @@ class AdminWebServer(cyclone.web.Application):
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
         self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
         self.mcache = cache.CacheManager(self.db_engine)
+        self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
+            'trw_online','system_session','system_cache'])
+
 
         self.aes = utils.AESCipher(key=self.config.system.secret)
 

@@ -9,7 +9,6 @@ from twisted.python import log
 from toughlib import utils
 from toughlib.permit import permit
 from toughwlan.admin.base import BaseHandler, MenuSys
-from toughwlan.common.backup import dumpdb,restoredb
 
 @permit.route(r"/backup", u"数据备份管理", MenuSys, order=5.0001, is_menu=True)
 class BackupHandler(BaseHandler):
@@ -32,7 +31,7 @@ class DumpHandler(BaseHandler):
         backup_path = self.settings.config.database.backup_path
         backup_file = "toughwlan_db_%s.json.gz" % utils.gen_backep_id()
         try:
-            dumpdb(self.settings.config, os.path.join(backup_path, backup_file))
+            self.db_backup.dumpdb(os.path.join(backup_path, backup_file))
             return self.render_json(code=0, msg="backup done!")
         except Exception as err:
             log.err()
@@ -46,8 +45,8 @@ class RestoreHandler(BaseHandler):
         backup_file = "toughwlan_db_%s.before_restore.json.gz" % utils.gen_backep_id()
         rebakfs = self.get_argument("bakfs")
         try:
-            dumpdb(self.settings.config, os.path.join(backup_path, backup_file))
-            restoredb(self.settings.config, os.path.join(backup_path, rebakfs))
+            self.db_backup.dumpdb(os.path.join(backup_path, backup_file))
+            self.db_backup.restoredb(os.path.join(backup_path, rebakfs))
             return self.render_json(code=0, msg="restore done!")
         except Exception as err:
             return self.render_json(code=1, msg="restore fail! %s" % (err))

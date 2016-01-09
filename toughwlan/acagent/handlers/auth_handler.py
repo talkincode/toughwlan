@@ -3,6 +3,8 @@
 import struct
 from twisted.internet import defer
 from txportal.packet import cmcc, huawei
+from toughlib import httpclient as requests
+from toughlib import utils
 from toughwlan.acagent.handlers import base_handler
 from toughwlan.acagent.session import RadiusSession
 from txradius.radius.tools import DecodeAddress
@@ -80,6 +82,14 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, 'success'),
             ]
             resp.auth_packet()
+
+            cbkparam = dict(
+                code=0,
+                username=username,
+                userip=userip,
+            )
+            notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
+            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
         else:
             resp = huawei.PortalV2.newMessage(
@@ -97,6 +107,13 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, (rad_resp or {}).get('msg','no radius resp')),
             ]
             resp.auth_packet()
+            cbkparam = dict(
+                code=1,
+                username=username,
+                userip=userip,
+            )
+            notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
+            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
 
 

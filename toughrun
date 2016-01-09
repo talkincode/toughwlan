@@ -33,14 +33,6 @@ initserv()
         echo "init database ok!"
     fi
 
-    if [ ! -f "/var/toughwlan/toughwlan.json" ];then
-        ln -s /etc/toughwlan.json /var/toughwlan/toughwlan.json
-    fi
-
-    if [ ! -f "/var/toughwlan/toughrun" ];then
-        ln -s /usr/local/bin/toughrun /var/toughwlan/toughrun
-    fi
-
     echo "init service ok!"
 }
 

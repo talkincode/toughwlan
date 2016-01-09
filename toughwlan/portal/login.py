@@ -56,7 +56,7 @@ class LoginHandler(BaseHandler):
         vendor = client.PortalClient.vendors.get(_vendor)
 
         is_chap=self.settings.config.portal.chap in (1, "1", "chap")
-        userIp=wlan_params.get('wlanuserip', '')
+        userIp=wlan_params.get('wlanuserip', self.request.remote_ip)
         username=self.get_argument("username", None)
         password=self.get_argument("password", None)
 

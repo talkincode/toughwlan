@@ -10,21 +10,26 @@ class LoginHandler(cyclone.web.RequestHandler):
 
     def get(self, *args, **kwargs):
         wlan_params = {
-            "wlanuserip": self.get_argument("userip", self.request.remote_ip),
-            "wlanusername": self.get_argument("username","test"),
+            "wlanuserip": self.get_argument("wlanuserip", self.request.remote_ip),
+            "wlanusername": self.get_argument("wlanusername",""),
             "wlanacip": self.settings.config.acagent.nasaddr,
-            "ssid": "default",
-            "wlanusermac": self.get_argument("usermac","00:00:00:00:00").replace(':','-'),
-            "wlanapmac": "00:00:00:00:00",
-            "wlanuserfirsturl": self.get_argument("firsturl","https://www.baidu.com")
+            "ssid": self.get_argument("ssid","default"),
+            "wlanusermac": self.get_argument("wlanusermac","00-00-00-00-00"),
+            "wlanapmac": self.get_argument("wlanapmac","00-00-00-00-00"),
+            "wlanuserfirsturl": self.get_argument("wlanuserfirsturl",""),
+            "callback": self.get_argument("callback","")
         }
         url = self.settings.config.acagent.portal_login.format(**wlan_params)
-        print url
         self.redirect(url, permanent=False)
 
     @defer.inlineCallbacks
     def post(self):
         pass
+
+class NotifyHandler(cyclone.web.RequestHandler):
+    def get(self, *args, **kwargs):
+        print repr(self.request)
+        self.write("notify ok!")
 
 
 class AcWebAuth(cyclone.web.Application):
@@ -40,7 +45,7 @@ class AcWebAuth(cyclone.web.Application):
             xheaders=True,
             config=self.config
         )
-        cyclone.web.Application.__init__(self, [(r"/", LoginHandler),],  **settings)
+        cyclone.web.Application.__init__(self, [(r"/", LoginHandler),(r"/notify", NotifyHandler),],  **settings)
 
 
 def run(config, dbengine=None,log=None):
