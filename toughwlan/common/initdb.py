@@ -126,7 +126,7 @@ def init_db(db):
     tplattr3 = models.TrwTemplateAttr()
     tplattr3.tpl_name = 'default'
     tplattr3.attr_name = 'home_page'
-    tplattr3.attr_value = u'http://www.baidu.com'
+    tplattr3.attr_value = u'/portal/index'
     tplattr3.attr_desc = u'认证成功重定向主页'
 
     db.add(tplattr1)

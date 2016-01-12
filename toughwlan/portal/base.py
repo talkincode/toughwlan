@@ -82,11 +82,12 @@ class BaseHandler(cyclone.web.RequestHandler):
         template = Template(template_string)
         return template.render(**template_vars)
 
-    def set_session_user(self, username, ipaddr, login_time):
+    def set_session_user(self, username, ipaddr, login_time, **kwargs):
         session_user = ObjectDict()
         session_user.username = username
         session_user.ipaddr = ipaddr
         session_user.login_time = login_time
+        session_user.update(**kwargs)
         self.session['session_user'] = session_user
         self.session.save()
 
@@ -126,20 +127,23 @@ class BaseHandler(cyclone.web.RequestHandler):
         return  param_dict
 
     def get_login_template(self, tpl_name=None):
-        return "%s/login.html" % tpl_name
+        if tpl_name:
+            return "%s/login.html" % tpl_name
+        else:
+            return "default/login.html"
 
 
     def get_error_template(self, tpl_name=None):
         if tpl_name:
             return "%s/error.html" % tpl_name
         else:
-            return "error.html"
+            return "default/error.html"
 
     def get_index_template(self, tpl_name=None):
         if tpl_name:
             return "%s/index.html" % tpl_name
         else:
-            return "index.html"
+            return "default/index.html"
 
     def get_template_attrs(self, ssid):
         @self.cache.cache(prefix='portal', expire=600)  
@@ -189,11 +193,6 @@ class BaseHandler(cyclone.web.RequestHandler):
             return check_os_funcs
         return _get_check_os_funs()
 
-
-class HomeHandler(BaseHandler):
-    def get(self):
-        tpl_name = self.get_argument("tpl_name")
-        self.render(self.get_index_template(tpl_name))
 
 
 

@@ -66,7 +66,7 @@ class LoginHandler(BaseHandler):
 
         
         tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
-        firsturl=tpl.get("home_page", "/?tpl_name=%s" % tpl.get('tpl_name', 'default'))
+        firsturl=tpl.get("home_page", "/portal/index?tpl_name=%s" % tpl.get('tpl_name', 'default'))
 
         def back_login(msg = u''):
             self.render(self.get_login_template(tpl['tpl_name']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
@@ -89,6 +89,7 @@ class LoginHandler(BaseHandler):
 
                 if challenge_resp.errCode > 0:
                     if challenge_resp.errCode == 2:
+                        self.set_session_user(username, userIp, utils.get_currtime(), qstr=qstr)
                         self.redirect(firsturl)
                         return
                     raise Exception(vendor.mod.AckChallengeErrs[challenge_resp.errCode])
@@ -105,6 +106,7 @@ class LoginHandler(BaseHandler):
 
             if auth_resp.errCode > 0:
                 if auth_resp.errCode == 2:
+                    self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
                     self.redirect(firsturl)
                     return
                 _err_msg=u"{0},{1}".format(
@@ -125,6 +127,7 @@ class LoginHandler(BaseHandler):
                 self.syslog.debug(u'Portal [username:%s] auth login [cast:%s ms]' % (
                 username, (time.time() - start_time) * 1000))
 
+            self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
             self.redirect(firsturl)
 
         except Exception as err:

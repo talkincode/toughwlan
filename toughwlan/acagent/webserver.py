@@ -16,10 +16,11 @@ class LoginHandler(cyclone.web.RequestHandler):
             "ssid": self.get_argument("ssid","default"),
             "wlanusermac": self.get_argument("wlanusermac","00-00-00-00-00"),
             "wlanapmac": self.get_argument("wlanapmac","00-00-00-00-00"),
-            "wlanuserfirsturl": self.get_argument("wlanuserfirsturl",""),
+            "wlanuserfirsturl": self.get_argument("wlanuserfirsturl","/portal/index"),
             "callback": self.get_argument("callback","")
         }
         url = self.settings.config.acagent.portal_login.format(**wlan_params)
+        print url
         self.redirect(url, permanent=False)
 
     @defer.inlineCallbacks
