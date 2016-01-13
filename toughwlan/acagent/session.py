@@ -23,10 +23,10 @@ class RadiusSession:
         self.interim_update = self.config.acagent.radius.interim_update
 
     @staticmethod
-    def stop_session(ipaddr):
-        for session in RadiusSession.sessions.itervalues():
+    def stop_session(ipaddr, log):
+        for session in RadiusSession.sessions.values():
             if session.session_data['Framed-IP-Address'] == ipaddr:
-                session.stop().addCallbacks(self.log.info,self.log.error)
+                session.stop().addCallbacks(log.info,log.error)
 
 
     @defer.inlineCallbacks

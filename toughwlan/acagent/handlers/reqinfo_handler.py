@@ -48,5 +48,5 @@ class AuthHandler(base_handler.BasicHandler):
             auth=req.auth,
         )
         resp.auth_packet()
-        return  defer.succeed(resp, rundata)
+        return  defer.succeed(resp)
 

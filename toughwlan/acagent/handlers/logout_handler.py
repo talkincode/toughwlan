@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from twisted.internet import defer
-from txportal.packet import cmcc, huawei
+from txportal.packet import cmcc, huawei, pktutils
 from toughwlan.acagent.handlers import base_handler
 from toughwlan.acagent.session import RadiusSession
 
@@ -37,10 +37,11 @@ class LogoutHandler(base_handler.BasicHandler):
             req.reqId,
             str(self.config.acagent.secret)
         )
-        return  defer.succeed(resp, rundata)
+        return  defer.succeed(resp)
 
-    def proc_huawev2(self, req, rundata):
-        resp = huawei.Portal.newMessageV2(
+    def proc_huaweiv2(self, req, rundata):
+        
+        resp = huawei.PortalV2.newMessage(
             huawei.ACK_LOGOUT,
             req.userIp,
             req.serialNo,
@@ -50,10 +51,9 @@ class LogoutHandler(base_handler.BasicHandler):
             chap=(req.isChap==0x00)
         )
         resp.auth_packet()
+        RadiusSession.stop_session(pktutils.DecodeAddress(req.userIp), log=self.syslog)
 
-        RadiusSession.stop_session(pktutils.DecodeAddress(req.userIp))
-
-        return  defer.succeed(resp, rundata)
+        return  defer.succeed(resp)
 
 
 

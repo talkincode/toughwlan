@@ -127,7 +127,7 @@ class LoginHandler(BaseHandler):
                 self.syslog.debug(u'Portal [username:%s] auth login [cast:%s ms]' % (
                 username, (time.time() - start_time) * 1000))
 
-            self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
+            self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr, nasaddr=ac_addr)
             self.redirect(firsturl)
 
         except Exception as err:
