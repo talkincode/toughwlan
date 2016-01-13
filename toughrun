@@ -62,7 +62,9 @@ acagent()
 upgrade()
 {
     cd /opt/toughwlan
-    git pull -f origin master
+    git fetch origin master
+    git reset --hard FETCH_HEAD
+    git clean -df
 }
 
 uplib()
