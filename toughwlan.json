@@ -3,14 +3,14 @@
         "auth_port": 1819, 
         "debug": 1, 
         "host": "0.0.0.0", 
-        "nasaddr": "127.0.0.1", 
+        "nasaddr": "127.0.0.3", 
         "nasid": "toughac", 
+        "notify_url": "http://127.0.0.1:1819/notify?username={username}&userip={userip}&code={code}", 
         "port": 2000, 
         "portal_login": "http://127.0.0.1:1818/portal/login?ssid={ssid}&wlanacip={wlanacip}&wlanuserip={wlanuserip}", 
-        "notify_url": "http://127.0.0.1:1819/notify?username={username}&userip={userip}&code={code}", 
         "radius": {
             "authorize_port": 3799, 
-            "interim_update": 300,
+            "interim_update": 300, 
             "pap_length": 32
         }, 
         "secret": "123456", 

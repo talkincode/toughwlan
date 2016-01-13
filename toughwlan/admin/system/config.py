@@ -76,27 +76,25 @@ class PortalHandler(BaseHandler):
 class AcAgentHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        config = self.settings.config
-        config['acagent']['nasid'] = self.get_argument("nasid")
-        config['acagent']['nasaddr'] = self.get_argument("nasaddr")
-        config['acagent']['portal_login'] = self.get_argument("portal_login")
-        config['acagent']['notify_url'] = self.get_argument("notify_url")
-        config['acagent']['vendor'] = self.get_argument("vendor")
-        config['acagent']['secret'] = self.get_argument("secret")
-        config.save()
+        self.settings.config['acagent']['nasid'] = self.get_argument("nasid")
+        self.settings.config['acagent']['nasaddr'] = self.get_argument("nasaddr")
+        self.settings.config['acagent']['portal_login'] = self.get_argument("portal_login")
+        self.settings.config['acagent']['notify_url'] = self.get_argument("notify_url")
+        self.settings.config['acagent']['vendor'] = self.get_argument("vendor")
+        self.settings.config['acagent']['secret'] = self.get_argument("secret")
+        self.settings.config.save()
         self.redirect("/config?active=acagent")
 
 @permit.route(r"/config/syslog/update", u"syslog 配置", u"系统管理", order=2.0005, is_menu=False)
 class SyslogHandler(BaseHandler):
     @cyclone.web.authenticated
     def post(self):
-        config = self.settings.config
-        config['syslog']['enable'] = int(self.get_argument("enable"))
-        config['syslog']['server'] = self.get_argument("server")
-        config['syslog']['port'] = int(self.get_argument("port",514))
-        config['syslog']['level'] = self.get_argument("level")
-        config.save()
-        self.application.syslog.setup(config)
+        self.settings.config['syslog']['enable'] = int(self.get_argument("enable"))
+        self.settings.config['syslog']['server'] = self.get_argument("server")
+        self.settings.config['syslog']['port'] = int(self.get_argument("port",514))
+        self.settings.config['syslog']['level'] = self.get_argument("level")
+        self.settings.config.save()
+        self.application.syslog.setup(self.settings.config)
         self.redirect("/config?active=syslog")
 
 

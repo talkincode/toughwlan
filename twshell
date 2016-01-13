@@ -20,6 +20,7 @@ usage ()
     restart            toughwlan instance restart
     stop               toughwlan instance stop
     upgrade            toughwlan instance upgrade
+    uplib              toughwlan instance upgrade lib
     logs               toughwlan instance logs
     dsh                toughwlan instance bash term
 
@@ -360,7 +361,16 @@ upgrade()
     instance=${1:-toughwlan}    
     cd ${rundir}/$instance
     docker exec -it wlan_$instance /usr/local/bin/toughrun upgrade
-    docker-compose restart wlan
+    docker-compose restart 
+    docker-compose ps
+}
+
+uplib()
+{
+    instance=${1:-toughwlan}    
+    cd ${rundir}/$instance
+    docker exec -it wlan_$instance /usr/local/bin/toughrun uplib
+    docker-compose restart 
     docker-compose ps
 }
 

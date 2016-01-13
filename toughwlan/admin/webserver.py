@@ -35,7 +35,7 @@ class AdminWebServer(cyclone.web.Application):
             template_path=os.path.join(os.path.dirname(__file__), "views"),
             static_path=os.path.join(os.path.dirname(toughwlan.__file__), "static"),
             xsrf_cookies=True,
-            config=config,
+            config=self.config,
             debug=self.config.system.debug,
             xheaders=True,
         )
