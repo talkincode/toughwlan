@@ -48,7 +48,7 @@
                                 <td>${bas.dns_name or ''}</td>
                                 <td>${bas.ip_addr}</td>
                                 <td>${bas.bas_secret}</td>
-                                <td>${bastype.get(str(bas.vendor_id))}</td>
+                                <td>${bastype.get(int(bas.vendor_id))}</td>
                                 <td>${{0:u"标准时区，北京时间",1:u"时间与时区相同"}[bas.time_type]}</td>
                                 <td>${bas.ac_port}</td>
                                 <td>${bas.coa_port}</td>
