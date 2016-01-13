@@ -10,26 +10,26 @@ usage ()
     cat <<EOF
     Usage: $0 [OPTIONS] instance
 
-    docker_setup       install docker, docker-compose
-    pull               toughwlan docker images pull
-    standalone         install toughwlan with already exists mysql
-    with_mysql         install toughwlan with new docker mysql instance
-    with_sqlite        install toughwlan with sqlite instance
-    remove             uninstall toughwlan and database
-    status             toughwlan instance status
-    restart            toughwlan instance restart
-    stop               toughwlan instance stop
-    upgrade            toughwlan instance upgrade
-    uplib              toughwlan instance upgrade lib
-    logs               toughwlan instance logs
-    dsh                toughwlan instance bash term
+    docker_setup               install docker, docker-compose
+    pull                       toughwlan docker images pull
+    install                    install toughwlan with sqlite (default)
+    install_with_rmysql        install toughwlan with remote mysql 
+    install_with_lmysql        install toughwlan and create local mysql docker inastance
+    remove                     uninstall toughwlan and database
+    status                     toughwlan instance status
+    restart                    toughwlan instance restart
+    stop                       toughwlan instance stop
+    upgrade                    toughwlan instance upgrade
+    uplib                      toughwlan instance upgrade lib
+    logs                       toughwlan instance logs
+    dsh                        toughwlan instance bash term
 
     All other options are passed to the twshell program.
 EOF
         exit 1
 }
 
-with_mysql()
+install_with_lmysql()
 {
     instance=${1:-toughwlan}    
 
@@ -67,7 +67,7 @@ with_mysql()
 
     cat <<EOF
 
-    toughwlan instance config(with mysql):
+    toughwlan instance config(with local mysql):
 
     instance name: $instance
     mysql_user: ${mysql_user}
@@ -145,7 +145,7 @@ EOF
     exit 0
 }
 
-standalone()
+install_with_rmysql()
 {
     instance=${1:-toughwlan}
 
@@ -187,7 +187,7 @@ standalone()
     radius_coa_port=${radius_coa_port:-3799}
     cat <<EOF
 
-    toughwlan instance config (standalone):
+    toughwlan instance config (with remote mysql):
 
     instance name: $instance
     mysql_host: ${mysql_host}
@@ -240,7 +240,7 @@ EOF
 }
 
 
-with_sqlite()
+install()
 {
     instance=${1:-toughwlan}
 
@@ -265,7 +265,7 @@ with_sqlite()
 
     cat <<EOF
 
-    toughwlan instance config (standalone):
+    toughwlan instance config (default sqlite inside):
 
     instance name: $instance
     admin_port: ${admin_port}
@@ -409,16 +409,16 @@ case "$1" in
     docker_setup
   ;;
 
-  standalone)
-    standalone $2
+  install)
+    install $2
   ;;
 
-  with_mysql)
-    with_mysql $2
+  install_with_lmysql)
+    install_with_lmysql $2
   ;;
 
-  with_sqlite)
-    with_sqlite $2
+  install_with_rmysql)
+    install_with_rmysql $2
   ;;
 
   remove)
