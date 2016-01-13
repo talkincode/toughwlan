@@ -112,6 +112,11 @@ wlan:
         - "${portal_listen_port}:50100/udp"
     links:
         - wlandb:wlandb
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
     environment:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
@@ -216,6 +221,11 @@ wlan:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
     restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
 EOF
@@ -281,6 +291,11 @@ wlan:
         - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
     restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
 EOF

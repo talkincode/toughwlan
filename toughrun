@@ -18,7 +18,6 @@ install()
     cp /opt/toughwlan/toughwlan.json /etc/toughwlan.json
 
     chmod +x /opt/toughwlan/toughctl
-    chmod +x /opt/toughwlan/toughrun
 }
 
 initserv()
