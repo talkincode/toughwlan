@@ -51,8 +51,7 @@ class LogoutHandler(base_handler.BasicHandler):
         )
         resp.auth_packet()
 
-        for session in RadiusSession.find_session(pktutils.DecodeAddress(req.userIp)):
-            session.stop().addCallbacks(self.syslog.info, self.syslog.error)
+        RadiusSession.stop_session(pktutils.DecodeAddress(req.userIp))
 
         return  defer.succeed(resp, rundata)
 
