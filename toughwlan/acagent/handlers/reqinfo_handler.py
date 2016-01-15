@@ -5,7 +5,7 @@ from twisted.internet import defer
 from txportal.packet import cmcc, huawei
 from toughwlan.acagent.handlers import base_handler
 
-class AuthHandler(base_handler.BasicHandler):
+class ReqInfoHandler(base_handler.BasicHandler):
 
     def proc_cmccv1(self, req, rundata):
         resp = cmcc.Portal.newMessage(

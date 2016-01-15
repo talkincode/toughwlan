@@ -4,9 +4,15 @@ import sys,os
 from twisted.internet import protocol
 from twisted.internet import reactor, defer
 from txportal.packet import cmcc, huawei, pktutils
+from toughlib import db_cache as cache
+from toughlib.dbengine import get_engine
 from toughlib import logger
 from toughwlan.acagent.handlers import (
-    auth_handler, chellenge_handler, base_handler, logout_handler
+    auth_handler, 
+    chellenge_handler, 
+    base_handler, 
+    reqinfo_handler,
+    logout_handler
 )
 from toughwlan.acagent import radius_loader
 from txradius.radius import dictionary
@@ -17,8 +23,9 @@ ACError = base_handler.ACError
 class AcPortald(protocol.DatagramProtocol):
     def __init__(self, config,dbengine=None, log=None):
         self.config = config
-        self.dbengine = dbengine
         self.log = log or logger.Logger(self.config)
+        self.dbengine = dbengine or get_engine(self.config)
+        self.mcache = cache.CacheManager(self.dbengine)
         self.radius_dict = dictionary.Dictionary(
             os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
         self.radloader = radius_loader.RadiusLoader(config,dbengine)
@@ -28,8 +35,10 @@ class AcPortald(protocol.DatagramProtocol):
             cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config, self.log),
             cmcc.REQ_AUTH      : auth_handler.AuthHandler(
                                             self.config, self.log, 
-                                            radius_dict=self.radius_dict,radius_loader=self.radloader ),
-            cmcc.REQ_INFO      : auth_handler.AuthHandler(self.config, self.log),
+                                            radius_dict=self.radius_dict,
+                                            radius_loader=self.radloader,
+                                            mcache=self.mcache),
+            cmcc.REQ_INFO      : reqinfo_handler.ReqInfoHandler(self.config, self.log),
             cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config, self.log),
             cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config, self.log),
             cmcc.NTF_HEARTBEAT : base_handler.EmptyHandler(self.config, self.log),

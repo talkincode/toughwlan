@@ -4,14 +4,17 @@
 import cyclone.web
 from twisted.internet import reactor, defer
 from urllib import urlencode
-from toughlib import logger
+from toughlib import logger,utils
+from toughlib import db_cache as cache
+from toughlib.dbengine import get_engine
 
 class LoginHandler(cyclone.web.RequestHandler):
 
     def get(self, *args, **kwargs):
         wlan_params = {
-            "wlanuserip": self.get_argument("wlanuserip", self.request.remote_ip),
-            "wlanusername": self.get_argument("wlanusername",""),
+            "wlanuserip": utils.safestr(self.get_argument("wlanuserip", self.request.remote_ip)),
+            "wlanusername": self.get_argument("username",""),
+            "token" : self.get_argument("token",""),
             "wlanacip": self.settings.config.acagent.nasaddr,
             "ssid": self.get_argument("ssid","default"),
             "wlanusermac": self.get_argument("wlanusermac","00-00-00-00-00"),
@@ -19,6 +22,14 @@ class LoginHandler(cyclone.web.RequestHandler):
             "wlanuserfirsturl": self.get_argument("wlanuserfirsturl","/portal/index"),
             "callback": self.get_argument("callback","")
         }
+
+        if all([wlan_params['wlanusername'],wlan_params['token']]):
+            self.application.mcache.set("callback_token_%s" % wlan_params['wlanusername'],wlan_params['token'],300)
+        elif all([wlan_params['wlanuserip'],wlan_params['token']]):
+            self.application.mcache.set("callback_token_%s" % wlan_params['wlanuserip'],wlan_params['token'],300)
+        elif all([wlan_params['wlanuserip'],wlan_params['callback']]):
+            self.application.mcache.set("callback_cache_%s" % wlan_params['wlanuserip'],wlan_params['callback'],300)
+
         url = self.settings.config.acagent.portal_login.format(**wlan_params)
         print url
         self.redirect(url, permanent=False)
@@ -39,6 +50,8 @@ class AcWebAuth(cyclone.web.Application):
 
         self.config = config
         self.log = log or logger.Logger(config)
+        self.db_engine = dbengine or get_engine(self.config)
+        self.mcache = cache.CacheManager(self.db_engine)
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             login_url="/",

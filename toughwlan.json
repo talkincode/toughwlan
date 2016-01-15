@@ -5,7 +5,7 @@
         "host": "0.0.0.0", 
         "nasaddr": "127.0.0.1", 
         "nasid": "toughac", 
-        "notify_url": "http://127.0.0.1:1819/notify?username={username}&userip={userip}&code={code}", 
+        "notify_url": "http://127.0.0.1:1819/notify?username={username}&userip={userip}&code={code}&token={token}", 
         "port": 2000, 
         "portal_login": "http://127.0.0.1:1818/portal/login?ssid={ssid}&wlanacip={wlanacip}&wlanuserip={wlanuserip}", 
         "radius": {

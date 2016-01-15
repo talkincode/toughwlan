@@ -87,6 +87,8 @@ class AuthHandler(base_handler.BasicHandler):
                 code=0,
                 username=username,
                 userip=userip,
+                token=self.mcache.get("callback_token_%s" % username) \
+                or self.mcache.get("callback_token_%s" % userip),
             )
             notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
             requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
@@ -111,7 +113,10 @@ class AuthHandler(base_handler.BasicHandler):
                 code=1,
                 username=username,
                 userip=userip,
+                token=self.mcache.get("callback_token_%s" % username) \
+                or self.mcache.get("callback_token_%s" % userip),
             )
+            self.syslog.info(cbkparam) 
             notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
             requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)

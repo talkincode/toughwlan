@@ -10,11 +10,12 @@ class ACError(BaseException):
 
 
 class BasicHandler:
-    def __init__(self, config, syslog, radius_dict=None,radius_loader=None):
+    def __init__(self, config, syslog, radius_dict=None,radius_loader=None,mcache=None):
         self.config = config
         self.syslog = syslog
         self.radius_dict = radius_dict
         self.radius_loader = radius_loader
+        self.mcache = mcache
 
     def process(self, req, rundata):
         if 'cmccv1' in self.config.acagent.vendor:
