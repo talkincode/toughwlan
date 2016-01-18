@@ -34,21 +34,23 @@ def start_initdb(config):
     init_db.update(config)
 
 def start_admin(config,dbengine,log):
-    from toughwlan.admin import webserver
+    from toughwlan.admin import webserver as admin_web
     from toughwlan.admin import ddns_task
-    webserver.run(config, dbengine,log)
+    admin_web.run(config, dbengine,log)
     ddns_task.run(config, dbengine,log)
 
 def start_portal(config,dbengine,log):
-    from toughwlan.portal import portald, webserver
+    from toughwlan.portal import portald
+    from toughwlan.portal import webserver as portal_web
     portald.run(config,dbengine,log)
-    webserver.run(config,dbengine,log)
+    portal_web.run(config,dbengine,log)
 
 def start_acagent(config,dbengine,log):
-    from toughwlan.acagent import authorized, portald, webserver
+    from toughwlan.acagent import authorized, portald
+    from toughwlan.acagent import webserver as ac_web
     authorized.run(config, dbengine,log)
     portald.run(config, dbengine,log)
-    webserver.run(config, dbengine,log)
+    ac_web.run(config, dbengine,log)
 
 
 def run():
