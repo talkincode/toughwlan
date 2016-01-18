@@ -22,13 +22,10 @@ class LoginHandler(cyclone.web.RequestHandler):
             "wlanuserfirsturl": self.get_argument("wlanuserfirsturl","/portal/index"),
             "callback": self.get_argument("callback","")
         }
-
-        if all([wlan_params['wlanusername'],wlan_params['token']]):
-            self.application.mcache.set("callback_token_%s" % wlan_params['wlanusername'],wlan_params['token'],300)
-        elif all([wlan_params['wlanuserip'],wlan_params['token']]):
-            self.application.mcache.set("callback_token_%s" % wlan_params['wlanuserip'],wlan_params['token'],300)
-        elif all([wlan_params['wlanuserip'],wlan_params['callback']]):
-            self.application.mcache.set("callback_cache_%s" % wlan_params['wlanuserip'],wlan_params['callback'],300)
+        self.application.log.info(wlan_params)
+        self.application.log.info("callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']))
+        self.application.mcache.set(
+            "callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']),wlan_params['callback'],300)
 
         url = self.settings.config.acagent.portal_login.format(**wlan_params)
         print url

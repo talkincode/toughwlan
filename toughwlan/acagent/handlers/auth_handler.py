@@ -82,16 +82,11 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, 'success'),
             ]
             resp.auth_packet()
-
-            cbkparam = dict(
-                code=0,
-                username=username,
-                userip=userip,
-                token=self.mcache.get("callback_token_%s" % username) \
-                or self.mcache.get("callback_token_%s" % userip),
-            )
-            notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
-            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+            notify_url = self.mcache.get("callback_cache_%s" % utils.safestr(userip))
+            self.syslog.info("callback %s" % notify_url)
+            if notify_url:
+                notify_url = utils.safestr(notify_url.format(code=0))
+                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
         else:
             resp = huawei.PortalV2.newMessage(
@@ -109,16 +104,11 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, (rad_resp or {}).get('msg','no radius resp')),
             ]
             resp.auth_packet()
-            cbkparam = dict(
-                code=1,
-                username=username,
-                userip=userip,
-                token=self.mcache.get("callback_token_%s" % username) \
-                or self.mcache.get("callback_token_%s" % userip),
-            )
-            self.syslog.info(cbkparam) 
-            notify_url = utils.safestr(self.config.acagent.notify_url.format(**cbkparam))
-            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+            notify_url = self.mcache.get("callback_cache_%s" % utils.safestr(userip))
+            self.syslog.info("callback %s" % notify_url)
+            if notify_url:
+                notify_url = utils.safestr(notify_url.format(code=1))
+                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
 
 
