@@ -86,7 +86,7 @@ class AuthHandler(base_handler.BasicHandler):
             self.syslog.info("callback %s" % notify_url)
             if notify_url:
                 notify_url = utils.safestr(notify_url.format(code=0))
-                requests.post(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
         else:
             resp = huawei.PortalV2.newMessage(
@@ -108,7 +108,7 @@ class AuthHandler(base_handler.BasicHandler):
             self.syslog.info("callback %s" % notify_url)
             if notify_url:
                 notify_url = utils.safestr(notify_url.format(code=1))
-                requests.post(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
             defer.returnValue(resp)
 
 
