@@ -82,11 +82,7 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, 'success'),
             ]
             resp.auth_packet()
-            notify_url = self.mcache.get("callback_cache_%s" % utils.safestr(userip))
-            self.syslog.info("callback %s" % notify_url)
-            if notify_url:
-                notify_url = utils.safestr(notify_url.format(code=0))
-                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+            self.callback(userip,code=0)
             defer.returnValue(resp)
         else:
             resp = huawei.PortalV2.newMessage(
@@ -104,11 +100,17 @@ class AuthHandler(base_handler.BasicHandler):
                 (0x05, (rad_resp or {}).get('msg','no radius resp')),
             ]
             resp.auth_packet()
-            notify_url = self.mcache.get("callback_cache_%s" % utils.safestr(userip))
-            self.syslog.info("callback %s" % notify_url)
-            if notify_url:
-                notify_url = utils.safestr(notify_url.format(code=1))
-                requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+            self.callback(userip,code=1)
             defer.returnValue(resp)
+
+
+    def callback(self,userip,code=0):
+        cache_key = "callback_cache_%s" % utils.safestr(userip)
+        notify_url = self.mcache.get(cache_key)
+        self.syslog.info("callback %s" % notify_url)
+        if notify_url:
+            notify_url = utils.safestr(notify_url.format(code=code))
+            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+
 
 
