@@ -15,21 +15,21 @@ portaltype = {
 }
 
 bastype = {
-    '0'    : u'标准',
+    0    : u'标准',
     # '9': u'思科',
     # '3041': u'阿尔卡特',
     # '2352': u'爱立信',
-    '2011': u'华为',
-    '25506': u'H3C',
-    '3902': u'中兴',
-    '10055': u'爱快',
-    '14988': u'RouterOS'
+    2011: u'华为',
+    25506: u'H3C',
+    3902: u'中兴',
+    10055: u'爱快',
+    14988: u'RouterOS'
 }
 
 bas_add_form = btforms.Form(
     btforms.Textbox("ip_addr", rules.is_ip, description=u"设备地址", required="required", **input_style),
     btforms.Textbox("bas_name", rules.len_of(2, 64), description=u"设备名称", required="required", **input_style),
-    btforms.Textbox("dns_name", rules.len_of(1, 128), description=u"radius域名", help=u"动态IP专用", **input_style),
+    btforms.Textbox("dns_name", rules.len_of(1, 128), description=u"DNS域名", help=u"动态IP专用", **input_style),
     btforms.Textbox("bas_secret", rules.is_alphanum2(4, 32), description=u"共享秘钥", required="required", **input_style),
     btforms.Dropdown("vendor_id", description=u"设备类型", args=bastype.items(), required="required", **input_style),
     btforms.Dropdown("portal_vendor", description=u"portal协议", args=portaltype.items(), required="required", **input_style),
@@ -45,7 +45,7 @@ bas_update_form = btforms.Form(
     btforms.Hidden("id", description=u"编号"),
     btforms.Textbox("ip_addr", rules.is_ip, description=u"设备地址", required="required", readonly="readonly", **input_style),
     btforms.Textbox("bas_name", rules.len_of(2, 64), description=u"设备名称", required="required", **input_style),
-    btforms.Textbox("dns_name", rules.len_of(1, 128), description=u"radius域名", help=u"动态IP专用",  **input_style),
+    btforms.Textbox("dns_name", rules.len_of(1, 128), description=u"DNS域名", help=u"动态IP专用",  **input_style),
     btforms.Textbox("bas_secret", rules.is_alphanum2(4, 32), description=u"共享秘钥", required="required", **input_style),
     btforms.Dropdown("vendor_id", description=u"设备类型", args=bastype.items(), required="required", **input_style),
     btforms.Dropdown("portal_vendor", description=u"portal协议", args=portaltype.items(), required="required",**input_style),

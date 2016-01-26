@@ -30,12 +30,12 @@
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            % if not handler.current_user:
-            <li role="presentation"><a href="/login">用户认证</a></li>
+            % if not current_user:
+            <li role="presentation"><a href="/portal/login">用户认证</a></li>
             % else:
             <!-- <li role="presentation"><a href="javascript:void(0);">00:00:00</a></li> -->
-            <li role="presentation"><a href="/">${handler.current_user.username}</a></li>
-            <li role="presentation"><a href="/logout">断开连接</a></li>
+            <li role="presentation"><a href="javascript:void(0);">${current_user.username}</a></li>
+            <li role="presentation"><a href="/portal/logout">断开连接</a></li>
             % endif
           </ul>
         </nav>

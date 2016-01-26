@@ -31,6 +31,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.syslog = self.application.syslog
         self.cache = self.application.mcache
         self.session = session.Session(self.application.session_manager, self)
+        self.db_backup = self.application.db_backup
 
 
     def initialize(self):

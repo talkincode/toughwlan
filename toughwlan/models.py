@@ -109,7 +109,7 @@ class TrwBas(DeclarativeBase):
     dns_name = Column(u'dns_name', Unicode(length=128), nullable=True, doc=u"DNS名称")
     bas_name = Column(u'bas_name', Unicode(length=64), nullable=False, doc=u"bas名称")
     bas_secret = Column(u'bas_secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
-    vendor_id = Column(u'vendor_id', SMALLINT(), nullable=False, doc=u"bas类型")
+    vendor_id = Column(u'vendor_id', INTEGER(), nullable=False, doc=u"bas类型")
     portal_vendor = Column(u'portal_vendor', Unicode(length=64), nullable=False, doc=u"portal协议")
     time_type = Column(u'time_type', SMALLINT(), nullable=False, doc=u"时区类型")
     ac_port = Column(u'ac_port', INTEGER(), nullable=False, doc=u"AC端口")

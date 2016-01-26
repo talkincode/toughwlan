@@ -10,24 +10,26 @@ usage ()
     cat <<EOF
     Usage: $0 [OPTIONS] instance
 
-    docker_setup       install docker, docker-compose
-    pull               toughwlan docker images pull
-    standalone         install toughwlan with already exists mysql
-    with_mysql         install toughwlan with new docker mysql instance
-    remove             uninstall toughwlan and database
-    status             toughwlan instance status
-    restart            toughwlan instance restart
-    stop               toughwlan instance stop
-    upgrade            toughwlan instance upgrade
-    logs               toughwlan instance logs
-    dsh                toughwlan instance bash term
+    docker_setup               install docker, docker-compose
+    pull                       toughwlan docker images pull
+    install                    install toughwlan with sqlite (default)
+    install_with_rmysql        install toughwlan with remote mysql 
+    install_with_lmysql        install toughwlan and create local mysql docker inastance
+    remove                     uninstall toughwlan and database
+    status                     toughwlan instance status
+    restart                    toughwlan instance restart
+    stop                       toughwlan instance stop
+    upgrade                    toughwlan instance upgrade
+    uplib                      toughwlan instance upgrade lib
+    logs                       toughwlan instance logs
+    dsh                        toughwlan instance bash term
 
     All other options are passed to the twshell program.
 EOF
         exit 1
 }
 
-with_mysql()
+install_with_lmysql()
 {
     instance=${1:-toughwlan}    
 
@@ -65,7 +67,7 @@ with_mysql()
 
     cat <<EOF
 
-    toughwlan instance config(with mysql):
+    toughwlan instance config(with local mysql):
 
     instance name: $instance
     mysql_user: ${mysql_user}
@@ -110,6 +112,11 @@ wlan:
         - "${portal_listen_port}:50100/udp"
     links:
         - wlandb:wlandb
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
     environment:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
@@ -138,7 +145,7 @@ EOF
     exit 0
 }
 
-standalone()
+install_with_rmysql()
 {
     instance=${1:-toughwlan}
 
@@ -162,18 +169,25 @@ standalone()
     read -p "mysql root password [radroot]: " mysql_root_password
     mysql_root_password=${mysql_root_password:-radroot}
 
-    read -p "toughwlan web port [1816]: " web_port
-    web_port=${web_port:-1816}
+    read -p "toughwlan admin port [1810]: " admin_port
+    admin_port=${admin_port:-1810}
 
-    read -p "toughwlan auth port [1812]: " auth_port
-    auth_port=${auth_port:-1812}
+    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
+    portal_auth_port=${portal_auth_port:-1818}
+    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
+    portal_listen_port=${portal_listen_port:-50100}
 
-    read -p "toughwlan acct port [1813]: " acct_port
-    acct_port=${acct_port:-1813}
+    read -p "toughwlan ac port [2000]: " ac_port
+    ac_port=${ac_port:-2000}
 
+    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
+    ac_redirect_port=${ac_redirect_port:-1819}
+
+    read -p "toughwlan radius coa port [3799]: " radius_coa_port
+    radius_coa_port=${radius_coa_port:-3799}
     cat <<EOF
 
-    toughwlan instance config (standalone):
+    toughwlan instance config (with remote mysql):
 
     instance name: $instance
     mysql_host: ${mysql_host}
@@ -193,6 +207,7 @@ EOF
     rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 wlan:
+    container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
@@ -206,6 +221,81 @@ wlan:
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
     restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
+    volumes:
+        - /home/toughrun/$instance:/var/toughwlan
+EOF
+
+    cd ${rundir}/$instance
+
+    docker-compose up -d
+
+    docker-compose ps
+
+    exit 0
+}
+
+
+install()
+{
+    instance=${1:-toughwlan}
+
+    mkdir -p ${rundir}/$instance
+
+    read -p "toughwlan admin port [1810]: " admin_port
+    admin_port=${admin_port:-1810}
+
+    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
+    portal_auth_port=${portal_auth_port:-1818}
+    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
+    portal_listen_port=${portal_listen_port:-50100}
+
+    read -p "toughwlan ac port [2000]: " ac_port
+    ac_port=${ac_port:-2000}
+
+    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
+    ac_redirect_port=${ac_redirect_port:-1819}
+
+    read -p "toughwlan radius coa port [3799]: " radius_coa_port
+    radius_coa_port=${radius_coa_port:-3799}
+
+    cat <<EOF
+
+    toughwlan instance config (default sqlite inside):
+
+    instance name: $instance
+    admin_port: ${admin_port}
+    portal_auth_port: ${portal_auth_port}
+    portal_listen_port: ${portal_listen_port}
+    ac_port: ${ac_port}
+    ac_redirect_port: ${ac_redirect_port}
+    radius_coa_port: ${radius_coa_port}
+
+EOF
+
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+wlan:
+    container_name: wlan_${instance}
+    image: "index.alauda.cn/toughstruct/toughwlan"
+    privileged: true
+    ports:
+        - "${admin_port}:1810"
+        - "${portal_auth_port}:1818"
+        - "${ac_redirect_port}:1819"
+        - "${ac_port}:2000/udp"
+        - "${radius_coa_port}:3799/udp"
+        - "${portal_listen_port}:50100/udp"
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
 EOF
@@ -285,8 +375,17 @@ upgrade()
 {
     instance=${1:-toughwlan}    
     cd ${rundir}/$instance
-    docker exec -it wlan_$instance /opt/toughwlan/toughrun upgrade
-    docker-compose restart wlan
+    docker exec -it wlan_$instance /usr/local/bin/toughrun upgrade
+    docker-compose restart 
+    docker-compose ps
+}
+
+uplib()
+{
+    instance=${1:-toughwlan}    
+    cd ${rundir}/$instance
+    docker exec -it wlan_$instance /usr/local/bin/toughrun uplib
+    docker-compose restart 
     docker-compose ps
 }
 
@@ -310,12 +409,16 @@ case "$1" in
     docker_setup
   ;;
 
-  standalone)
-    standalone $2
+  install)
+    install $2
   ;;
 
-  with_mysql)
-    with_mysql $2
+  install_with_lmysql)
+    install_with_lmysql $2
+  ;;
+
+  install_with_rmysql)
+    install_with_rmysql $2
   ;;
 
   remove)
@@ -340,6 +443,10 @@ case "$1" in
 
   upgrade)
     upgrade $2
+  ;;
+
+  uplib)
+    uplib $2
   ;;
 
   dsh)

@@ -1,7 +1,7 @@
 #!/bin/sh
 # toughwlan docker install script
 # author: jamiesun.net@gmail.com
-# version: 0.0.6
+# version: 0.0.11
 
 set -e
 
@@ -15,10 +15,9 @@ install()
 
     git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwlan
 
-    ln -s /opt/toughwlan/toughwlan.json /etc/toughwlan.json
+    cp /opt/toughwlan/toughwlan.json /etc/toughwlan.json
 
     chmod +x /opt/toughwlan/toughctl
-    chmod +x /opt/toughwlan/toughrun
 }
 
 initserv()
@@ -31,14 +30,6 @@ initserv()
         pypy /opt/toughwlan/toughctl --initdb
         echo "ok" > /var/toughwlan/.install
         echo "init database ok!"
-    fi
-
-    if [ ! -f "/var/toughwlan/toughwlan.json" ];then
-        ln -s /opt/toughwlan/toughwlan.json /var/toughwlan/toughwlan.json
-    fi
-
-    if [ ! -f "/var/toughwlan/toughrun" ];then
-        ln -s /usr/local/bin/toughrun /var/toughwlan/toughrun
     fi
 
     echo "init service ok!"
@@ -71,7 +62,16 @@ acagent()
 upgrade()
 {
     cd /opt/toughwlan
-    git pull origin master
+    git fetch origin master
+    git reset --hard FETCH_HEAD
+    git clean -df
+}
+
+uplib()
+{
+    pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
+    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps
 }
 
 case "$1" in
@@ -102,6 +102,10 @@ case "$1" in
 
   upgrade)
     upgrade
+  ;;
+
+  uplib)
+    uplib
   ;;
 
 esac

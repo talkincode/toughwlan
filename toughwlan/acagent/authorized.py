@@ -23,11 +23,11 @@ class AcRadiusAuthorize(protocol.DatagramProtocol):
         if session_id in RadiusSession.sessions:
             del RadiusSession.sessions[session_id]
 
-        coaresp = coareq.CreateReply()
-        self.log.info("[RADIUSAuthorize] :: Send Authorize radius response: %s" % (repr(coaresp)))
+        reply = coareq.CreateReply()
+        self.log.info("[RADIUSAuthorize] :: Send Authorize radius response: %s" % (repr(reply)))
         if self.config.acagent.debug:
-            self.log.debug(reply.format_str())
-        self.transport.write(reply.ReplyPacket(), reply.source)
+            self.log.debug(message.format_packet_str(reply))
+        self.transport.write(reply.ReplyPacket(),  (host, port))
 
 
     def datagramReceived(self, datagram, (host, port)):
@@ -37,13 +37,13 @@ class AcRadiusAuthorize(protocol.DatagramProtocol):
                 self.log.info('[RADIUSAuthorize] :: Dropping Authorize packet from unknown host ' + host)
                 return
 
-            coa_req = message.CoaMessage(packet=datagram, dict=radius.dict, secret=six.b(radius.secret))
+            coa_req = message.CoAMessage(packet=datagram, dict=radius.dict, secret=six.b(radius.secret))
             self.log.info("[RADIUSAuthorize] :: Received Authorize radius request: %s" % message.format_packet_log(coa_req))
 
             if self.config.acagent.debug:
-                self.log.debug(coa_req.format_str())
+                self.log.debug(message.format_packet_str(coa_req))
 
-            self.processPacket(coa_req)
+            self.processPacket(coa_req,  (host, port))
 
         except packet.PacketError as err:
             errstr = 'RadiusError:Dropping invalid packet from {0} {1},{2}'.format(

@@ -60,7 +60,7 @@ class LoginHandler(BaseHandler):
         vendor = client.PortalClient.vendors.get(_vendor)
 
         is_chap=self.settings.config.portal.chap in (1, "1", "chap")
-        userIp=wlan_params.get('wlanuserip', '')
+        userIp=wlan_params.get('wlanuserip', self.request.remote_ip)
         username=self.get_argument("username", None)
         password=self.get_argument("password", None)
 
@@ -68,9 +68,8 @@ class LoginHandler(BaseHandler):
             self.syslog.debug(u"Start [username:%s] portal auth, wlan params:%s" % (
                 username, utils.safeunicode(wlan_params)))
 
-        
-        tpl = self.get_template_attrs(ssid, ispcode)
-        firsturl=tpl.get("home_page", "/?tpl_path=%s" % tpl.get('tpl_path', 'default'))
+        tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
+        firsturl=tpl.get("home_page", "/portal/index?tpl_name=%s" % tpl.get('tpl_name', 'default'))
 
         def back_login(msg = u''):
             self.render(self.get_login_template(tpl['tpl_path']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
@@ -93,6 +92,7 @@ class LoginHandler(BaseHandler):
 
                 if challenge_resp.errCode > 0:
                     if challenge_resp.errCode == 2:
+                        self.set_session_user(username, userIp, utils.get_currtime(), qstr=qstr)
                         self.redirect(firsturl)
                         return
                     raise Exception(vendor.mod.AckChallengeErrs[challenge_resp.errCode])
@@ -109,6 +109,7 @@ class LoginHandler(BaseHandler):
 
             if auth_resp.errCode > 0:
                 if auth_resp.errCode == 2:
+                    self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
                     self.redirect(firsturl)
                     return
                 _err_msg=u"{0},{1}".format(
@@ -129,6 +130,7 @@ class LoginHandler(BaseHandler):
                 self.syslog.debug(u'Portal [username:%s] auth login [cast:%s ms]' % (
                 username, (time.time() - start_time) * 1000))
 
+            self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr, nasaddr=ac_addr)
             self.redirect(firsturl)
 
         except Exception as err:

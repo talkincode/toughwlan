@@ -26,7 +26,7 @@ class RadiusLoader:
                     os.path.join(os.path.dirname(toughwlan.__file__),"dictionarys/dictionary"))
             radius.send_auth = functools.partial(
                 client.send_auth,
-                radius.secret,
+                str(radius.secret),
                 radius.dict,
                 radius.ip_addr,
                 authport=int(radius.auth_port),
@@ -35,7 +35,7 @@ class RadiusLoader:
 
             radius.send_acct = functools.partial(
                 client.send_acct,
-                radius.secret,
+                str(radius.secret),
                 radius.dict,
                 radius.ip_addr,
                 acctport=int(radius.acct_port),
@@ -56,7 +56,7 @@ class RadiusLoader:
                 ip_addr=host,
                 serv_type=serv_type)
             radius = self.warp(cur.fetchone())
-            self.cache.set(cache_key,radius, expire=600)
+            self.cache.set(cache_key,radius, expire=60)
             return radius
 
     def getMasterRadius(self):
@@ -67,7 +67,7 @@ class RadiusLoader:
         with self.dbengine.begin() as conn:
             cur = conn.execute(_sql("select * from trw_radius where serv_type = 1"))
             radius = self.warp(cur.fetchone())
-            self.cache.set(cache_key,radius, expire=600)
+            self.cache.set(cache_key,radius, expire=60)
             return radius
 
             

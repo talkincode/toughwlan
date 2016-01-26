@@ -5,13 +5,15 @@
         "host": "0.0.0.0", 
         "nasaddr": "127.0.0.1", 
         "nasid": "toughac", 
+        "notify_url": "http://127.0.0.1:1819/notify?username={username}&userip={userip}&code={code}&token={token}", 
         "port": 2000, 
-        "portal_login": "http://127.0.0.1:1818/portal/login", 
+        "portal_login": "http://127.0.0.1:1818/portal/login?ssid={ssid}&wlanacip={wlanacip}&wlanuserip={wlanuserip}", 
         "radius": {
             "authorize_port": 3799, 
-            "interim_update": 300
+            "interim_update": 300, 
+            "pap_length": 32
         }, 
-        "secret": "123456", 
+        "secret": "secret", 
         "vendor": "huaweiv2"
     }, 
     "admin": {
