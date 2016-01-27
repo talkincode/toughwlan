@@ -47,11 +47,8 @@ def start_portal(config,dbengine):
 
 def start_acagent(config,dbengine):
     from toughwlan.acagent import authorized, portald
-    from toughwlan.acagent import webserver as ac_web
     authorized.run(config, dbengine)
     portald.run(config, dbengine)
-    ac_web.run(config, dbengine)
-
 
 def run():
     log.startLogging(sys.stdout)
