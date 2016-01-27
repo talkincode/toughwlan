@@ -23,11 +23,9 @@ import toughwlan
 
 
 class AdminWebServer(cyclone.web.Application):
-    def __init__(self, config=None, dbengine=None, log=None, **kwargs):
+    def __init__(self, config=None, dbengine=None, **kwargs):
 
         self.config = config
-
-        self.syslog = log or logger.Logger(config)
 
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -89,7 +87,7 @@ class AdminWebServer(cyclone.web.Application):
                 permit.bind_super(opr.operator_name)
 
 
-def run(config, dbengine=None, log=None):
-    app = AdminWebServer(config, dbengine=dbengine, log=log)
+def run(config, dbengine=None):
+    app = AdminWebServer(config, dbengine=dbengine)
     reactor.listenTCP(config.admin.port, app, interface=config.admin.host)
 

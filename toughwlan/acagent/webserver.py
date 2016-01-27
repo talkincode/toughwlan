@@ -4,7 +4,7 @@
 import cyclone.web
 from twisted.internet import reactor, defer
 from urllib import urlencode
-from toughlib import logger,utils
+from toughlib import logger,utils,dispatch
 from toughlib import db_cache as cache
 from toughlib.dbengine import get_engine
 
@@ -12,9 +12,9 @@ class LoginHandler(cyclone.web.RequestHandler):
 
     def get(self, *args, **kwargs):
         wlan_params = {
-            "wlanuserip": utils.safestr(self.get_argument("wlanuserip", self.request.remote_ip)),
-            "wlanusername": self.get_argument("username",""),
-            "token" : self.get_argument("token",""),
+            "wlanuserip": self.get_argument("userip", self.request.remote_ip),
+            "ispcode": self.get_argument("ispcode", "default"),
+            "wlanusername": self.get_argument("username","test"),
             "wlanacip": self.settings.config.acagent.nasaddr,
             "ssid": self.get_argument("ssid","default"),
             "wlanusermac": self.get_argument("wlanusermac","00-00-00-00-00"),
@@ -22,8 +22,8 @@ class LoginHandler(cyclone.web.RequestHandler):
             "wlanuserfirsturl": self.get_argument("wlanuserfirsturl","/portal/index"),
             "callback": self.get_argument("callback","")
         }
-        self.application.log.info(wlan_params)
-        self.application.log.info("callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']))
+        dispatch.pub(EVENT_INFO, wlan_params)
+        dispatch.pub(EVENT_INFO, "callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']))
         self.application.mcache.set(
             "callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']),wlan_params['callback'],300)
 
@@ -43,10 +43,9 @@ class NotifyHandler(cyclone.web.RequestHandler):
 
 class AcWebAuth(cyclone.web.Application):
 
-    def __init__(self, config=None, dbengine=None, log=None, **kwargs):
+    def __init__(self, config=None, dbengine=None,**kwargs):
 
         self.config = config
-        self.log = log or logger.Logger(config)
         self.db_engine = dbengine or get_engine(self.config)
         self.mcache = cache.CacheManager(self.db_engine)
         settings = dict(
@@ -59,6 +58,6 @@ class AcWebAuth(cyclone.web.Application):
         cyclone.web.Application.__init__(self, [(r"/", LoginHandler),(r"/notify", NotifyHandler),],  **settings)
 
 
-def run(config, dbengine=None,log=None):
-    app = AcWebAuth(config,dbengine, log=log)
+def run(config, dbengine=None):
+    app = AcWebAuth(config,dbengine)
     reactor.listenTCP(int(config.acagent.auth_port), app, interface=config.acagent.host)

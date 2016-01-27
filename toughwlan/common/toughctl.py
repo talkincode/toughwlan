@@ -6,7 +6,7 @@ from twisted.python import log
 from twisted.internet import reactor
 from toughlib import config as iconfig
 from toughlib.dbengine import get_engine
-from toughlib import logger
+from toughlib import dispatch,logger
 import sys,os
 import argparse
 
@@ -33,24 +33,24 @@ def start_initdb(config):
     from toughwlan.common import initdb as init_db
     init_db.update(config)
 
-def start_admin(config,dbengine,log):
+def start_admin(config,dbengine):
     from toughwlan.admin import webserver as admin_web
     from toughwlan.admin import ddns_task
-    admin_web.run(config, dbengine,log)
-    ddns_task.run(config, dbengine,log)
+    admin_web.run(config, dbengine)
+    ddns_task.run(config, dbengine)
 
-def start_portal(config,dbengine,log):
+def start_portal(config,dbengine):
     from toughwlan.portal import portald
     from toughwlan.portal import webserver as portal_web
-    portald.run(config,dbengine,log)
-    portal_web.run(config,dbengine,log)
+    portald.run(config,dbengine)
+    portal_web.run(config,dbengine)
 
-def start_acagent(config,dbengine,log):
+def start_acagent(config,dbengine):
     from toughwlan.acagent import authorized, portald
     from toughwlan.acagent import webserver as ac_web
-    authorized.run(config, dbengine,log)
-    portald.run(config, dbengine,log)
-    ac_web.run(config, dbengine,log)
+    authorized.run(config, dbengine)
+    portald.run(config, dbengine)
+    ac_web.run(config, dbengine)
 
 
 def run():
@@ -74,23 +74,24 @@ def run():
 
     syslog = logger.Logger(config)
     dbengine = get_engine(config)
+    dispatch.register(syslog)
 
     if args.admin:
-        start_admin(config,dbengine=dbengine,log=syslog)
+        start_admin(config,dbengine=dbengine)
         reactor.run()    
 
     elif args.portal:
-        start_portal(config,dbengine=dbengine,log=syslog)
+        start_portal(config,dbengine=dbengine)
         reactor.run()
 
     elif args.acagent:
-        start_acagent(config,dbengine=dbengine,log=syslog)
+        start_acagent(config,dbengine=dbengine)
         reactor.run()
 
     elif args.standalone:
-        start_admin(config,dbengine=dbengine,log=syslog)
-        start_portal(config,dbengine=dbengine,log=syslog)
-        start_acagent(config,dbengine=dbengine,log=syslog)
+        start_admin(config,dbengine=dbengine)
+        start_portal(config,dbengine=dbengine)
+        start_acagent(config,dbengine=dbengine)
         reactor.run()
 
     elif args.initdb:

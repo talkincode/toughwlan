@@ -2,7 +2,7 @@
 # coding:utf-8
 
 import time
-from toughlib import utils
+from toughlib import utils, logger,dispatch
 from toughwlan.portal.base import BaseHandler
 from twisted.internet import defer
 from toughlib.permit import permit
@@ -15,18 +15,22 @@ class LoginHandler(BaseHandler):
     def get(self):
         qstr = self.request.query
         wlan_params = self.get_wlan_params(qstr)
+        ssid = wlan_params.get("ssid", "default")
+        ispcode = wlan_params.get("ispcode", "default")
 
         if self.settings.debug:
-            self.syslog.info(u"Open portal auth page, wlan params:{0}".format(utils.safeunicode(wlan_params)))
+            logger.info( u"Open portal auth page, wlan params:{0}".format(utils.safeunicode(wlan_params)))
 
-        tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
-        self.render(self.get_login_template(tpl['tpl_name']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
+        tpl = self.get_template_attrs(ssid,ispcode)
+        self.render(self.get_login_template(tpl['tpl_path']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
 
 
     @defer.inlineCallbacks
     def post(self):
         qstr = self.get_argument("qstr", "")
         wlan_params = self.get_wlan_params(qstr)
+        ssid = wlan_params.get("ssid", "default")
+        ispcode = wlan_params.get("ispcode", "default")
 
         if not wlan_params:
             self.render_error(msg=u"Missing parameter: ssid,wlanuserip,wlanacip")
@@ -61,15 +65,14 @@ class LoginHandler(BaseHandler):
         password=self.get_argument("password", None)
 
         if self.settings.debug:
-            self.syslog.debug(u"Start [username:%s] portal auth, wlan params:%s" % (
+            logger.info( u"Start [username:%s] portal auth, wlan params:%s" % (
                 username, utils.safeunicode(wlan_params)))
 
-        
         tpl = self.get_template_attrs(wlan_params.get("ssid", "default"))
         firsturl=tpl.get("home_page", "/portal/index?tpl_name=%s" % tpl.get('tpl_name', 'default'))
 
         def back_login(msg = u''):
-            self.render(self.get_login_template(tpl['tpl_name']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
+            self.render(self.get_login_template(tpl['tpl_path']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
 
         if not username or not password:
             back_login(msg = u"username and password cannot be empty")
@@ -121,10 +124,10 @@ class LoginHandler(BaseHandler):
 
             send_portal(data=affack_req, host=ac_addr, port=ac_port)
 
-            self.syslog.info(u'Portal [username:{0}] auth success'.format(username))
+            logger.info( u'Portal [username:{0}] auth success'.format(username))
 
             if self.settings.debug:
-                self.syslog.debug(u'Portal [username:%s] auth login [cast:%s ms]' % (
+                logger.debug( u'Portal [username:%s] auth login [cast:%s ms]' % (
                 username, (time.time() - start_time) * 1000))
 
             self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr, nasaddr=ac_addr)

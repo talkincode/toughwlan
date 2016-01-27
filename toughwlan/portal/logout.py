@@ -42,7 +42,7 @@ class LogoutHandler(BaseHandler):
                     vendor.mod.AckLogoutErrs[logout_resp.errCode], 
                     utils.safeunicode(logout_resp.get_text_info()[0] or "")
                 )
-                self.syslog.error(_err_msg)
+                logger.error( _err_msg)
 
             defer.returnValue("disconnect done!")
         except Exception as err:
@@ -52,7 +52,9 @@ class LogoutHandler(BaseHandler):
         if not self.current_user:
             self.redirect("/portal/login?ssid=default")
             return
-        self.disconnect().addCallbacks(self.syslog.info,self.syslog.error)
+        self.disconnect().addCallbacks(
+            functools.partial(dispatch.pub(logger.EVENT_INFO)),
+            functools.partial(dispatch.pub(logger.EVENT_ERROR)))
         qstr = self.current_user.get("qstr","ssid=default")
         self.clear_session()
         self.redirect("/portal/login?%s"%qstr,permanent=False)

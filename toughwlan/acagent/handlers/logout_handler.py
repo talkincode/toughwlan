@@ -51,7 +51,7 @@ class LogoutHandler(base_handler.BasicHandler):
             chap=(req.isChap==0x00)
         )
         resp.auth_packet()
-        RadiusSession.stop_session(pktutils.DecodeAddress(req.userIp), log=self.syslog)
+        RadiusSession.stop_session(pktutils.DecodeAddress(req.userIp))
 
         return  defer.succeed(resp)
 

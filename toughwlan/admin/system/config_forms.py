@@ -68,7 +68,6 @@ acagent_form = btforms.Form(
     btforms.Textbox("nasid", description=u"nas标识", **input_style),
     btforms.Textbox("nasaddr", description=u"nas地址", **input_style),
     btforms.Textbox("portal_login", description=u"portal重定向地址", **input_style),
-    btforms.Textbox("notify_url", description=u"Portal认证通知地址", **input_style),
     btforms.Dropdown("vendor",args=portaltype.items(), description=u"portal协议" , **input_style),
     btforms.Textbox("secret", description=u"共享密钥" , **input_style),
     btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),

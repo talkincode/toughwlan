@@ -7,7 +7,7 @@ import urllib
 import traceback
 import cyclone.web
 from cyclone.util import ObjectDict
-from toughlib import utils
+from toughlib import utils,dispatch,logger
 from toughlib.permit import permit
 from toughlib.paginator import Paginator
 from toughlib import db_session as session
@@ -28,7 +28,6 @@ class BaseHandler(cyclone.web.RequestHandler):
     
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)
-        self.syslog = self.application.syslog
         self.cache = self.application.mcache
         self.session = session.Session(self.application.session_manager, self)
         self.db_backup = self.application.db_backup
@@ -42,19 +41,21 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.db.close()
         
     def get_error_html(self, status_code=500, **kwargs):
-        self.syslog.error("http error : [status_code:{0}], {1}".format(status_code, utils.safestr(kwargs)))
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return self.render_json(code=1, msg=u"%s:服务器处理失败，请联系管理员" % status_code)
+        try:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return self.render_json(code=1, msg=u"%s:服务器处理失败，请联系管理员" % status_code)
 
-        if status_code == 404:
-            return self.render_string("error.html", msg=u"404:页面不存在")
-        elif status_code == 403:
-            return self.render_string("error.html", msg=u"403:非法的请求")
-        elif status_code == 500:
-            self.syslog.error(traceback.format_exc())
-            return self.render_string("error.html", msg=u"500:服务器处理失败，请联系管理员")
-        else:
-            return self.render_string("error.html", msg=u"%s:服务器处理失败，请联系管理员" % status_code)
+            if status_code == 404:
+                return self.render_string("error.html", msg=u"404:页面不存在")
+            elif status_code == 403:
+                return self.render_string("error.html", msg=u"403:非法的请求")
+            elif status_code == 500:
+                logger.info(traceback.format_exc())
+                return self.render_string("error.html", msg=u"500:服务器处理失败，请联系管理员")
+            else:
+                return self.render_string("error.html", msg=u"%s:服务器处理失败，请联系管理员" % status_code)
+        except:
+             return self.render_string("error.html", msg=u"%s:服务器处理失败，请联系管理员" % status_code)
 
     def render(self, template_name, **template_vars):
         html = self.render_string(template_name, **template_vars)
@@ -70,7 +71,7 @@ class BaseHandler(cyclone.web.RequestHandler):
             template_vars["code"] = 0
         resp = json.dumps(template_vars, ensure_ascii=False)
         if self.settings.debug:
-            self.syslog.msg("[api debug] :::::::: %s response body: %s" % (self.request.path, utils.safestr(resp)))
+            logger.debug("[api debug] :: %s response body: %s" % (self.request.path, utils.safestr(resp)))
         self.write(resp)
 
 

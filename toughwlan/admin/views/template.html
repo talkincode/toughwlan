@@ -40,7 +40,7 @@
                 <tbody>
                 % for item in tpl_list:
                 <tr>
-                    <td><a href="/template/detail?tpl_id=${item.id}">${item.tpl_name}</a></td>
+                    <td>${item.tpl_name}</td>
                     <td>${item.tpl_desc}</td>
                     <td>
                         % if permit.match(current_user.username,'/template/update'):
