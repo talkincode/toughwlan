@@ -23,11 +23,13 @@ class AddHandler(BaseHandler):
 
     @cyclone.web.authenticated
     def get(self):
-        self.render("base_form.html", form=nas_forms.bas_add_form())
+        isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
+        self.render("base_form.html", form=nas_forms.bas_add_form(isps=isps))
 
     @cyclone.web.authenticated
     def post(self):
-        form = nas_forms.bas_add_form()
+        isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
+        form = nas_forms.bas_add_form(isps)
         if not form.validates(source=self.get_params()):
             return self.render("base_form.html", form=form)
             
@@ -38,6 +40,7 @@ class AddHandler(BaseHandler):
             return self.render("base_form.html", form=form, msg=u"Bas地址已经存在")
             
         bas = models.TrwBas()
+        bas.isp_code = form.d.isp_code
         bas.ip_addr = form.d.ip_addr
         bas.dns_name = form.d.dns_name
         bas.bas_name = form.d.bas_name
@@ -59,12 +62,14 @@ class UpdateHandler(BaseHandler):
     @cyclone.web.authenticated
     def get(self):
         bas_id = self.get_argument("bas_id")
-        form = nas_forms.bas_update_form()
+        isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
+        form = nas_forms.bas_update_form(isps)
         form.fill(self.db.query(models.TrwBas).get(bas_id))
         return self.render("base_form.html", form=form)
 
     def post(self):
-        form = nas_forms.bas_update_form()
+        isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
+        form = nas_forms.bas_update_form(isps)
         if not form.validates(source=self.get_params()):
             return self.render("base_form.html", form=form)
             

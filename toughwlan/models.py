@@ -82,13 +82,13 @@ class TrwParam(DeclarativeBase):
     param_desc = Column(u'param_desc', Unicode(length=255),doc=u"参数描述")
 
 class TrwIsp(DeclarativeBase):
-    """运营商,状态 0-正常，1-停用
+    """运营商,状态 0-正常，1-暂停服务
     """
     __tablename__ = 'trw_isp'
 
     __table_args__ = {}
 
-    isp_code = Column('isp_code', Unicode(length=8), primary_key=True,nullable=False)
+    isp_code = Column('isp_code', Unicode(length=16), primary_key=True,nullable=False)
     isp_name = Column('isp_name', Unicode(length=128), nullable=False)
     isp_desc = Column('isp_desc', Unicode(length=255))   
     isp_email = Column('isp_email',Unicode(length=128))
@@ -96,6 +96,19 @@ class TrwIsp(DeclarativeBase):
     isp_idcard = Column('isp_idcard',Unicode(length=64))
     user_total = Column(u'user_total', INTEGER(), nullable=False, doc=u"用户数")
     status = Column('status', SMALLINT(), nullable=False)
+
+class TrwIspService(DeclarativeBase):
+    """运营商服务
+    """
+    __tablename__ = 'trw_isp_service'
+
+    __table_args__ = {}
+
+    isp_code = Column('isp_code', Unicode(length=16), primary_key=True,nullable=False)
+    service_type = Column('service_type', Unicode(length=16), primary_key=True, nullable=False)
+    bill_times = Column(u'bill_times', INTEGER(), nullable=False,default=0, doc=u"已经计费时长-秒")
+    sub_time = Column(u'sub_time', Unicode(length=19), nullable=False, doc=u"订阅时间")
+
 
 class TrwBas(DeclarativeBase):
     """BAS设备表 """
@@ -105,6 +118,7 @@ class TrwBas(DeclarativeBase):
 
     # column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
+    isp_code = Column('isp_code', Unicode(length=8),nullable=False)
     ip_addr = Column(u'ip_addr', Unicode(length=15), index=True, nullable=True, doc=u"IP地址")
     dns_name = Column(u'dns_name', Unicode(length=128), nullable=True, doc=u"DNS名称")
     bas_name = Column(u'bas_name', Unicode(length=64), nullable=False, doc=u"bas名称")

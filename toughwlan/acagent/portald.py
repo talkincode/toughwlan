@@ -21,9 +21,8 @@ import toughwlan
 ACError = base_handler.ACError
 
 class AcPortald(protocol.DatagramProtocol):
-    def __init__(self, config,dbengine=None, log=None):
+    def __init__(self, config,dbengine=None):
         self.config = config
-        self.log = log or logger.Logger(self.config)
         self.dbengine = dbengine or get_engine(self.config)
         self.mcache = cache.CacheManager(self.dbengine)
         self.radius_dict = dictionary.Dictionary(
@@ -32,23 +31,23 @@ class AcPortald(protocol.DatagramProtocol):
         self.rundata = {"challenges":{}}
 
         self.ac_handlers = {
-            cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config, self.log),
-            cmcc.REQ_AUTH      : auth_handler.AuthHandler(
-                                            self.config, self.log, 
+            cmcc.REQ_CHALLENGE : chellenge_handler.ChellengeHandler(self.config),
+            cmcc.REQ_AUTH      : auth_handler.AuthHandler( 
+                                            self.config,
                                             radius_dict=self.radius_dict,
                                             radius_loader=self.radloader,
                                             mcache=self.mcache),
-            cmcc.REQ_INFO      : reqinfo_handler.ReqInfoHandler(self.config, self.log),
-            cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config, self.log),
-            cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config, self.log),
-            cmcc.NTF_HEARTBEAT : base_handler.EmptyHandler(self.config, self.log),
-            cmcc.REQ_LOGOUT    : logout_handler.LogoutHandler(self.config, self.log),
+            cmcc.REQ_INFO      : reqinfo_handler.ReqInfoHandler(self.config),
+            cmcc.AFF_ACK_AUTH  : base_handler.EmptyHandler(self.config),
+            cmcc.ACK_NTF_LOGOUT: base_handler.EmptyHandler(self.config),
+            cmcc.NTF_HEARTBEAT : base_handler.EmptyHandler(self.config),
+            cmcc.REQ_LOGOUT    : logout_handler.LogoutHandler(self.config),
         }
 
     def sendtoPortald(self, msg):
         portal_addr = (self.config.portal.host, int(self.config.portal.listen))
         if self.config.system.debug:
-            self.log.debug(":: Send Message to Portal Listen %s: %s" % (portal_addr, repr(msg)))
+            logger.debug(":: Send Message to Portal Listen %s: %s" % (portal_addr, repr(msg)))
         self.transport.write(str(msg), portal_addr)
 
     def parse(self, datagram, (host, port)):
@@ -66,7 +65,7 @@ class AcPortald(protocol.DatagramProtocol):
         try:
             request = self.parse(datagram, (host, port))
             if self.config.system.debug:
-                self.log.debug(":: Received portal packet from %s:%s: %s" % (host, port, repr(request)))
+                logger.debug(":: Received portal packet from %s:%s: %s" % (host, port, repr(request)))
             # import pdb;pdb.set_trace()
             handler = self.ac_handlers[request.type]
             resp = yield handler.process(request,self.rundata)
@@ -74,16 +73,16 @@ class AcPortald(protocol.DatagramProtocol):
             if resp:
                 self.transport.write(str(resp), (host, port))
                 if self.config.system.debug:
-                    self.log.debug(":: Send response to %s:%s: %s" % (host, port, repr(resp)))
+                    logger.debug(":: Send response to %s:%s: %s" % (host, port, repr(resp)))
 
         except Exception as err:
-            self.log.error(':: Dropping invalid packet from %s: %s' % ((host, port), str(err)))
+            logger.error(':: Dropping invalid packet from %s: %s' % ((host, port), str(err)))
             import traceback
             traceback.print_exc()
 
 
-def run(config, dbengine=None,log=None):
-    portald = AcPortald(config,dbengine=dbengine, log=log)
+def run(config, dbengine=None):
+    portald = AcPortald(config,dbengine=dbengine)
     reactor.listenUDP(int(config.acagent.port), portald)
 
 

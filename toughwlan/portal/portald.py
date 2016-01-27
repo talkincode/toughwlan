@@ -60,7 +60,7 @@ class PortalListen(protocol.DatagramProtocol):
             str(secret)
         )
         try:
-            self.syslog.info("Send portal packet to %s:%s: %s"%(host,port, utils.safestr(req)))
+            logger.info("Send portal packet to %s:%s: %s"%(host,port, utils.safestr(req)))
             self.transport.write(str(resp), (host, port))
         except:
             pass
@@ -84,14 +84,14 @@ class PortalListen(protocol.DatagramProtocol):
                 source=(host, port)
             )
 
-            self.syslog.info("Received portal packet from %s:%s: %s"%(host,port,utils.safestr(req)))
+            logger.info("Received portal packet from %s:%s: %s"%(host,port,utils.safestr(req)))
             if req.type in self.actions:
                 self.actions[req.type](req, vendor, secret, (host, port))
             else:
-                self.syslog.error('Not support packet from ac host ' + host)
+                logger.error('Not support packet from ac host ' + host)
 
         except Exception as err:
-            self.syslog.error('Dropping invalid packet from %s: %s' % ((host, port), utils.safestr(err)))
+            logger.error('Dropping invalid packet from %s: %s' % ((host, port), utils.safestr(err)))
 
         
 def run(config, dbengine=None, log=None):

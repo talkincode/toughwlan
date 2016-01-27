@@ -12,6 +12,7 @@ from mako.template import Template
 from cyclone.util import ObjectDict
 from twisted.internet import defer
 from toughlib import utils, apiutils
+from toughlib import dispatch, logger
 from toughwlan import models
 from toughlib import db_session as session
 
@@ -19,7 +20,6 @@ class BaseHandler(cyclone.web.RequestHandler):
     
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)
-        self.syslog = self.application.syslog
         self.cache = self.application.mcache
         self.session = session.Session(self.application.session_manager, self)
 
@@ -35,7 +35,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.db.close()
         
     def get_error_html(self, status_code=500, **kwargs):
-        self.syslog.error("http error : [status_code:{0}], {1}".format(status_code, utils.safestr(kwargs)))
+        logger.info("http error : [status_code:{0}], {1}".format(status_code, utils.safestr(kwargs)))
         if status_code == 404:
             return self.render_string("error.html", msg=u"404:页面不存在")
         elif status_code == 403:
@@ -50,7 +50,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.write(html)
 
     def render_error(self, **template_vars):
-        self.syslog.error("render template error: {0}".format(repr(template_vars)))
+        logger.info("render template error: {0}".format(repr(template_vars)))
         tpl_name = template_vars.get("tpl_name","")
         tpl = self.get_error_template(tpl_name)
         html = self.render_string(tpl, **template_vars)
@@ -75,7 +75,7 @@ class BaseHandler(cyclone.web.RequestHandler):
             mytemplate = self.tp_lookup.get_template(template_name)
             return mytemplate.render(**template_vars)
         except Exception as err:
-            self.syslog.error("Render template error {0}".format(utils.safestr(err)))
+            logger.info("Render template error {0}".format(utils.safestr(err)))
             raise
 
     def render_from_string(self, template_string, **template_vars):
@@ -110,7 +110,7 @@ class BaseHandler(cyclone.web.RequestHandler):
 
         try:
             userAgent = self.request.headers['User-Agent']
-            self.syslog.info("UserAgent : %s"% userAgent)
+            logger.info("UserAgent : %s"% userAgent)
             return check_os(userAgent)
         except:
             return 'unknow', 'unknow'
@@ -196,14 +196,6 @@ class BaseHandler(cyclone.web.RequestHandler):
         return _get_check_os_funs()
 
 
-<<<<<<< HEAD
-class HomeHandler(BaseHandler):
-    def get(self):
-        tpl_path = self.get_argument("tpl_path")
-        self.render(self.get_index_template(tpl_path))
-
-=======
->>>>>>> master
 
 
 

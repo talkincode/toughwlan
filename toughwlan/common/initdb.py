@@ -88,6 +88,7 @@ def init_db(db):
     db.add(domain)
 
     nas = models.TrwBas()
+    nas.isp_code='default'
     nas.ip_addr = "127.0.0.1"
     nas.bas_name = "local ac"
     nas.bas_secret = "secret"

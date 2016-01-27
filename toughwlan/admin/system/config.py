@@ -79,7 +79,6 @@ class AcAgentHandler(BaseHandler):
         self.settings.config['acagent']['nasid'] = self.get_argument("nasid")
         self.settings.config['acagent']['nasaddr'] = self.get_argument("nasaddr")
         self.settings.config['acagent']['portal_login'] = self.get_argument("portal_login")
-        self.settings.config['acagent']['notify_url'] = self.get_argument("notify_url")
         self.settings.config['acagent']['vendor'] = self.get_argument("vendor")
         self.settings.config['acagent']['secret'] = self.get_argument("secret")
         self.settings.config.save()

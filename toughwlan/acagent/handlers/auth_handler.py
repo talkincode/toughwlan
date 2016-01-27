@@ -4,10 +4,11 @@ import struct
 from twisted.internet import defer
 from txportal.packet import cmcc, huawei
 from toughlib import httpclient as requests
-from toughlib import utils
+from toughlib import utils, logger, dispatch
 from toughwlan.acagent.handlers import base_handler
 from toughwlan.acagent.session import RadiusSession
 from txradius.radius.tools import DecodeAddress
+import functools
 
 class AuthHandler(base_handler.BasicHandler):
 
@@ -107,10 +108,10 @@ class AuthHandler(base_handler.BasicHandler):
     def callback(self,userip,code=0):
         cache_key = "callback_cache_%s" % utils.safestr(userip)
         notify_url = self.mcache.get(cache_key)
-        self.syslog.info("callback %s" % notify_url)
+        logger.info("callback %s" % notify_url)
         if notify_url:
             notify_url = utils.safestr(notify_url.format(code=code))
-            requests.get(notify_url).addCallbacks(self.syslog.info,self.syslog.error)
+            requests.get(notify_url).addCallbacks(logger.info,logger.error)
 
 
 

@@ -8,25 +8,25 @@ from twisted.internet import task
 from twisted.python import log
 from twisted.internet import reactor
 from txradius import message
+from toughlib import dispatch, logger
 
 class RadiusSession:
 
     sessions = {}
 
-    def __init__(self, config, radius, log=log):
+    def __init__(self, config, radius):
         self.config = config
         self.radius = radius
-        self.log=log
         self.session_start = int(time.time())
         self.session_id = uuid.uuid1().hex.upper()
         self.session_data = {}
         self.interim_update = self.config.acagent.radius.interim_update
 
     @staticmethod
-    def stop_session(ipaddr, log):
+    def stop_session(ipaddr):
         for session in RadiusSession.sessions.values():
             if session.session_data['Framed-IP-Address'] == ipaddr:
-                session.stop().addCallbacks(log.info,log.error)
+                session.stop().addCallbacks(logger.info,logger.error)
 
 
     @defer.inlineCallbacks
@@ -69,7 +69,7 @@ class RadiusSession:
 
             acct_resp = yield self.radius.send_acct(**self.session_data)
             if acct_resp.code == packet.AccountingResponse:
-                self.log.msg('Start session  %s' % self.session_id)
+                logger.info('Start session  %s' % self.session_id)
                 RadiusSession.sessions[self.session_id] = self
                 reactor.callLater(self.interim_update,self.check_session)
                 defer.returnValue(dict(code=0,msg=u"success"))
@@ -78,7 +78,7 @@ class RadiusSession:
 
     @defer.inlineCallbacks
     def update(self):
-        self.log.msg('Alive session  %s' % self.session_id)
+        logger.info('Alive session  %s' % self.session_id)
         self.session_data['Acct-Status-Type'] = 3
         self.session_data['Acct-Session-Time'] = (int(time.time()) - self.session_start)
         acct_resp = yield self.radius.send_acct(**self.session_data)
@@ -86,7 +86,7 @@ class RadiusSession:
 
     @defer.inlineCallbacks
     def stop(self):
-        self.log.msg('Stop session  %s' % self.session_id)
+        logger.info('Stop session  %s' % self.session_id)
         del RadiusSession.sessions[self.session_id]
         self.session_data['Acct-Status-Type'] = 2
         self.session_data['Acct-Session-Time'] = (int(time.time()) - self.session_start)

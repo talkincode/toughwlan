@@ -3,6 +3,7 @@
 
 from twisted.internet import defer
 from txradius import client
+from toughlib import logger, dispatch
 import functools
 
 class ACError(BaseException):
@@ -10,9 +11,8 @@ class ACError(BaseException):
 
 
 class BasicHandler:
-    def __init__(self, config, syslog, radius_dict=None,radius_loader=None,mcache=None):
+    def __init__(self, config, radius_dict=None,radius_loader=None,mcache=None):
         self.config = config
-        self.syslog = syslog
         self.radius_dict = radius_dict
         self.radius_loader = radius_loader
         self.mcache = mcache
@@ -46,5 +46,5 @@ class BasicHandler:
 class EmptyHandler(BasicHandler):
 
     def process(self, req, rundata):
-        self.syslog.debug("do nothing for {0}".format(repr(req)))
+        logger.error("do nothing for {0}".format(repr(req)))
         return None
