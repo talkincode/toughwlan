@@ -81,7 +81,34 @@ class TrwParam(DeclarativeBase):
     param_value = Column(u'param_value', Unicode(length=1024), nullable=False,doc=u"参数值")
     param_desc = Column(u'param_desc', Unicode(length=255),doc=u"参数描述")
 
-    #relation definitions
+class TrwIsp(DeclarativeBase):
+    """运营商,状态 0-正常，1-暂停服务
+    """
+    __tablename__ = 'trw_isp'
+
+    __table_args__ = {}
+
+    isp_code = Column('isp_code', Unicode(length=16), primary_key=True,nullable=False)
+    isp_name = Column('isp_name', Unicode(length=128), nullable=False)
+    isp_desc = Column('isp_desc', Unicode(length=255))   
+    isp_email = Column('isp_email',Unicode(length=128))
+    isp_phone = Column('isp_phone',Unicode(length=64))
+    isp_idcard = Column('isp_idcard',Unicode(length=64))
+    user_total = Column(u'user_total', INTEGER(), nullable=False, doc=u"用户数")
+    status = Column('status', SMALLINT(), nullable=False)
+
+class TrwIspService(DeclarativeBase):
+    """运营商服务
+    """
+    __tablename__ = 'trw_isp_service'
+
+    __table_args__ = {}
+
+    isp_code = Column('isp_code', Unicode(length=16), primary_key=True,nullable=False)
+    service_type = Column('service_type', Unicode(length=16), primary_key=True, nullable=False)
+    bill_times = Column(u'bill_times', INTEGER(), nullable=False,default=0, doc=u"已经计费时长-秒")
+    sub_time = Column(u'sub_time', Unicode(length=19), nullable=False, doc=u"订阅时间")
+
 
 class TrwBas(DeclarativeBase):
     """BAS设备表 """
@@ -91,7 +118,8 @@ class TrwBas(DeclarativeBase):
 
     # column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"设备id")
-    ip_addr = Column(u'ip_addr', Unicode(length=15), nullable=True, doc=u"IP地址")
+    isp_code = Column('isp_code', Unicode(length=8),nullable=False)
+    ip_addr = Column(u'ip_addr', Unicode(length=15), index=True, nullable=True, doc=u"IP地址")
     dns_name = Column(u'dns_name', Unicode(length=128), nullable=True, doc=u"DNS名称")
     bas_name = Column(u'bas_name', Unicode(length=64), nullable=False, doc=u"bas名称")
     bas_secret = Column(u'bas_secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
@@ -113,9 +141,11 @@ class TrwDomain(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"id")
+    isp_code = Column('isp_code', Unicode(length=8),nullable=False)
     domain_code = Column(u'domain_code', Unicode(length=16), nullable=False, index=True, doc=u"域编码")
     tpl_name = Column(u'tpl_name', Unicode(length=64), nullable=False, doc=u"模版名称")
     domain_desc = Column(u'domain_desc', Unicode(length=64), nullable=False, doc=u"域描述")
+    UniqueConstraint('isp_code', 'domain_code', name='unique_isp_domain')
 
 class TrwDomainAttr(DeclarativeBase):
     """portal模版属性 """
@@ -125,10 +155,12 @@ class TrwDomainAttr(DeclarativeBase):
 
     # column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"模版属性id")
+    isp_code = Column('isp_code', Unicode(length=8), nullable=False)
     domain_code = Column(u'domain_code', Unicode(length=16), nullable=False, doc=u"域编码")
     attr_name = Column(u'attr_name', Unicode(length=128), nullable=False, doc=u"模版名")
     attr_value = Column(u'attr_value', Unicode(length=1024), nullable=False, doc=u"属性值")
     attr_desc = Column(u'attr__desc', Unicode(length=255), doc=u"属性描述")
+    UniqueConstraint('isp_code', 'domain_code',"attr_name", name='unique_isp_domain_attr')
 
 class TrwSsid(DeclarativeBase):
     """SSID信息表 """
@@ -138,9 +170,11 @@ class TrwSsid(DeclarativeBase):
 
     #column definitions
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"id")
+    isp_code = Column('isp_code', Unicode(length=8), nullable=False)
     domain_code = Column(u'domain_code', Unicode(length=16), nullable=False,doc=u"域编码")
     ssid = Column(u'ssid', Unicode(length=16), nullable=False, index=True, doc=u"ssid")
     ssid_desc = Column(u'ssid_desc', Unicode(length=64), nullable=False, doc=u"ssid描述")
+    UniqueConstraint('isp_code', 'domain_code',"ssid", name='unique_isp_domain_ssid')
 
 
 class TrwRadius(DeclarativeBase):
@@ -159,6 +193,7 @@ class TrwRadius(DeclarativeBase):
     acct_port = Column(u'acct_port', INTEGER(), nullable=False, doc=u"记账端口")
     admin_url = Column(u'admin_url', Unicode(length=255), nullable=False, doc=u"管理地址")
     last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
+
 
 class TrwRadiusStatus(DeclarativeBase):
     """radius状态信息表 """
@@ -191,20 +226,8 @@ class TrwTemplate(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"模版id")
     tpl_name = Column(u'tpl_name', Unicode(length=64), nullable=False, doc=u"模版名称")
     tpl_desc = Column(u'tpl_desc', Unicode(length=512), nullable=False, doc=u"模版描述")
+    UniqueConstraint('isp_code', 'tpl_name', name='unique_isp_tempalte')
 
-
-class TrwTemplateAttr(DeclarativeBase):
-    """portal模版属性 """
-    __tablename__ = 'trw_template_attr'
-
-    __table_args__ = {}
-
-    # column definitions
-    id = Column(u'id', INTEGER(),primary_key=True, nullable=False, doc=u"模版属性id")
-    tpl_name = Column('tpl_name', Unicode(length=128), nullable=False, doc=u"模版名")
-    attr_name = Column(u'attr_name', Unicode(length=128), nullable=False, doc=u"模版名")
-    attr_value = Column(u'attr_value', Unicode(length=1024), nullable=False, doc=u"属性值")
-    attr_desc = Column(u'attr__desc', Unicode(length=255), doc=u"属性描述")
 
 
 class TrwOperateLog(DeclarativeBase):
