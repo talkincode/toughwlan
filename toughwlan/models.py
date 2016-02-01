@@ -191,29 +191,9 @@ class TrwRadius(DeclarativeBase):
     secret = Column(u'secret', Unicode(length=64), nullable=False, doc=u"共享密钥")
     auth_port = Column(u'auth_port', INTEGER(), nullable=False, doc=u"认证端口")
     acct_port = Column(u'acct_port', INTEGER(), nullable=False, doc=u"记账端口")
-    admin_url = Column(u'admin_url', Unicode(length=255), nullable=False, doc=u"管理地址")
+    api_secret = Column(u'api_secret', Unicode(length=255), nullable=False, doc=u"API密钥")
+    api_url = Column(u'api_url', Unicode(length=255), nullable=False, doc=u"API地址")
     last_check = Column(u'last_check', Unicode(length=19), nullable=True, doc=u"最后检测")
-
-
-class TrwRadiusStatus(DeclarativeBase):
-    """radius状态信息表 """
-    __tablename__ = 'trw_radius_status'
-
-    __table_args__ = {}
-
-    #column definitions
-    id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"id")
-    ip_addr = Column(u'ip_addr', Unicode(length=16), nullable=False,doc=u"radius地址")
-    stat_time = Column(u'stat_time', Unicode(length=16), nullable=False, doc=u"统计时间")
-    auth_all = Column(u'auth_all', INTEGER(), nullable=False, doc=u"认证总数")
-    auth_accept = Column(u'auth_accept', INTEGER(), nullable=False, doc=u"认证成功数")
-    auth_reject = Column(u'auth_reject', INTEGER(), nullable=False, doc=u"认证拒绝数")
-    acct_all = Column(u'acct_all', INTEGER(), nullable=False, doc=u"记账总数")
-    acct_start = Column(u'acct_start', INTEGER(), nullable=False, doc=u"记账开始数")
-    acct_stop = Column(u'acct_stop', INTEGER(), nullable=False, doc=u"记账结束数")
-    acct_update = Column(u'acct_update', INTEGER(), nullable=False, doc=u"记账更新数")
-    acct_on = Column(u'acct_on', INTEGER(), nullable=False, doc=u"记账上线数")
-    acct_off = Column(u'acct_off', INTEGER(), nullable=False, doc=u"记账下线数")
 
 
 class TrwTemplate(DeclarativeBase):
@@ -256,6 +236,43 @@ class TrwOSTypes(DeclarativeBase):
     match_rule = Column(u'match_rule', Unicode(length=255), nullable=False, doc=u"匹配规则")
 
 
+class TrwAccount(DeclarativeBase):
+    """
+    上网账号表
+    用户状态 1:"正常", 2:"停机" 
+   
+    """
+
+    __tablename__ = 'trw_account'
+
+    __table_args__ = {}
+
+    account_number = Column('account_number', Unicode(length=32),primary_key=True,nullable=False,doc=u"上网账号")
+    isp_code = Column('isp_code', Unicode(length=8), nullable=False)
+    password = Column('password', Unicode(length=128), nullable=False,doc=u"上网密码")
+    status = Column('status', INTEGER(), nullable=False,doc=u"用户状态")
+    address = Column('address', Unicode(length=128), nullable=False,doc=u"地址")
+    expire_date = Column('expire_date', Unicode(length=10), nullable=False,doc=u"过期时间- ####-##-##")
+    concur_number = Column('concur_number', INTEGER(), nullable=False,doc=u"用户并发数")
+    input_rate = Column('input_rate', INTEGER(), nullable=False,doc=u"上行速率")
+    output_rate = Column('output_rate', INTEGER(), nullable=False,doc=u"下行速率")
+    bind_mac = Column('bind_mac', SMALLINT(), nullable=False,doc=u"是否绑定mac")
+    mac_addr = Column('mac_addr', Unicode(length=17),doc=u"mac地址")
+    account_desc = Column(u'account_desc', Unicode(255),doc=u"用户描述")
+    create_time = Column('create_time', Unicode(length=19), nullable=False,doc=u"创建时间")
+    update_time = Column('update_time', Unicode(length=19), nullable=False,doc=u"更新时间")
+
+class TrwAccountAttr(DeclarativeBase):
+    """上网账号扩展策略属性表"""
+    __tablename__ = 'trw_account_attr'
+    __table_args__ = {}
+
+    id = Column(u'id', INTEGER(), primary_key=True, nullable=False,doc=u"属性id")
+    account_number = Column('account_number', Unicode(length=32),nullable=False,doc=u"上网账号")
+    attr_name = Column(u'attr_name', Unicode(length=255), nullable=False,doc=u"属性名")
+    attr_value = Column(u'attr_value', Unicode(length=255), nullable=False,doc=u"属性值")
+    attr_desc = Column(u'attr_desc', Unicode(length=255),doc=u"属性描述")
+
 class TrwOnline(DeclarativeBase):
     """用户在线信息表 """
     __tablename__ = 'trw_online'
@@ -268,13 +285,12 @@ class TrwOnline(DeclarativeBase):
     id = Column(u'id', INTEGER(), primary_key=True, nullable=False, doc=u"在线id")
     username = Column(u'username', Unicode(length=32), nullable=False, index=True, doc=u"上网账号")
     nas_addr = Column(u'nas_addr', Unicode(length=32), nullable=False, index=True, doc=u"bas地址")
-    session_id = Column(u'session_id', Unicode(length=64), nullable=False, index=True, doc=u"会话id")
+    acct_session_id = Column(u'acct_session_id', Unicode(length=64), nullable=False, index=True, doc=u"会话id")
     start_time = Column(u'start_time', Unicode(length=19), nullable=False, doc=u"会话开始时间")
     ipaddr = Column(u'ipaddr', Unicode(length=32),  nullable=False, doc=u"IP地址")
     macaddr = Column(u'macaddr', Unicode(length=32), nullable=False, doc=u"mac地址")
     nas_port_id = Column(u'nas_port_id', Unicode(length=255), nullable=True, doc=u"接入端口物理信息")
     input_total = Column(u'input_total', INTEGER(), doc=u"上行流量（kb）")
     output_total = Column(u'output_total', INTEGER(), doc=u"下行流量（kb）")
-    start_source = Column(u'start_source', Unicode(length=64), nullable=False, doc=u"上线来源")
 
 

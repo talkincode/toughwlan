@@ -54,7 +54,6 @@
                                 <td>${item.acct_port}</td>
                                 <td width="5%">${serv_types[item.serv_type]}</td>
                                 <td>
-                                   <a class="opt-btn btn-default" href="${item.admin_url}">进入管理</a>
                                     % if permit.match(current_user.username,'/radius/update'):
                                     <a class="opt-btn btn-default" href="/radius/update?radius_id=${item.id}">修改</a>
                                     % endif

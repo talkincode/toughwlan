@@ -18,6 +18,15 @@ def portal():
 def acagent():
     local("pypy toughctl --acagent -c toughwlan.json")
 
+def radauth():
+    local("pypy toughctl --radauth -c toughwlan.json")
+
+def radacct():
+    local("pypy toughctl --radacct -c toughwlan.json")
+
+def radworker():
+    local("pypy toughctl --radworker -c toughwlan.json")
+
 def all():
     local("pypy toughctl --standalone -c toughwlan.json")
 

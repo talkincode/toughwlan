@@ -17,13 +17,11 @@ from toughlib import db_session as session
 from toughlib import db_cache as cache
 import toughwlan
 
-class PortalWebServer(cyclone.web.Application):
+class Httpd(cyclone.web.Application):
 
-    def __init__(self, config=None, dbengine=None, log=None, **kwargs):
+    def __init__(self, config=None, dbengine=None, **kwargs):
 
         self.config = config
-
-        self.syslog = log or logger.Logger(config)
 
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
@@ -58,9 +56,9 @@ class PortalWebServer(cyclone.web.Application):
 
     def init_route(self):
         handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "portal")
-        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.portal",excludes=['views','webserver','portald'])
+        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.portal",excludes=['views','httpd','portald'])
 
-def run(config, dbengine=None, log=None):
-    app = PortalWebServer(config, dbengine,log)
+def run(config, dbengine=None):
+    app = Httpd(config, dbengine)
     reactor.listenTCP(int(config.portal.port), app, interface=config.portal.host)
 

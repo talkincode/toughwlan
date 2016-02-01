@@ -106,7 +106,8 @@ def init_db(db):
     radius.acct_port = 1813
     radius.auth_port = 1812
     radius.serv_type = 1
-    radius.admin_url = "http://127.0.0.1:1816/admin"
+    radius.api_url = "http://127.0.0.1:1816/api"
+    radius.api_secret = "0BOTrVO6WRtkRnKTmM52nKfQpvCGY8vD"
     radius.last_check = utils.get_currtime()
     db.add(radius)
 

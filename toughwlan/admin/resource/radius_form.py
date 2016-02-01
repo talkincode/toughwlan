@@ -13,7 +13,8 @@ radius_add_form = btforms.Form(
     btforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     btforms.Textbox("acct_port", rules.is_number, description=u"记账端口", required="required", **input_style),
     btforms.Dropdown("serv_type", args=serv_types.items(),description=u"服务器类型(主|备)", required="required", **input_style),
-    btforms.Textbox("admin_url", rules.len_of(1, 255), description=u"管理地址", required="required", **input_style),
+    btforms.Textbox("api_url", rules.len_of(1, 255), description=u"api地址", required="required", **input_style),
+    btforms.Textbox("api_secret", rules.len_of(6, 255), description=u"api密钥", required="required", **input_style),
     btforms.Button("submit", type="submit", html=u"<b>提交</b>", **button_style),
     title=u"新增radius",
     action="/radius/add"
@@ -27,7 +28,8 @@ radius_update_form = btforms.Form(
     btforms.Textbox("auth_port", rules.is_number, description=u"认证端口", required="required", **input_style),
     btforms.Textbox("acct_port", rules.is_number, description=u"记账端口", required="required", **input_style),
     btforms.Dropdown("serv_type", args=serv_types.items(),description=u"服务器类型(主|备)", required="required", **input_style),
-    btforms.Textbox("admin_url", rules.len_of(1, 255), description=u"管理地址", required="required", **input_style),
+    btforms.Textbox("api_url", rules.len_of(1, 255), description=u"api地址", required="required", **input_style),
+    btforms.Textbox("api_secret", rules.len_of(6, 255), description=u"api密钥", required="required", **input_style),
     btforms.Button("submit", type="submit", html=u"<b>提交</b>", **button_style),
     title=u"修改radius",
     action="/radius/update"

@@ -22,7 +22,7 @@ import toughwlan
 
 
 
-class AdminWebServer(cyclone.web.Application):
+class Httpd(cyclone.web.Application):
     def __init__(self, config=None, dbengine=None, **kwargs):
 
         self.config = config
@@ -75,7 +75,7 @@ class AdminWebServer(cyclone.web.Application):
 
     def init_route(self):
         handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "admin")
-        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.admin",excludes=['views','webserver','ddns_task'])
+        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.admin",excludes=['views','httpd','ddns_task'])
 
         conn = self.db()
         oprs = conn.query(models.TrwOperator)
@@ -88,6 +88,6 @@ class AdminWebServer(cyclone.web.Application):
 
 
 def run(config, dbengine=None):
-    app = AdminWebServer(config, dbengine=dbengine)
+    app = Httpd(config, dbengine=dbengine)
     reactor.listenTCP(config.admin.port, app, interface=config.admin.host)
 

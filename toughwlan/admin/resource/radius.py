@@ -45,7 +45,8 @@ class AddHandler(BaseHandler):
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
         radius.auth_port = form.d.auth_port
-        radius.admin_url = form.d.admin_url
+        radius.api_url = form.d.api_url
+        radius.api_secret = form.d.api_secret
         radius.serv_type = form.d.serv_type
         radius.last_check = utils.get_currtime()
         self.db.add(radius)
@@ -76,7 +77,8 @@ class UpdateHandler(BaseHandler):
         radius.secret = form.d.secret
         radius.acct_port = form.d.acct_port
         radius.auth_port = form.d.auth_port
-        radius.admin_url = form.d.admin_url
+        radius.api_url = form.d.api_url
+        radius.api_secret = form.d.api_secret
         radius.serv_type = form.d.serv_type
 
         self.add_oplog(u'修改Radius信息:%s' % (radius.ip_addr))
