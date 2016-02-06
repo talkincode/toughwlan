@@ -19,9 +19,10 @@ class AcRadiusAuthorize(protocol.DatagramProtocol):
         self.log = log or logger.Logger(config)
 
     def processPacket(self, coareq, (host,port)):
-        session_id = coareq.get("Acct-Session-Id",['0'])[0]
-        if session_id in RadiusSession.sessions:
-            del RadiusSession.sessions[session_id]
+        session_id = coareq.get_acct_sessionid()
+        session = RadiusSession.sessions.pop(session_id,None)
+        if session:
+            session.stop()
 
         reply = coareq.CreateReply()
         self.log.info("[RADIUSAuthorize] :: Send Authorize radius response: %s" % (repr(reply)))
