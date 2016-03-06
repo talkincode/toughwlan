@@ -10,28 +10,16 @@ def tag():
     local("git push origin v%s:v%s"%(__version__,__version__))
 
 def admin():
-    local("pypy toughctl --admin -c toughwlan.json")
+    local("pypy toughctl --admin -c etc/toughwlan.json")
 
 def portal():
-    local("pypy toughctl --portal -c toughwlan.json")
-
-def acagent():
-    local("pypy toughctl --acagent -c toughwlan.json")
-
-def radauth():
-    local("pypy toughctl --radauth -c toughwlan.json")
-
-def radacct():
-    local("pypy toughctl --radacct -c toughwlan.json")
-
-def radworker():
-    local("pypy toughctl --radworker -c toughwlan.json")
+    local("pypy toughctl --portal -c etc/toughwlan.json")
 
 def all():
-    local("pypy toughctl --standalone -c toughwlan.json")
+    local("pypy toughctl --standalone -c etc/toughwlan.json")
 
 def initdb():
-    local("pypy toughctl --initdb -c toughwlan.json")
+    local("pypy toughctl --initdb -c etc/toughwlan.json")
 
 def uplib():
     local("pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps")

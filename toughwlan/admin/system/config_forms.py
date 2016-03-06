@@ -61,22 +61,6 @@ portal_form = btforms.Form(
     action="/config/portal/update"
 )
 
-acagent_form = btforms.Form(
-    btforms.Textbox("host", description=u"监听地址", readonly="readonly", **input_style),
-    btforms.Textbox("port", description=u"认证监听端口", readonly="readonly", **input_style),
-    btforms.Textbox("auth_port", description=u"重定向端口", readonly="readonly", **input_style),
-    btforms.Textbox("nasid", description=u"nas标识", **input_style),
-    btforms.Textbox("nasaddr", description=u"nas地址", **input_style),
-    btforms.Textbox("portal_login", description=u"portal重定向地址", **input_style),
-    btforms.Dropdown("vendor",args=portaltype.items(), description=u"portal协议" , **input_style),
-    btforms.Textbox("secret", description=u"共享密钥" , **input_style),
-    btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
-    title=u"AcAgentl配置管理",
-    action="/config/acagent/update"
-)
-
-
-
 syslog_form = btforms.Form(
     btforms.Dropdown("enable", args=booleans.items(), description=u"开启syslog", **input_style),
     btforms.Textbox("server", description=u"syslog 服务器", **input_style),

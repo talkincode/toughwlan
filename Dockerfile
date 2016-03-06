@@ -13,16 +13,6 @@ EXPOSE 1810
 # portal web port
 EXPOSE 1818
 
-# radius port
-EXPOSE 1645/udp
-EXPOSE 1646/udp
-
-# ac portal port
-EXPOSE 2000/udp
-
-# ac radius port
-EXPOSE 3799/udp
-
 # portal listen port
 EXPOSE 50100/udp
 

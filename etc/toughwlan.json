@@ -1,20 +1,4 @@
 {
-    "acagent": {
-        "auth_port": 1819, 
-        "debug": 1, 
-        "host": "0.0.0.0", 
-        "nasaddr": "127.0.0.1", 
-        "nasid": "toughac", 
-        "port": 2000, 
-        "portal_login": "http://127.0.0.1:1818/portal/login?ssid={ssid}&wlanacip={wlanacip}&wlanuserip={wlanuserip}", 
-        "radius": {
-            "authorize_port": 3799, 
-            "interim_update": 300, 
-            "pap_length": 32
-        }, 
-        "secret": "secret", 
-        "vendor": "huaweiv2"
-    }, 
     "radiusd": {
         "acct_port": 1646, 
         "auth_port": 1645, 
