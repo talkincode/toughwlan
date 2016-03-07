@@ -56,15 +56,6 @@ install_with_lmysql()
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
-    read -p "toughwlan ac port [2000]: " ac_port
-    ac_port=${ac_port:-2000}
-
-    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
-    ac_redirect_port=${ac_redirect_port:-1819}
-
-    read -p "toughwlan radius coa port [3799]: " radius_coa_port
-    radius_coa_port=${radius_coa_port:-3799}
-
     cat <<EOF
 
     toughwlan instance config(with local mysql):
@@ -77,9 +68,6 @@ install_with_lmysql()
     admin_port: ${admin_port}
     portal_auth_port: ${portal_auth_port}
     portal_listen_port: ${portal_listen_port}
-    ac_port: ${ac_port}
-    ac_redirect_port: ${ac_redirect_port}
-    radius_coa_port: ${radius_coa_port}
 
 EOF
 
@@ -106,9 +94,6 @@ wlan:
     ports:
         - "${admin_port}:1810"
         - "${portal_auth_port}:1818"
-        - "${ac_redirect_port}:1819"
-        - "${ac_port}:2000/udp"
-        - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
     links:
         - wlandb:wlandb
@@ -177,15 +162,6 @@ install_with_rmysql()
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
-    read -p "toughwlan ac port [2000]: " ac_port
-    ac_port=${ac_port:-2000}
-
-    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
-    ac_redirect_port=${ac_redirect_port:-1819}
-
-    read -p "toughwlan radius coa port [3799]: " radius_coa_port
-    radius_coa_port=${radius_coa_port:-3799}
-    cat <<EOF
 
     toughwlan instance config (with remote mysql):
 
@@ -198,9 +174,6 @@ install_with_rmysql()
     admin_port: ${admin_port}
     portal_auth_port: ${portal_auth_port}
     portal_listen_port: ${portal_listen_port}
-    ac_port: ${ac_port}
-    ac_redirect_port: ${ac_redirect_port}
-    radius_coa_port: ${radius_coa_port}
 
 EOF
 
@@ -213,9 +186,6 @@ wlan:
     ports:
         - "${admin_port}:1810"
         - "${portal_auth_port}:1818"
-        - "${ac_redirect_port}:1819"
-        - "${ac_port}:2000/udp"
-        - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
     environment:
         - DB_TYPE=mysql
@@ -254,15 +224,6 @@ install()
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
-    read -p "toughwlan ac port [2000]: " ac_port
-    ac_port=${ac_port:-2000}
-
-    read -p "toughwlan ac redirect port [1819]: " ac_redirect_port
-    ac_redirect_port=${ac_redirect_port:-1819}
-
-    read -p "toughwlan radius coa port [3799]: " radius_coa_port
-    radius_coa_port=${radius_coa_port:-3799}
-
     cat <<EOF
 
     toughwlan instance config (default sqlite inside):
@@ -271,9 +232,6 @@ install()
     admin_port: ${admin_port}
     portal_auth_port: ${portal_auth_port}
     portal_listen_port: ${portal_listen_port}
-    ac_port: ${ac_port}
-    ac_redirect_port: ${ac_redirect_port}
-    radius_coa_port: ${radius_coa_port}
 
 EOF
 
@@ -286,9 +244,6 @@ wlan:
     ports:
         - "${admin_port}:1810"
         - "${portal_auth_port}:1818"
-        - "${ac_redirect_port}:1819"
-        - "${ac_port}:2000/udp"
-        - "${radius_coa_port}:3799/udp"
         - "${portal_listen_port}:50100/udp"
     restart: always
     ulimits:

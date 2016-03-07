@@ -21,8 +21,6 @@ class ConfigHandler(BaseHandler):
         database_form.fill(self.settings.config.database)        
         portal_form = config_forms.portal_form()
         portal_form.fill(self.settings.config.portal)
-        acagent_form = config_forms.acagent_form()
-        acagent_form.fill(self.settings.config.acagent)
         admin_form = config_forms.admin_form()
         admin_form.fill(self.settings.config.admin)
 
@@ -38,7 +36,6 @@ class ConfigHandler(BaseHandler):
                   default_form=default_form,
                   database_form=database_form,
                   portal_form=portal_form,
-                  acagent_form=acagent_form,
                   admin_form=admin_form,
                   syslog_form=syslog_form
               )
@@ -72,17 +69,6 @@ class PortalHandler(BaseHandler):
     def post(self):
         self.redirect("/config?active=portal")
 
-@permit.route(r"/config/acagent/update", u"AcAgent 配置", u"系统管理", order=2.0004, is_menu=False)
-class AcAgentHandler(BaseHandler):
-    @cyclone.web.authenticated
-    def post(self):
-        self.settings.config['acagent']['nasid'] = self.get_argument("nasid")
-        self.settings.config['acagent']['nasaddr'] = self.get_argument("nasaddr")
-        self.settings.config['acagent']['portal_login'] = self.get_argument("portal_login")
-        self.settings.config['acagent']['vendor'] = self.get_argument("vendor")
-        self.settings.config['acagent']['secret'] = self.get_argument("secret")
-        self.settings.config.save()
-        self.redirect("/config?active=acagent")
 
 @permit.route(r"/config/syslog/update", u"syslog 配置", u"系统管理", order=2.0005, is_menu=False)
 class SyslogHandler(BaseHandler):

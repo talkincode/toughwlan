@@ -11,8 +11,6 @@ install()
 
     pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
 
-    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps
-
     git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwlan
 
     cp /opt/toughwlan/toughwlan.json /etc/toughwlan.json
@@ -53,12 +51,6 @@ portal()
     pypy /opt/toughwlan/toughctl --portal
 }
 
-acagent()
-{
-    initserv
-    pypy /opt/toughwlan/toughctl --acagent
-}
-
 upgrade()
 {
     cd /opt/toughwlan
@@ -96,9 +88,6 @@ case "$1" in
     portal
   ;;
 
-  acagent)
-    acagent
-  ;;
 
   upgrade)
     upgrade

@@ -45,32 +45,11 @@ def start_portal(config,dbengine):
     portald.run(config,dbengine)
     portal_web.run(config,dbengine)
 
-def start_acagent(config,dbengine):
-    from toughwlan.acagent import authorized, portald
-    authorized.run(config, dbengine)
-    portald.run(config, dbengine)
-
-def start_radauth(config):
-    from toughwlan.radiusd import radiusd
-    radiusd.run_auth(config)
-    
-def start_radacct(config):
-    from toughwlan.radiusd import radiusd
-    radiusd.run_acct(config)
-
-def start_radworker(config,dbengine):
-    from toughwlan.radiusd import radiusd
-    radiusd.run_worker(config,dbengine)
-
 def run():
     log.startLogging(sys.stdout)
     parser = argparse.ArgumentParser()
     parser.add_argument('-admin', '--admin', action='store_true', default=False, dest='admin', help='run admin')
     parser.add_argument('-portal', '--portal', action='store_true', default=False, dest='portal', help='run portal')
-    parser.add_argument('-acagent', '--acagent', action='store_true', default=False, dest='acagent', help='run acagent')
-    parser.add_argument('-radauth', '--radauth', action='store_true', default=False, dest='radauth', help='run radauth')
-    parser.add_argument('-radacct', '--radacct', action='store_true', default=False, dest='radacct', help='run radacct')
-    parser.add_argument('-radworker', '--radworker', action='store_true', default=False, dest='radworker', help='run radworker')
     parser.add_argument('-standalone', '--standalone', action='store_true', default=False, dest='standalone', help='run standalone')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -96,29 +75,9 @@ def run():
         start_portal(config,dbengine=dbengine)
         reactor.run()
 
-    elif args.acagent:
-        start_acagent(config,dbengine=dbengine)
-        reactor.run()
-
-    elif args.radauth:
-        start_radauth(config)
-        reactor.run()
-
-    elif args.radacct:
-        start_radacct(config)
-        reactor.run()
-
-    elif args.radworker:
-        start_radworker(config,dbengine)
-        reactor.run()
-
     elif args.standalone:
         start_admin(config,dbengine=dbengine)
         start_portal(config,dbengine=dbengine)
-        start_acagent(config,dbengine=dbengine)
-        start_radauth(config)
-        start_radacct(config)
-        start_radworker(config,dbengine)
         reactor.run()
 
     elif args.initdb:

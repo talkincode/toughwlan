@@ -36,9 +36,6 @@
         <li role="presentation" class="${active=='portal' and 'active' or '' }">
             <a href="#portal" aria-controls="portal" role="tab" data-toggle="tab">Portal设置</a>
         </li>        
-        <li role="presentation" class="${active=='acagent' and 'active' or '' }">
-            <a href="#acagent" aria-controls="acagent" role="tab" data-toggle="tab">Acagent设置</a>
-        </li>
     </ul>
 
     <!-- Tab panes -->
@@ -67,12 +64,6 @@
                 ${portal_form.render_css()}
             </form>
         </div>        
-        <div role="tabpanel" class="tab-pane ${active=='acagent' and 'active' or '' }" id="acagent">
-            <form class="form-horizontal form-well" role="form" action="${acagent_form.action}" method="post">
-                ${xsrf_form_html()}
-                ${acagent_form.render_css()}
-            </form>
-        </div>
     </div>
     </div>
 </div>
