@@ -32,10 +32,7 @@
         </li>
         <li role="presentation" class="${active=='database' and 'active' or '' }">
             <a href="#database" aria-controls="database" role="tab" data-toggle="tab">数据库设置</a>
-        </li>        
-        <li role="presentation" class="${active=='portal' and 'active' or '' }">
-            <a href="#portal" aria-controls="portal" role="tab" data-toggle="tab">Portal设置</a>
-        </li>        
+        </li>             
     </ul>
 
     <!-- Tab panes -->
@@ -57,13 +54,7 @@
                 ${xsrf_form_html()}
                 ${database_form.render_css()}
             </form>
-        </div>        
-        <div role="tabpanel" class="tab-pane ${active=='portal' and 'active' or '' }" id="portal">
-            <form class="form-horizontal form-well" role="form" action="${portal_form.action}" method="post">
-                ${xsrf_form_html()}
-                ${portal_form.render_css()}
-            </form>
-        </div>        
+        </div>             
     </div>
     </div>
 </div>

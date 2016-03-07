@@ -43,22 +43,22 @@ class ApiHandler(BaseHandler):
         self.render_result(code=apistatus.sign_err.code,msg=self._decode_msg(err,msg))
  
     def render_parse_err(self, err=None, msg=None):
-        self.render_result(code=apistatus.sign_err.code, msg=self._decode_msg(err,msg)))
+        self.render_result(code=apistatus.sign_err.code, msg=self._decode_msg(err,msg))
  
     def render_verify_err(self, err=None,msg=None):
-        self.render_result(code=apistatus.verify_err.code, msg=self._decode_msg(err,msg)))
+        self.render_result(code=apistatus.verify_err.code, msg=self._decode_msg(err,msg))
  
     def render_server_err(self,err=None, msg=None):
-        self.render_result(code=apistatus.server_err.code, msg=self._decode_msg(err,msg))) 
+        self.render_result(code=apistatus.server_err.code, msg=self._decode_msg(err,msg)) 
 
     def render_timeout(self,err=None, msg=None):
-        self.render_result(code=apistatus.timeout.code, msg=self._decode_msg(err,msg))) 
+        self.render_result(code=apistatus.timeout.code, msg=self._decode_msg(err,msg)) 
 
     def render_limit_err(self,err=None, msg=None):
-        self.render_result(code=apistatus.limit_err.code, msg=self._decode_msg(err,msg))) 
+        self.render_result(code=apistatus.limit_err.code, msg=self._decode_msg(err,msg)) 
 
     def render_unknow(self,err=None, msg=None):
-        self.render_result(code=apistatus.unknow.code, msg=self._decode_msg(err,msg)))
+        self.render_result(code=apistatus.unknow.code, msg=self._decode_msg(err,msg))
  
 
 

@@ -50,67 +50,6 @@
                     <td>${sys_version or '1.0'}</td>
                 </tr>
                 </tbody>
-                <thead>
-                <tr>
-                    <th colspan="4"> <i class="fa fa-laptop"></i> 管理服务信息</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>监听地址</td>
-                    <td>${config.admin.host}</td>
-                    <td>WEB管理端口</td>
-                    <td>${config.admin.port}</td>                    
-                </tr>
-                </tbody>
-                <thead>
-                <tr>
-                    <th colspan="4"><i class="fa fa-laptop"></i>  Portal 服务信息</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>监听地址</td>
-                    <td>${config.portal.host}</td>
-                    <td>Web 认证端口</td>
-                    <td>${config.portal.port}</td>                    
-                </tr>
-                <tr>
-                    <td>协议支持</td>
-                    <td>CMCC V1, CMCC V2, HUAWEI V1, HUAWEI V2, WIFIDOG</td>  
-                    <td>下线监听端口</td>
-                    <td>${config.portal.listen}</td>                    
-                </tr>
-                </tbody>
-                <thead>
-                <tr>
-                    <th colspan="4"><i class="fa fa-laptop"></i>  AcAgent 服务信息</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>监听地址</td>
-                    <td>${config.acagent.host}</td>
-                    <td>Web 认证端口</td>
-                    <td>${config.acagent.port}</td>                    
-                </tr>
-                <tr>
-                    <td>Web 认证端口</td>
-                    <td>${config.acagent.auth_port}</td>
-                    <td>Portal 协议</td>
-                    <td>${config.acagent.vendor}</td>                    
-                </tr>
-                <tr>
-                    <td>Portal 重定向地址</td>
-                    <td colspan="3">${config.acagent.portal_login}</td>                  
-                </tr>
-                <tr>
-                    <td>Radius 授权端口</td>
-                    <td>${config.acagent.radius.authorize_port}</td>
-                    <td>Radius 记账间隔(秒)</td>
-                    <td>${config.acagent.radius.interim_update}</td>                    
-                </tr>
-                </tbody>
             </table>
 
 

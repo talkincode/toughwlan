@@ -49,7 +49,7 @@ class Httpd(cyclone.web.Application):
                                         input_encoding='utf-8',
                                         output_encoding='utf-8',
                                         encoding_errors='replace',
-                                        module_directory="/tmp")
+                                        module_directory="/tmp/toughwlan")
 
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
