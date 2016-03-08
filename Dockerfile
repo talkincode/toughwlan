@@ -3,7 +3,7 @@ MAINTAINER jamiesun <jamiesun.net@gmail.com>
 
 VOLUME ["/var/toughwlan"]
 
-ADD toughrun /usr/local/bin/toughrun
+ADD script/toughrun /usr/local/bin/toughrun
 RUN chmod +x /usr/local/bin/toughrun
 RUN /usr/local/bin/toughrun install
 
