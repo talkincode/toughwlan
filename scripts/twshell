@@ -162,6 +162,7 @@ install_with_rmysql()
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
+    cat <<EOF
 
     toughwlan instance config (with remote mysql):
 
