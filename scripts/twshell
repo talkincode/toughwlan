@@ -206,6 +206,8 @@ EOF
 
     cd ${rundir}/$instance
 
+    cat ${rundir}/$instance/docker-compose.yml
+
     docker-compose up -d
 
     docker-compose ps
@@ -261,6 +263,8 @@ wlan:
 EOF
 
     cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
 
     docker-compose up -d
 
@@ -423,7 +427,7 @@ case "$1" in
   pull)
     pull 
   ;;
-  
+
   upshell)
     upshell 
   ;;
