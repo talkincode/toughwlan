@@ -13,7 +13,7 @@ install()
 
     git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwlan
 
-    cp /opt/toughwlan/toughwlan.json /etc/toughwlan.json
+    cp /opt/toughwlan/etc/toughwlan.json /etc/toughwlan.json
 
     chmod +x /opt/toughwlan/toughctl
 }
