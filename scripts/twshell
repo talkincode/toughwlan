@@ -87,6 +87,7 @@ wlandb:
     restart: always
     volumes:
         - ${rundir}/$instance/twmysql:/var/lib/mysql
+        - ${rundir}/$instance/twmysql/etc:/etc
 wlan:
     container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
@@ -108,6 +109,7 @@ wlan:
     restart: always
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
+        - /home/toughrun/${instance}/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -199,6 +201,7 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
+        - /home/toughrun/$instance/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -254,6 +257,7 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
+        - /home/toughrun/$instance/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -358,6 +362,13 @@ pull()
     docker pull index.alauda.cn/toughstruct/toughwlan
 }
 
+upshell()
+{
+    wget  https://raw.githubusercontent.com/talkincode/toughwlan/master/scripts/twshell  -O /usr/local/bin/twshell
+    chmod +x /usr/local/bin/twshell
+}
+
+
 
 case "$1" in
 
@@ -411,6 +422,10 @@ case "$1" in
 
   pull)
     pull 
+  ;;
+  
+  upshell)
+    upshell 
   ;;
 
   *)
