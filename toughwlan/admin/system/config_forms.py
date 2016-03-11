@@ -52,15 +52,6 @@ admin_form = btforms.Form(
     action="/config/admin/update"
 )
 
-portal_form = btforms.Form(
-    btforms.Textbox("host", description=u"监听地址", readonly="readonly", **input_style),
-    btforms.Textbox("port", description=u"认证监听端口", readonly="readonly", **input_style),
-    btforms.Textbox("listen", description=u"下线监听端口", readonly="readonly", **input_style),
-    # btforms.Button("submit", type="submit", html=u"<b>更新</b>", **button_style),
-    title=u"Portal配置管理",
-    action="/config/portal/update"
-)
-
 syslog_form = btforms.Form(
     btforms.Dropdown("enable", args=booleans.items(), description=u"开启syslog", **input_style),
     btforms.Textbox("server", description=u"syslog 服务器", **input_style),

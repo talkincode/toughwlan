@@ -19,8 +19,6 @@ class ConfigHandler(BaseHandler):
         syslog_form.fill(self.settings.config.syslog)
         database_form = config_forms.database_form()
         database_form.fill(self.settings.config.database)        
-        portal_form = config_forms.portal_form()
-        portal_form.fill(self.settings.config.portal)
         admin_form = config_forms.admin_form()
         admin_form.fill(self.settings.config.admin)
 
@@ -35,7 +33,6 @@ class ConfigHandler(BaseHandler):
                   active=active,
                   default_form=default_form,
                   database_form=database_form,
-                  portal_form=portal_form,
                   admin_form=admin_form,
                   syslog_form=syslog_form
               )
@@ -62,13 +59,6 @@ class DatabaseHandler(BaseHandler):
         config['database']['backup_path'] = self.get_argument("backup_path")
         config.save()
         self.redirect("/config?active=database")
-
-@permit.route(r"/config/portal/update", u"Portal 配置", u"系统管理", order=2.0003, is_menu=False)
-class PortalHandler(BaseHandler):
-    @cyclone.web.authenticated
-    def post(self):
-        self.redirect("/config?active=portal")
-
 
 @permit.route(r"/config/syslog/update", u"syslog 配置", u"系统管理", order=2.0005, is_menu=False)
 class SyslogHandler(BaseHandler):
