@@ -54,7 +54,7 @@ class Httpd(cyclone.web.Application):
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
         self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
-        self.mcache = cache.CacheManager(self.db_engine)
+        self.mcache = cache.CacheManager(self.db_engine,cache_name="ToughWlanWeb")
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
             'trw_online','system_session','system_cache'])
 

@@ -8,7 +8,8 @@ from twisted.internet import task
 from twisted.internet import protocol
 from twisted.internet import reactor
 from txportal.packet import cmcc, huawei
-from toughlib import utils, logger, mcache
+from toughlib import utils, logger
+from toughlib import db_cache as cache
 from toughwlan import models
 
 ac_cache_key = 'toughwlan.cache.ac.{0}'.format
@@ -21,7 +22,7 @@ class PortalListen(protocol.DatagramProtocol):
         self.syslog = log or logger.Logger(config)
         self.dbengine = dbengine
         self.config = config
-        self.mcache = mcache.Mcache()
+        self.mcache = cache.CacheManager(self.dbengine,cache_name="ToughWlanPortald")
         # self.vendor = PortalListen.vendors.get(config.portal.vendor)
         # self.actions = {
         #     self.vendor.mod.NTF_LOGOUT : self.doAckNtfLogout
