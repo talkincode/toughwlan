@@ -87,7 +87,6 @@ wlandb:
     restart: always
     volumes:
         - ${rundir}/$instance/twmysql:/var/lib/mysql
-        - ${rundir}/$instance/twmysql/etc:/etc
 wlan:
     container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
@@ -109,7 +108,6 @@ wlan:
     restart: always
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-        - /home/toughrun/${instance}/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -201,7 +199,6 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-        - /home/toughrun/$instance/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -259,7 +256,6 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-        - /home/toughrun/$instance/etc:/etc
 EOF
 
     cd ${rundir}/$instance
@@ -332,7 +328,8 @@ logs()
 {
     instance=${1:-toughwlan}
     cd ${rundir}/$instance
-    docker-compose logs
+    logname=${2:-admin}    
+    tail -f ./$logname.log
 }
 
 upgrade()
@@ -409,7 +406,7 @@ case "$1" in
   ;;
 
   logs)
-    logs $2
+    logs $2 $3
   ;;
 
   upgrade)
