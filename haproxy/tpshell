@@ -80,7 +80,7 @@ tportal:
         - "1818"
     environment:
         - DB_TYPE=mysql
-        - DB_URL=mysql://$mysql_user:$mysql_password@${mysql_database}:${mysql_port}/$mysql_database?charset=utf8
+        - DB_URL=mysql://$mysql_user:$mysql_password@$mysql_host:${mysql_port}/$mysql_database?charset=utf8
     restart: always
     ulimits:
         nproc: 65535
