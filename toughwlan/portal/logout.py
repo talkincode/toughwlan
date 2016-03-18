@@ -2,7 +2,7 @@
 # coding:utf-8
 
 import time
-from toughlib import utils
+from toughlib import utils,dispatch,logger
 from toughwlan.portal.base import BaseHandler
 from twisted.internet import defer
 from toughlib.permit import permit
@@ -52,9 +52,7 @@ class LogoutHandler(BaseHandler):
         if not self.current_user:
             self.redirect("/portal/login?ssid=default")
             return
-        self.disconnect().addCallbacks(
-            functools.partial(dispatch.pub(logger.EVENT_INFO)),
-            functools.partial(dispatch.pub(logger.EVENT_ERROR)))
+        self.disconnect().addCallbacks(logger.info,logger.error)
         qstr = self.current_user.get("qstr","ssid=default")
         self.clear_session()
         self.redirect("/portal/login?%s"%qstr,permanent=False)

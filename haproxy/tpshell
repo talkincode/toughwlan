@@ -1,0 +1,273 @@
+#!/bin/sh
+# toughportal v1.0 install script
+# author: jamiesun.net@gmail.com
+
+rundir=/home/toughrun
+
+
+usage ()
+{
+    cat <<EOF
+    Usage: $0 [OPTIONS] instance
+
+    docker_setup               install docker, docker-compose
+    pull                       toughportal docker images pull
+    install                    install toughportal portal with remote mysql 
+    remove                     uninstall toughportal and database
+    status                     toughportal instance status
+    restart                    toughportal instance restart
+    stop                       toughportal instance stop
+    upgrade                    toughportal instance upgrade
+    uplib                      toughportal instance upgrade lib
+    logs                       toughportal instance logs
+    dsh                        toughportal instance bash term
+
+    All other options are passed to the twshell program.
+EOF
+        exit 1
+}
+
+install()
+{
+    instance=${1:-toughportal}
+
+    mkdir -p ${rundir}/$instance
+
+    read -p "mysql host (must): " mysql_host
+    if [ -z $mysql_host ]; then
+        echo "mysql host is empty"
+        exit 1
+    fi
+
+    read -p "mysql port (3306): " mysql_port
+    mysql_port=${mysql_port:-"3306"}
+
+    read -p "mysql user [wlanuser]: " mysql_user
+    mysql_user=${mysql_user:-wlanuser}
+
+    read -p "mysql user password [wlanpwd]: " mysql_password
+    mysql_password=${mysql_password:-wlanpwd}
+
+    read -p "mysql database [wlandb]: " mysql_database
+    mysql_database=${mysql_database:-wlandb}
+
+    read -p "mysql root password [wlanroot]: " mysql_root_password
+    mysql_root_password=${mysql_root_password:-wlanroot}
+
+    read -p "toughportal portal web auth port [1818]: " portal_ha_port
+    portal_ha_port=${portal_ha_port:-1818}
+
+
+    toughportal instance config (with remote mysql):
+
+    instance name: $instance
+    mysql_host: ${mysql_host}
+    mysql_user: ${mysql_user}
+    mysql_password: ${mysql_password}
+    mysql_database: ${mysql_database}
+    mysql_root_password: ${mysql_root_password}
+    portal_ha_port: ${portal_ha_port}
+
+EOF
+
+    rm -f ${rundir}/$instance/docker-compose.yml
+    cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+tportal:
+    container_name: tportal_${instance}
+    image: "index.alauda.cn/toughstruct/toughportal"
+    privileged: true
+    expose:
+        - "1818"
+    environment:
+        - DB_TYPE=mysql
+        - DB_URL=mysql://$mysql_user:$mysql_password@${mysql_database}:${mysql_port}/$mysql_database?charset=utf8
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000
+    volumes:
+        - /home/toughrun/$instance:/var/toughportal
+
+tpha:
+    container_name: tpha_${instance}
+    image: "index.alauda.cn/tutum/haproxy"
+    privileged: true
+    ports:
+        - "${portal_ha_port}:1818"
+    links:
+        - tportal:tportal
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
+EOF
+
+    cd ${rundir}/$instance
+
+    docker-compose up -d
+
+    docker-compose ps
+
+    exit 0
+}
+
+
+docker_setup()
+{
+    curl -sSL https://get.daocloud.io/docker | sh
+
+    curl -L https://get.daocloud.io/docker/compose/releases/download/1.5.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
+    ln -s /usr/local/bin/docker-compose /usr/local/bin/docp
+}
+
+remove()
+{
+    instance=${1:-toughportal}
+
+    cd ${rundir}/$instance
+    read -p "remove all instance [y/n](n): " rmdata
+    rmdata=${rmdata:-n}
+    if [ rmdata == 'y' ]; then
+        docker-compose kill tportal
+        docker-compose rm tportal        
+        docker-compose kill tpha
+        docker-compose rm tpha
+    fi 
+}
+
+
+status()
+{
+    instance=${1:-toughportal}
+    cd ${rundir}/$instance
+    docker-compose ps
+}
+
+restart()
+{
+    instance=${1:-toughportal}
+
+    cd ${rundir}/$instance
+    docker-compose restart
+    docker-compose ps
+}
+
+stop()
+{
+    instance=${1:-toughportal}
+
+    cd ${rundir}/$instance
+    docker-compose stop
+    docker-compose ps
+}
+
+logs()
+{
+    instance=${1:-toughportal}
+    cd ${rundir}/$instance
+    docker-compose logs
+}
+
+scale()
+{
+    instance=${1:-toughportal}
+    snum=${2:-4}
+    cd ${rundir}/$instance
+    docker-compose scale $instance=$snum
+    docker-compose restart
+    docker-compose ps
+}
+
+upgrade()
+{
+    instance=${1:-toughportal}    
+    cd ${rundir}/$instance
+    docker exec -it tportal_$instance /usr/local/bin/toughrun upgrade
+    docker-compose restart 
+    docker-compose ps
+}
+
+uplib()
+{
+    instance=${1:-toughportal}    
+    cd ${rundir}/$instance
+    docker exec -it tportal_$instance /usr/local/bin/toughrun uplib
+    docker-compose restart 
+    docker-compose ps
+}
+
+dsh()
+{
+    instance=${1:-toughportal}    
+    cd ${rundir}/$instance
+    docker exec -it tportal_$instance bash
+}
+
+pull()
+{
+    docker pull index.alauda.cn/toughstruct/toughportal
+    docker pull index.alauda.cn/tutum/haproxy
+}
+
+
+case "$1" in
+
+  docker_setup)
+    docker_setup
+  ;;
+
+  install)
+    install $2
+  ;;
+
+  remove)
+    remove $2
+  ;;
+
+  status)
+    status $2
+  ;;
+
+  restart)
+    restart $2
+  ;;
+
+  stop)
+    stop $2
+  ;;
+
+  logs)
+    logs $2
+  ;;
+
+  upgrade)
+    upgrade $2
+  ;;
+
+  uplib)
+    uplib $2
+  ;;
+
+  scale)
+    scale $2 $3
+  ;;
+
+  dsh)
+    dsh $2
+  ;;
+
+  pull)
+    pull 
+  ;;
+
+  *)
+   usage
+  ;;
+
+esac

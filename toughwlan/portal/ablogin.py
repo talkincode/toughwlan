@@ -9,7 +9,7 @@ from toughlib.permit import permit
 from txportal import client
 import functools
 
-@permit.route(r"/portal/login")
+@permit.route(r"/portal/ablogin")
 class LoginHandler(BaseHandler):
 
     def get(self):
@@ -34,12 +34,14 @@ class LoginHandler(BaseHandler):
 
         if not wlan_params:
             self.render_error(msg=u"Missing parameter: ssid,wlanuserip,wlanacip")
+            self.finish()
             return
 
         start_time = time.time()
         nas = self.get_nas(wlan_params.get("wlanacip",'127.0.0.1'))
         if not nas:
             self.render_error(msg=u"AC server {0} didn't  register ".format(wlan_params.get("wlanacip")))
+            self.finish()
             return
 
         ac_addr = nas['ip_addr']
@@ -48,6 +50,7 @@ class LoginHandler(BaseHandler):
         _vendor= utils.safestr(nas['portal_vendor'])
         if _vendor not in ('cmccv1','cmccv2','huaweiv1','huaweiv2'):
             self.render_error(msg=u"AC server portal_vendor {0} not support ".format(_vendor))
+            self.finish()
             return
 
         send_portal = functools.partial(
@@ -55,7 +58,8 @@ class LoginHandler(BaseHandler):
             secret,
             log=logger,
             debug=self.settings.debug,
-            vendor=_vendor
+            vendor=_vendor,
+            timeout=10,
         )
         vendor = client.PortalClient.vendors.get(_vendor)
 
@@ -73,6 +77,7 @@ class LoginHandler(BaseHandler):
 
         def back_login(msg = u''):
             self.render(self.get_login_template(tpl['tpl_path']), tpl = tpl, msg = msg, qstr = qstr, **wlan_params)
+            self.finish()
 
         if not username or not password:
             back_login(msg = u"username and password cannot be empty")
@@ -93,7 +98,7 @@ class LoginHandler(BaseHandler):
                 if challenge_resp.errCode > 0:
                     if challenge_resp.errCode == 2:
                         self.set_session_user(username, userIp, utils.get_currtime(), qstr=qstr)
-                        self.redirect(firsturl)
+                        self.finish("ok")
                         return
                     raise Exception(vendor.mod.AckChallengeErrs[challenge_resp.errCode])
 
@@ -110,7 +115,7 @@ class LoginHandler(BaseHandler):
             if auth_resp.errCode > 0:
                 if auth_resp.errCode == 2:
                     self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
-                    self.redirect(firsturl)
+                    self.finish("ok")
                     return
                 _err_msg=u"{0},{1}".format(
                     vendor.mod.AckAuthErrs[auth_resp.errCode], 
@@ -119,10 +124,10 @@ class LoginHandler(BaseHandler):
                 raise Exception(_err_msg)
 
             ### aff_ack ################################
-            affack_req = vendor.proto.newAffAckAuth(
-                userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, chap = is_chap)
+            # affack_req = vendor.proto.newAffAckAuth(
+            #     userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, chap = is_chap)
 
-            send_portal(data=affack_req, host=ac_addr, port=ac_port)
+            # send_portal(data=affack_req, host=ac_addr, port=ac_port)
 
             logger.info( u'Portal [username:{0}] auth success'.format(username))
 
@@ -131,7 +136,7 @@ class LoginHandler(BaseHandler):
                 username, (time.time() - start_time) * 1000))
 
             self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr, nasaddr=ac_addr)
-            self.redirect(firsturl)
+            self.finish("ok")
 
         except Exception as err:
             import traceback
