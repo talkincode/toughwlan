@@ -165,6 +165,7 @@ install_with_rmysql()
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
+    cat <<EOF
 
     toughwlan instance config (with remote mysql):
 
@@ -205,6 +206,8 @@ wlan:
 EOF
 
     cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
 
     docker-compose up -d
 
@@ -260,6 +263,8 @@ wlan:
 EOF
 
     cd ${rundir}/$instance
+
+    cat ${rundir}/$instance/docker-compose.yml
 
     docker-compose up -d
 
@@ -327,7 +332,8 @@ logs()
 {
     instance=${1:-toughwlan}
     cd ${rundir}/$instance
-    docker-compose logs
+    logname=${2:-admin}    
+    tail -f ./$logname.log
 }
 
 upgrade()
@@ -360,6 +366,13 @@ pull()
     docker pull index.alauda.cn/toughstruct/mysql
     docker pull index.alauda.cn/toughstruct/toughwlan
 }
+
+upshell()
+{
+    wget  https://raw.githubusercontent.com/talkincode/toughwlan/master/scripts/twshell  -O /usr/local/bin/twshell
+    chmod +x /usr/local/bin/twshell
+}
+
 
 
 case "$1" in
@@ -397,7 +410,7 @@ case "$1" in
   ;;
 
   logs)
-    logs $2
+    logs $2 $3
   ;;
 
   upgrade)
@@ -414,6 +427,10 @@ case "$1" in
 
   pull)
     pull 
+  ;;
+
+  upshell)
+    upshell 
   ;;
 
   *)

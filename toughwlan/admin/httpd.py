@@ -54,7 +54,7 @@ class Httpd(cyclone.web.Application):
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
         self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
-        self.mcache = cache.CacheManager(self.db_engine)
+        self.mcache = cache.CacheManager(self.db_engine,cache_name="ToughWlanWeb")
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
             'trw_online','system_session','system_cache'])
 
@@ -70,21 +70,11 @@ class Httpd(cyclone.web.Application):
                          handle_params={"path": self.config.database.backup_path},
                          order=1.0405)
 
-        self.init_route()
-        cyclone.web.Application.__init__(self, permit.all_handlers, **settings)
-
-    def init_route(self):
         handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "admin")
         load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.admin",excludes=['views','httpd','ddns_task'])
 
-        conn = self.db()
-        oprs = conn.query(models.TrwOperator)
-        for opr in oprs:
-            if opr.operator_type > 0:
-                for rule in self.db.query(models.TrwOperatorRule).filter_by(operator_name=opr.operator_name):
-                    permit.bind_opr(rule.operator_name, rule.rule_path)
-            elif opr.operator_type == 0:  # 超级管理员授权所有
-                permit.bind_super(opr.operator_name)
+        cyclone.web.Application.__init__(self, permit.all_handlers, **settings)
+
 
 
 def run(config, dbengine=None):
