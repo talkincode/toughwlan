@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #coding:utf-8
-from toughwlan.admin.base import BaseHandler
+from toughwlan.manage.base import BaseHandler
 from toughlib.permit import permit
 
 @permit.route(r"/logout")

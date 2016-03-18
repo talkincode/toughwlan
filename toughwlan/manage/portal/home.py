@@ -3,7 +3,7 @@
 
 import time
 from toughlib import utils
-from toughwlan.portal.base import BaseHandler
+from toughwlan.manage.portal.base import BaseHandler
 from twisted.internet import defer
 from toughlib.permit import permit
 from txportal import client

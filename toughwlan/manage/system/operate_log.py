@@ -2,7 +2,7 @@
 # coding:utf-8
 import cyclone.web
 from toughwlan import models
-from toughwlan.admin.base import BaseHandler, MenuSys
+from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 
 @permit.route(r"/operate/log", u'操作日志查询', MenuSys, order=4.0000, is_menu=True)

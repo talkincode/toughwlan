@@ -1,4 +1,4 @@
-FROM talkincode/tough-pypy:kiss
+FROM talkincode/tough-pypy:twlan
 MAINTAINER jamiesun <jamiesun.net@gmail.com>
 
 VOLUME ["/var/toughwlan"]

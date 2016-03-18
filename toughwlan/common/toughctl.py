@@ -33,23 +33,21 @@ def start_initdb(config):
     from toughwlan.common import initdb as init_db
     init_db.update(config)
 
-def start_admin(config,dbengine):
-    from toughwlan.admin import httpd as admin_web
-    from toughwlan.admin import ddns_task
-    admin_web.run(config, dbengine)
+def start_manage(config,dbengine):
+    from toughwlan.manage import httpd
+    from toughwlan.manage import ddns_task
+    httpd.run(config, dbengine)
     ddns_task.run(config, dbengine)
 
-def start_portal(config,dbengine):
-    from toughwlan.portal import portald
-    from toughwlan.portal import httpd as portal_web
+def start_portald(config,dbengine):
+    from toughwlan.manage.portal import portald
     portald.run(config,dbengine)
-    portal_web.run(config,dbengine)
 
 def run():
     log.startLogging(sys.stdout)
     parser = argparse.ArgumentParser()
-    parser.add_argument('-admin', '--admin', action='store_true', default=False, dest='admin', help='run admin')
-    parser.add_argument('-portal', '--portal', action='store_true', default=False, dest='portal', help='run portal')
+    parser.add_argument('-httpd', '--httpd', action='store_true', default=False, dest='httpd', help='run httpd')
+    parser.add_argument('-portald', '--portald', action='store_true', default=False, dest='portald', help='run portald')
     parser.add_argument('-standalone', '--standalone', action='store_true', default=False, dest='standalone', help='run standalone')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -63,21 +61,19 @@ def run():
     if args.debug:
         config.system.debug = True
 
-    syslog = logger.Logger(config)
     dbengine = get_engine(config)
-    dispatch.register(syslog)
 
-    if args.admin:
-        start_admin(config,dbengine=dbengine)
+    if args.httpd:
+        start_manage(config,dbengine=dbengine)
         reactor.run()    
 
-    elif args.portal:
-        start_portal(config,dbengine=dbengine)
+    elif args.portald:
+        start_portald(config,dbengine=dbengine)
         reactor.run()
 
     elif args.standalone:
-        start_admin(config,dbengine=dbengine)
-        start_portal(config,dbengine=dbengine)
+        start_manage(config,dbengine=dbengine)
+        start_portald(config,dbengine=dbengine)
         reactor.run()
 
     elif args.initdb:

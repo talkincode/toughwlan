@@ -3,7 +3,7 @@
 import json
 from hashlib import md5
 from toughlib import utils, apiutils, logger, storage
-from toughwlan.admin.base import BaseHandler
+from toughwlan.manage.base import BaseHandler
 from toughlib.permit import permit
 from toughlib.apiutils import apistatus
 from toughwlan import models

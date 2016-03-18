@@ -88,7 +88,7 @@ class BaseHandler(cyclone.web.RequestHandler):
             template_vars["menu_icons"] = MENU_ICONS
             template_vars["all_menus"] = self.current_user.permit.build_menus(order_cats=ADMIN_MENUS)
 
-        mytemplate = self.tp_lookup.get_template(template_name)
+        mytemplate = self.tp_lookup.get_template("admin/%s"%template_name)
         return mytemplate.render(**template_vars)
 
 

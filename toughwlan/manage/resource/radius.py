@@ -3,9 +3,9 @@
 
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler, MenuRes
+from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
-from toughwlan.admin.resource import radius_form
+from toughwlan.manage.resource import radius_form
 from toughwlan import models
 
 

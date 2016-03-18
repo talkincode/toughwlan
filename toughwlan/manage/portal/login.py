@@ -3,7 +3,7 @@
 
 import time
 from toughlib import utils, logger,dispatch
-from toughwlan.portal.base import BaseHandler
+from toughwlan.manage.portal.base import BaseHandler
 from twisted.internet import defer
 from toughlib.permit import permit
 from txportal import client
@@ -38,6 +38,7 @@ class LoginHandler(BaseHandler):
 
         start_time = time.time()
         nas = self.get_nas(wlan_params.get("wlanacip",'127.0.0.1'))
+        print nas
         if not nas:
             self.render_error(msg=u"AC server {0} didn't  register ".format(wlan_params.get("wlanacip")))
             return
@@ -55,7 +56,8 @@ class LoginHandler(BaseHandler):
             secret,
             log=logger,
             debug=self.settings.debug,
-            vendor=_vendor
+            vendor=_vendor,
+            timeout=15
         )
         vendor = client.PortalClient.vendors.get(_vendor)
 
@@ -122,7 +124,7 @@ class LoginHandler(BaseHandler):
             affack_req = vendor.proto.newAffAckAuth(
                 userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, chap = is_chap)
 
-            send_portal(data=affack_req, host=ac_addr, port=ac_port)
+            send_portal(data=affack_req, host=ac_addr, port=ac_port,noresp=True)
 
             logger.info( u'Portal [username:{0}] auth success'.format(username))
 

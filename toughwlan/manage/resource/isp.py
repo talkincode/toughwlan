@@ -3,10 +3,10 @@
 
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler,MenuRes
+from toughwlan.manage.base import BaseHandler,MenuRes
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.resource import isp_forms
+from toughwlan.manage.resource import isp_forms
 
 
 @permit.route(r"/isp", u"服务商管理", MenuRes, order=2.1000, is_menu=True)

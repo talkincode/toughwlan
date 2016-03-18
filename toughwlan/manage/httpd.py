@@ -17,6 +17,8 @@ from toughlib.dbengine import get_engine
 from toughlib.permit import permit, load_handlers
 from toughlib import db_session as session
 from toughlib import db_cache as cache
+from toughlib import redis_cache
+from toughlib import redis_session
 from toughlib.db_backup import DBBackup
 import toughwlan
 
@@ -30,7 +32,7 @@ class Httpd(cyclone.web.Application):
         settings = dict(
             cookie_secret="12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
             login_url="/login",
-            template_path=os.path.join(os.path.dirname(__file__), "views"),
+            template_path=os.path.join(os.path.dirname(toughwlan.__file__), "views"),
             static_path=os.path.join(os.path.dirname(toughwlan.__file__), "static"),
             xsrf_cookies=True,
             config=self.config,
@@ -53,15 +55,20 @@ class Httpd(cyclone.web.Application):
 
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
-        self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
-        self.mcache = cache.CacheManager(self.db_engine,cache_name="ToughWlanWeb")
+
+        redisconf = config.get('redis')
+        if redisconf:
+            self.session_manager = redis_session.SessionManager(redisconf,settings["cookie_secret"], 600)
+            self.mcache = redis_cache.CacheManager(redisconf,cache_name='ToughWlanWeb-%s'%os.getpid())
+            self.mcache.print_hit_stat(10)
+        else:
+            self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
+            self.mcache = cache.CacheManager(self.db_engine,cache_name='ToughWlanWeb-%s'%os.getpid())
+
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
             'trw_online','system_session','system_cache'])
 
-
         self.aes = utils.AESCipher(key=self.config.system.secret)
-
-
 
         permit.add_route(cyclone.web.StaticFileHandler,
                          r"/backup/download/(.*)",
@@ -70,8 +77,8 @@ class Httpd(cyclone.web.Application):
                          handle_params={"path": self.config.database.backup_path},
                          order=1.0405)
 
-        handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "admin")
-        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.admin",excludes=['views','httpd','ddns_task'])
+        handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "manage")
+        load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.manage",excludes=['views','httpd','ddns_task'])
 
         cyclone.web.Application.__init__(self, permit.all_handlers, **settings)
 

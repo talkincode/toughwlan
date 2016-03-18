@@ -4,7 +4,7 @@ import os
 import subprocess
 import os.path
 import cyclone.web
-from toughwlan.admin.base import BaseHandler, MenuSys
+from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 
 

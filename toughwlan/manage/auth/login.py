@@ -2,7 +2,7 @@
 #coding:utf-8
 from hashlib import md5
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler
+from toughwlan.manage.base import BaseHandler
 from toughwlan import models
 from toughlib.permit import permit
 

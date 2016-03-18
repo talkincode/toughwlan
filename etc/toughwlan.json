@@ -22,6 +22,11 @@
         "user_ntf_heart": 120,
         "proxy_addr": "http://127.0.0.1:1818/portal/login"
     }, 
+    "redis": {
+        "host": "127.0.0.1", 
+        "port": 6379, 
+        "passwd": ""
+    }, 
     "syslog": {
         "enable": 0, 
         "level": "INFO", 

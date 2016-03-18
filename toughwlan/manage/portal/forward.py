@@ -8,7 +8,7 @@ from toughlib import logger,utils,dispatch
 from toughlib.permit import permit
 from toughlib import db_cache as cache
 from toughlib.dbengine import get_engine
-from toughwlan.portal.base import BaseHandler
+from toughwlan.manage.portal.base import BaseHandler
 
 @permit.route(r"/portal/forward")
 class ForwardHandler(BaseHandler):

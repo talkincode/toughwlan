@@ -3,10 +3,10 @@
 
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler, MenuRes
+from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.resource import ostype_forms
+from toughwlan.manage.resource import ostype_forms
 
 permit.route(r"/ostype", u"终端类型管理", MenuRes, order=9.0001, is_menu=True)
 class OsTypeHandler(BaseHandler):

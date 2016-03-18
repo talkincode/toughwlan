@@ -2,10 +2,10 @@
 # coding:utf-8
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler, MenuRes
+from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.resource import domain_form
+from toughwlan.manage.resource import domain_form
 
 
 @permit.route(r"/domain", u"域信息管理", MenuRes, order=5.0000, is_menu=True)

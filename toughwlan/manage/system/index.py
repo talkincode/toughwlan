@@ -4,7 +4,7 @@ import cyclone.auth
 import cyclone.escape
 import cyclone.web
 from beaker.cache import cache_managers
-from toughwlan.admin.base import BaseHandler
+from toughwlan.manage.base import BaseHandler
 from toughlib.permit import permit
 
 @permit.route(r"/")

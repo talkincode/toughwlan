@@ -8,7 +8,7 @@ import cyclone.web
 from twisted.python import log
 from toughlib import utils
 from toughlib.permit import permit
-from toughwlan.admin.base import BaseHandler, MenuSys
+from toughwlan.manage.base import BaseHandler, MenuSys
 
 @permit.route(r"/backup", u"数据备份管理", MenuSys, order=5.0001, is_menu=True)
 class BackupHandler(BaseHandler):

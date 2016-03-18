@@ -48,11 +48,12 @@ install_with_lmysql()
     read -p "mysql root password [wlanroot]: " mysql_root_password
     mysql_root_password=${mysql_root_password:-wlanroot}
 
-    read -p "toughwlan admin port [1810]: " admin_port
+    read -p "toughwlan web port [1810]: " admin_port
     admin_port=${admin_port:-1810}
 
-    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
-    portal_auth_port=${portal_auth_port:-1818}
+    read -p "toughwlan portal web auth port [1818]: " portal_ha_port
+    portal_ha_port=${portal_ha_port:-1818}
+
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
@@ -107,7 +108,21 @@ wlan:
         - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
     restart: always
     volumes:
-        - /home/toughrun/$instance:/var/toughwlan   
+        - /home/toughrun/$instance:/var/toughwlan 
+tpha:
+    container_name: tpha_${instance}
+    image: "index.alauda.cn/tutum/haproxy"
+    privileged: true
+    ports:
+        - "${portal_ha_port}:1810"
+    links:
+        - wlan:wlan
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
 EOF
 
     cd ${rundir}/$instance
@@ -160,8 +175,9 @@ install_with_rmysql()
     read -p "toughwlan admin port [1810]: " admin_port
     admin_port=${admin_port:-1810}
 
-    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
-    portal_auth_port=${portal_auth_port:-1818}
+    read -p "toughwlan portal web auth port [1818]: " portal_ha_port
+    portal_ha_port=${portal_ha_port:-1818}
+
     read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
     portal_listen_port=${portal_listen_port:-50100}
 
@@ -203,6 +219,20 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
+tpha:
+    container_name: tpha_${instance}
+    image: "index.alauda.cn/tutum/haproxy"
+    privileged: true
+    ports:
+        - "${portal_ha_port}:1810"
+    links:
+        - wlan:wlan
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000    
 EOF
 
     cd ${rundir}/$instance
@@ -260,6 +290,20 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
+tpha:
+    container_name: tpha_${instance}
+    image: "index.alauda.cn/tutum/haproxy"
+    privileged: true
+    ports:
+        - "${portal_ha_port}:1810"
+    links:
+        - wlan:wlan
+    restart: always
+    ulimits:
+        nproc: 65535
+        nofile:
+          soft: 20000
+          hard: 40000  
 EOF
 
     cd ${rundir}/$instance
@@ -298,7 +342,9 @@ remove()
     fi 
     
     docker-compose kill wlan
-    docker-compose rm wlan
+    docker-compose rm wlan    
+    docker-compose kill tpha
+    docker-compose rm tpha
     rm -f ${rundir}/$instance/.install
 }
 
@@ -325,6 +371,16 @@ stop()
 
     cd ${rundir}/$instance
     docker-compose stop
+    docker-compose ps
+}
+
+scale()
+{
+    instance=${1:-toughwlan}
+    snum=${2:-4}
+    cd ${rundir}/$instance
+    docker-compose scale $instance=$snum
+    docker-compose restart
     docker-compose ps
 }
 
@@ -365,6 +421,7 @@ pull()
 {
     docker pull index.alauda.cn/toughstruct/mysql
     docker pull index.alauda.cn/toughstruct/toughwlan
+    docker pull index.alauda.cn/tutum/haproxy
 }
 
 upshell()
@@ -407,6 +464,10 @@ case "$1" in
 
   stop)
     stop $2
+  ;;
+
+  scale)
+    scale $2 $3
   ;;
 
   logs)

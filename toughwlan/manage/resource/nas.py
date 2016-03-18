@@ -3,10 +3,10 @@
 
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler,MenuRes
+from toughwlan.manage.base import BaseHandler,MenuRes
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.resource import nas_forms
+from toughwlan.manage.resource import nas_forms
 
 
 @permit.route(r"/bas", u"接入设备管理", MenuRes, order=1.0000, is_menu=True)

@@ -2,10 +2,10 @@
 # coding:utf-8
 from hashlib import md5
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler, MenuSys
+from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.system import password_forms
+from toughwlan.manage.system import password_forms
 
 
 ###############################################################################

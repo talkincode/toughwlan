@@ -15,6 +15,7 @@ from toughlib import utils, apiutils
 from toughlib import dispatch, logger
 from toughwlan import models
 from toughlib import db_session as session
+from toughwlan.manage.settings import *
 
 class BaseHandler(cyclone.web.RequestHandler):
     
@@ -72,7 +73,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         template_vars["handler"] = self
         template_vars["utils"] = utils
         try:
-            mytemplate = self.tp_lookup.get_template(template_name)
+            mytemplate = self.tp_lookup.get_template("portal/%s"%template_name)
             return mytemplate.render(**template_vars)
         except Exception as err:
             logger.info("Render template error {0}".format(utils.safestr(err)))
@@ -146,8 +147,7 @@ class BaseHandler(cyclone.web.RequestHandler):
             return "default/index.html"
 
     def get_template_attrs(self, ssid, ispcode):
-        @self.cache.cache(prefix='portal', expire=600)  
-        def _get_template_attrs(ssid,ispcode):
+        def fetch_result():
             domain_code = self.db.query(models.TrwSsid.domain_code).filter_by(
                 ssid=ssid, isp_code=ispcode).scalar()
             tpl_name = self.db.query(models.TrwDomain.tpl_name).filter_by(
@@ -159,41 +159,35 @@ class BaseHandler(cyclone.web.RequestHandler):
                 ssid=ssid,
                 domain=domain_code
             )
-
             dmattrs = self.db.query(models.TrwDomainAttr).filter_by(
                 domain_code=domain_code,isp_code=ispcode)
             for dattr in dmattrs:
                 tpl_dict[dattr.attr_name] = dattr.attr_value
-
             return tpl_dict
 
-        return _get_template_attrs(ssid,ispcode)
+        return self.cache.aget(template_cache_key(ssid, ispcode),fetch_result,expire=3600)
 
     def get_nas(self, ipaddr):
-        @self.cache.cache(prefix='portal', expire=600)  
-        def _get_nas_info(ipaddr):
+        def fetch_result():
             nas = self.db.query(models.TrwBas).filter_by(ip_addr=ipaddr).first()
             return nas and { c.name:getattr(nas, c.name)  for c in nas.__table__.columns} or {}
-        return _get_nas_info(ipaddr)
-
+        return self.cache.aget(nas_cache_ipkey(ipaddr),fetch_result,expire=3600)
 
     def get_domain(self, ssid, ispcode):
-        @self.cache.cache(prefix='portal', expire=600)  
-        def _get_domain_code(ssid,ispcode):
+        def fetch_result():
             return self.db.query(models.TrwSsid.domain_code).filter_by(
                 ssid=ssid, isp_code=ispcode).scalar()
-        return _get_domain_code(ssid,ispcode)
+        return self.cache.aget(domain_cache_key(ssid, ispcode),fetch_result,expire=3600)
 
         
     def get_check_os_funs(self):
-        @self.cache.cache(prefix='portal', expire=600)  
-        def _get_check_os_funs():
+        def fetch_result():
             ostypes = [(it.os_name, it.dev_type, it.match_rule) for it in self.db.query(models.TrwOSTypes)]
             check_os_funcs = []
             for os_name, dev_type, rule in ostypes:
                 check_os_funcs.append([dev_type, os_name, re.compile(r'{0}'.format(rule), re.IGNORECASE)])
             return check_os_funcs
-        return _get_check_os_funs()
+        return self.cache.aget(chkos_cache_key,fetch_result,expire=3600)
 
 
 

@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from toughlib.utils import safeunicode
-from toughwlan.admin.api.api_base import ApiHandler
+from toughwlan.manage.api.api_base import ApiHandler
 from toughlib.permit import permit
 from toughwlan import models
 import random

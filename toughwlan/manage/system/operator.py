@@ -3,11 +3,11 @@
 from hashlib import md5
 import cyclone.web
 from toughlib import utils
-from toughwlan.admin.base import BaseHandler, MenuSys
+from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 from toughwlan import models
-from toughwlan.admin.system import operator_form
-from toughwlan.admin.system.operator_form import opr_status_dict
+from toughwlan.manage.system import operator_form
+from toughwlan.manage.system.operator_form import opr_status_dict
 
 
 @permit.route(r"/operator", u"操作员管理", MenuSys, order=3.0000, is_menu=True)

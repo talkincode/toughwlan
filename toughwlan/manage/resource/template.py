@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding:utf-8
 import cyclone.web
-from toughwlan.admin.base import BaseHandler, MenuRes
+from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
-from toughwlan.admin.resource import template_forms
+from toughwlan.manage.resource import template_forms
 from toughwlan import models
 
 @permit.route(r"/template", u"认证模版管理", MenuRes, order=7.0000, is_menu=True)
