@@ -74,7 +74,7 @@ EOF
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 tportal:
     container_name: tportal_${instance}
-    image: "index.alauda.cn/toughstruct/toughportal"
+    image: "index.alauda.cn/toughstruct/toughwlan:portal"
     privileged: true
     expose:
         - "1818"
@@ -211,7 +211,7 @@ dsh()
 
 pull()
 {
-    docker pull index.alauda.cn/toughstruct/toughportal
+    docker pull index.alauda.cn/toughstruct/toughwlan:portal
     docker pull index.alauda.cn/tutum/haproxy
 }
 
