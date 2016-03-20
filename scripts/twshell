@@ -55,6 +55,7 @@ redis:
         - "6379"
     environment:
         - REDIS_MAXMEMORY="256mb"
+        - REDIS_PASS="**None**"
     restart: always         
 wlan:
     container_name: wlan_${instance}
@@ -121,6 +122,7 @@ redis:
         - "6379"
     environment:
         - REDIS_MAXMEMORY="512mb"
+        - REDIS_PASS="**None**"
     restart: always 
 wlanpd:
     command: /usr/local/bin/toughrun portald
