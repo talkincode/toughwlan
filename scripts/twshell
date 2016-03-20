@@ -252,6 +252,7 @@ scale()
     snum=${2:-4}
     cd ${rundir}/$instance
     docker-compose scale wlan=$snum
+    docker-compose kill haproxy
     docker-compose rm haproxy
     docker-compose up -d
     docker-compose ps
