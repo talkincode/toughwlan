@@ -15,8 +15,6 @@ from toughlib import logger
 from toughwlan import models
 from toughlib.dbengine import get_engine
 from toughlib.permit import permit, load_handlers
-from toughlib import db_session as session
-from toughlib import db_cache as cache
 from toughlib import redis_cache
 from toughlib import redis_session
 from toughlib.db_backup import DBBackup
@@ -56,14 +54,9 @@ class Httpd(cyclone.web.Application):
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
 
-        redisconf = config.get('redis')
-        if redisconf:
-            self.session_manager = redis_session.SessionManager(redisconf,settings["cookie_secret"], 600)
-            self.mcache = redis_cache.CacheManager(redisconf,cache_name='ToughWlanWeb-%s'%os.getpid())
-            self.mcache.print_hit_stat(10)
-        else:
-            self.session_manager = session.SessionManager(settings["cookie_secret"], self.db_engine, 600)
-            self.mcache = cache.CacheManager(self.db_engine,cache_name='ToughWlanWeb-%s'%os.getpid())
+        self.session_manager = redis_session.SessionManager(config.redis,settings["cookie_secret"], 600)
+        self.mcache = redis_cache.CacheManager(config.redis,cache_name='ToughWlanWeb-%s'%os.getpid())
+        self.mcache.print_hit_stat(10)
 
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
             'trw_online','system_session','system_cache'])

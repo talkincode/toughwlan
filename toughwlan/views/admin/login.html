@@ -39,6 +39,7 @@
                     return false;
                 }
                 else {
+                    console.log(data.msg);
                     window.location.href = "/";
                 }
             }, "json");
@@ -55,6 +56,7 @@
         <p class="login-box-msg"><img src="/static/img/toughradius-logo2.png"></p>
 
         <form action="/login" method="post">
+            ${xsrf_form_html()}
             <div class="form-group has-feedback">
                 <input type="text" id="username" class="form-control" placeholder="username" autocomplete="off"/>
                 <span class="glyphicon glyphicon-user form-control-feedback"></span>

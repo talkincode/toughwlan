@@ -9,11 +9,11 @@ def tag():
     local("git tag -a v%s -m 'version %s'"%(__version__,__version__))
     local("git push origin v%s:v%s"%(__version__,__version__))
 
-def admin():
-    local("pypy toughctl --admin -c etc/toughwlan.json")
+def httpd():
+    local("pypy toughctl --httpd -c etc/toughwlan.json")
 
-def portal():
-    local("pypy toughctl --portal -c etc/toughwlan.json")
+def portald():
+    local("pypy toughctl --portald -c etc/toughwlan.json")
 
 def all():
     local("pypy toughctl --standalone -c etc/toughwlan.json")

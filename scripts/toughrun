@@ -40,16 +40,16 @@ standalone()
     pypy /opt/toughwlan/toughctl --standalone
 }
 
-admin()
+httpd()
 {
     initserv
-    pypy /opt/toughwlan/toughctl --admin
+    pypy /opt/toughwlan/toughctl --httpd
 }
 
-portal()
+portald()
 {
     initserv
-    pypy /opt/toughwlan/toughctl --portal
+    pypy /opt/toughwlan/toughctl --portald
 }
 
 upgrade()
@@ -81,12 +81,12 @@ case "$1" in
     standalone
   ;;
 
-  admin)
-    admin
+  httpd)
+    httpd
   ;;
 
-  portal)
-    portal
+  portald)
+    portald
   ;;
 
 

@@ -10,7 +10,7 @@ from cyclone.util import ObjectDict
 from toughlib import utils,dispatch,logger
 from toughlib.permit import permit
 from toughlib.paginator import Paginator
-from toughlib import db_session as session
+from toughlib import redis_session 
 from toughwlan import __version__ as sys_version
 from toughwlan import models
 
@@ -29,7 +29,7 @@ class BaseHandler(cyclone.web.RequestHandler):
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)
         self.cache = self.application.mcache
-        self.session = session.Session(self.application.session_manager, self)
+        self.session = redis_session.Session(self.application.session_manager, self)
         self.db_backup = self.application.db_backup
 
 
@@ -70,8 +70,8 @@ class BaseHandler(cyclone.web.RequestHandler):
         if not template_vars.has_key("code"):
             template_vars["code"] = 0
         resp = json.dumps(template_vars, ensure_ascii=False)
-        if self.settings.debug:
-            logger.debug("[api debug] :: %s response body: %s" % (self.request.path, utils.safestr(resp)))
+        # if self.settings.debug:
+        #     logger.debug("[api debug] :: %s response body: %s" % (self.request.path, utils.safestr(resp)))
         self.write(resp)
 
 
@@ -128,8 +128,9 @@ class BaseHandler(cyclone.web.RequestHandler):
         session_opr.opr_type = opr_type
         session_opr.login_time = login_time
         session_opr.resources = [r.rule_path for r in self.db.query(models.TrwOperatorRule).filter_by(operator_name=username)]        
-        self.session['session_opr'] = session_opr
+        self.session['wlan_session_opr'] = session_opr
         self.session.save()
+        logger.info(self.session)
 
     def clear_session(self):
         self.session.clear()
@@ -137,7 +138,8 @@ class BaseHandler(cyclone.web.RequestHandler):
         self.clear_all_cookies()  
         
     def get_current_user(self):
-        opr = self.session.get("session_opr")
+        logger.info(self.session)
+        opr = self.session.get("wlan_session_opr")
         if opr:
             opr.permit = permit.fork(opr.username,opr.opr_type,opr.resources)
         return opr

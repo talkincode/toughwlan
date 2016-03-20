@@ -159,22 +159,22 @@ def init_db(db):
     db.commit()
     db.close()
 
-def update(config):
+def update(config,force=False):
     print 'starting update database...'
     try:
-        db_engine = get_engine(config)
-        metadata = models.get_metadata(db_engine)
-        metadata.drop_all(db_engine)
-        metadata.create_all(db_engine)
-        print 'update database done'
-        db = scoped_session(sessionmaker(bind=db_engine, autocommit=False, autoflush=True))()
-        init_db(db)
+        if int(os.environ.get("DB_INIT", 1)) == 1 or force:
+            db_engine = get_engine(config)
+            metadata = models.get_metadata(db_engine)
+            metadata.drop_all(db_engine)
+            metadata.create_all(db_engine)
+            print 'update database done'
+            db = scoped_session(sessionmaker(bind=db_engine, autocommit=False, autoflush=True))()
+            init_db(db)
     except:
         import traceback
         traceback.print_exc()
-        print 'initdb error, retry wait 5 second'
-        time.sleep(5.0)
-        update(config)
+
+
 
 
 

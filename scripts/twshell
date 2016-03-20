@@ -12,9 +12,7 @@ usage ()
 
     docker_setup               install docker, docker-compose
     pull                       toughwlan docker images pull
-    install                    install toughwlan with sqlite (default)
-    install_with_rmysql        install toughwlan with remote mysql 
-    install_with_lmysql        install toughwlan and create local mysql docker inastance
+    install                    install toughwlan 
     remove                     uninstall toughwlan and database
     status                     toughwlan instance status
     restart                    toughwlan instance restart
@@ -29,133 +27,50 @@ EOF
         exit 1
 }
 
-install_with_lmysql()
-{
-    instance=${1:-toughwlan}    
 
-    mkdir -p ${rundir}/$instance
-    cd ${rundir}/$instance
-
-    read -p "mysql user [wlanuser]: " mysql_user
-    mysql_user=${mysql_user:-wlanuser}
-
-    read -p "mysql user password [wlanpwd]: " mysql_password
-    mysql_password=${mysql_password:-wlanpwd}
-
-    read -p "mysql database [wlandb]: " mysql_database
-    mysql_database=${mysql_database:-wlandb}
-
-    read -p "mysql root password [wlanroot]: " mysql_root_password
-    mysql_root_password=${mysql_root_password:-wlanroot}
-
-    read -p "toughwlan web port [1810]: " admin_port
-    admin_port=${admin_port:-1810}
-
-    read -p "toughwlan portal web auth port [1818]: " portal_ha_port
-    portal_ha_port=${portal_ha_port:-1818}
-
-    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
-    portal_listen_port=${portal_listen_port:-50100}
-
-    cat <<EOF
-
-    toughwlan instance config(with local mysql):
-
-    instance name: $instance
-    mysql_user: ${mysql_user}
-    mysql_password: ${mysql_password}
-    mysql_database: ${mysql_database}
-    mysql_root_password: ${mysql_root_password}
-    admin_port: ${admin_port}
-    portal_auth_port: ${portal_auth_port}
-    portal_listen_port: ${portal_listen_port}
-
-EOF
-
-    rm -f ${rundir}/$instance/docker-compose.yml
-    cat > ${rundir}/$instance/docker-compose.yml <<EOF
-wlandb:
-    container_name: wlandb_${instance}
-    image: "index.alauda.cn/toughstruct/mysql"
-    privileged: true
-    expose:
-        - "3306"
-    environment:
-        - MYSQL_USER=$mysql_user
-        - MYSQL_PASSWORD=$mysql_password
-        - MYSQL_DATABASE=$mysql_database
-        - MYSQL_ROOT_PASSWORD=$mysql_root_password
-    restart: always
-    volumes:
-        - ${rundir}/$instance/twmysql:/var/lib/mysql
-wlan:
-    container_name: wlan_${instance}
-    image: "index.alauda.cn/toughstruct/toughwlan"
-    privileged: true
-    ports:
-        - "${admin_port}:1810"
-        - "${portal_auth_port}:1818"
-        - "${portal_listen_port}:50100/udp"
-    links:
-        - wlandb:wlandb
-    ulimits:
-        nproc: 65535
-        nofile:
-          soft: 20000
-          hard: 40000
-    environment:
-        - DB_TYPE=mysql
-        - DB_URL=mysql://$mysql_user:$mysql_password@wlandb:3306/$mysql_database?charset=utf8
-    restart: always
-    volumes:
-        - /home/toughrun/$instance:/var/toughwlan 
-tpha:
-    container_name: tpha_${instance}
-    image: "index.alauda.cn/tutum/haproxy"
-    privileged: true
-    ports:
-        - "${portal_ha_port}:1810"
-    links:
-        - wlan:wlan
-    restart: always
-    ulimits:
-        nproc: 65535
-        nofile:
-          soft: 20000
-          hard: 40000    
-EOF
-
-    cd ${rundir}/$instance
-
-    cat ${rundir}/$instance/docker-compose.yml
-
-    docker-compose up -d wlandb
-
-    echo 3
-    sleep 1
-    echo 2
-    sleep 1
-    echo 1
-    sleep 1
-
-    docker-compose up -d wlan
-
-    docker-compose ps
-
-    exit 0
-}
-
-install_with_rmysql()
+install()
 {
     instance=${1:-toughwlan}
 
     mkdir -p ${rundir}/$instance
 
-    read -p "mysql host (must): " mysql_host
+    read -p "toughwlan web port [1810]: " admin_port
+    admin_port=${admin_port:-1810}
+
+    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
+    portal_listen_port=${portal_listen_port:-50100}
+
+    read -p "mysql host (if none, use sqlite, without haproxy): " mysql_host
+
     if [ -z $mysql_host ]; then
-        echo "mysql host is empty"
-        exit 1
+        echo "toughwlan instance config (default sqlite and without haproxy):"
+        echo "instance name: $instance"
+        echo "web port: ${admin_port}"
+        echo "portal_listen_port: ${portal_listen_port}"
+        rm -f ${rundir}/$instance/docker-compose.yml
+        cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+wlan:
+    container_name: wlan_${instance}
+    command: /usr/local/bin/toughrun standalone
+    image: "index.alauda.cn/toughstruct/toughwlan"
+    privileged: true
+    ports:
+        - "${admin_port}:1810"
+        - "${portal_listen_port}:50100"
+    restart: always  
+    volumes:
+        - /home/toughrun/$instance:/var/toughwlan
+EOF
+
+        cd ${rundir}/$instance
+        cat ${rundir}/$instance/docker-compose.yml
+        docker-compose up -d
+        docker-compose ps
+        exit 0
     fi
+
+    read -p "toughwlan portal haproxy port [1818]: " portal_ha_port
+    portal_ha_port=${portal_ha_port:-1818}
 
     read -p "mysql port (3306): " mysql_port
     mysql_port=${mysql_port:-"3306"}
@@ -172,18 +87,9 @@ install_with_rmysql()
     read -p "mysql root password [radroot]: " mysql_root_password
     mysql_root_password=${mysql_root_password:-radroot}
 
-    read -p "toughwlan admin port [1810]: " admin_port
-    admin_port=${admin_port:-1810}
-
-    read -p "toughwlan portal web auth port [1818]: " portal_ha_port
-    portal_ha_port=${portal_ha_port:-1818}
-
-    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
-    portal_listen_port=${portal_listen_port:-50100}
-
     cat <<EOF
 
-    toughwlan instance config (with remote mysql):
+    toughwlan instance config (with remote mysql & haproxy):
 
     instance name: $instance
     mysql_host: ${mysql_host}
@@ -200,13 +106,12 @@ EOF
 
     rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
-wlan:
-    container_name: wlan_${instance}
+wlanpd:
+    container_name: wlanpd_${instance}
+    command: /usr/local/bin/toughrun portald
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
-        - "${admin_port}:1810"
-        - "${portal_auth_port}:1818"
         - "${portal_listen_port}:50100/udp"
     environment:
         - DB_TYPE=mysql
@@ -219,69 +124,16 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-tpha:
-    container_name: tpha_${instance}
-    image: "index.alauda.cn/tutum/haproxy"
-    privileged: true
-    ports:
-        - "${portal_ha_port}:1810"
-    links:
-        - wlan:wlan
-    restart: always
-    ulimits:
-        nproc: 65535
-        nofile:
-          soft: 20000
-          hard: 40000    
-EOF
-
-    cd ${rundir}/$instance
-
-    cat ${rundir}/$instance/docker-compose.yml
-
-    docker-compose up -d
-
-    docker-compose ps
-
-    exit 0
-}
-
-
-install()
-{
-    instance=${1:-toughwlan}
-
-    mkdir -p ${rundir}/$instance
-
-    read -p "toughwlan admin port [1810]: " admin_port
-    admin_port=${admin_port:-1810}
-
-    read -p "toughwlan portal web auth port [1818]: " portal_auth_port
-    portal_auth_port=${portal_auth_port:-1818}
-    read -p "toughwlan portal logout listen port [50100]: " portal_listen_port
-    portal_listen_port=${portal_listen_port:-50100}
-
-    cat <<EOF
-
-    toughwlan instance config (default sqlite inside):
-
-    instance name: $instance
-    admin_port: ${admin_port}
-    portal_auth_port: ${portal_auth_port}
-    portal_listen_port: ${portal_listen_port}
-
-EOF
-
-    rm -f ${rundir}/$instance/docker-compose.yml
-    cat > ${rundir}/$instance/docker-compose.yml  <<EOF
 wlan:
     container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
         - "${admin_port}:1810"
-        - "${portal_auth_port}:1818"
-        - "${portal_listen_port}:50100/udp"
+    environment:
+        - EXCLUDE_PORTS=6379,9001
+        - DB_TYPE=mysql
+        - DB_URL=mysql://$mysql_user:$mysql_password@$mysql_host:${mysql_port}/$mysql_database?charset=utf8
     restart: always
     ulimits:
         nproc: 65535
@@ -290,12 +142,12 @@ wlan:
           hard: 40000    
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
-tpha:
-    container_name: tpha_${instance}
+haproxy:
+    container_name: haproxy_${instance}
     image: "index.alauda.cn/tutum/haproxy"
     privileged: true
     ports:
-        - "${portal_ha_port}:1810"
+        - "${portal_ha_port}:80"
     links:
         - wlan:wlan
     restart: always
@@ -303,7 +155,7 @@ tpha:
         nproc: 65535
         nofile:
           soft: 20000
-          hard: 40000  
+          hard: 40000    
 EOF
 
     cd ${rundir}/$instance
@@ -316,6 +168,7 @@ EOF
 
     exit 0
 }
+
 
 
 docker_setup()
@@ -331,21 +184,12 @@ docker_setup()
 remove()
 {
     instance=${1:-toughwlan}
-
     cd ${rundir}/$instance
-    read -p "remove database [y/n](n): " rmdata
-    rmdata=${rmdata:-n}
-    if [ rmdata == 'y' ]; then
-        docker-compose kill wlandb
-        docker-compose rm wlandb
-        rm -fr ${rundir}/$instance/twmysql
-    fi 
-    
     docker-compose kill wlan
-    docker-compose rm wlan    
-    docker-compose kill tpha
-    docker-compose rm tpha
-    rm -f ${rundir}/$instance/.install
+    docker-compose rm wlan
+    rm -f ${rundir}/$instance/.install    
+    docker-compose kill haproxy
+    docker-compose rm haproxy
 }
 
 
@@ -379,7 +223,7 @@ scale()
     instance=${1:-toughwlan}
     snum=${2:-4}
     cd ${rundir}/$instance
-    docker-compose scale $instance=$snum
+    docker-compose scale wlan=$snum
     docker-compose restart
     docker-compose ps
 }
@@ -388,7 +232,7 @@ logs()
 {
     instance=${1:-toughwlan}
     cd ${rundir}/$instance
-    logname=${2:-admin}    
+    logname=${2:-httpd}    
     tail -f ./$logname.log
 }
 
@@ -442,13 +286,6 @@ case "$1" in
     install $2
   ;;
 
-  install_with_lmysql)
-    install_with_lmysql $2
-  ;;
-
-  install_with_rmysql)
-    install_with_rmysql $2
-  ;;
 
   remove)
     remove $2

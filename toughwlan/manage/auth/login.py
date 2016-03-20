@@ -34,10 +34,6 @@ class LoginHandler(BaseHandler):
 
         self.set_session_user(uname, self.request.remote_ip, opr.operator_type, utils.get_currtime())
 
-        if opr.operator_type == 1:
-            for rule in self.db.query(models.TrwOperatorRule).filter_by(operator_name=uname):
-                permit.bind_opr(rule.operator_name, rule.rule_path)
-
         self.add_oplog( u'操作员(%s)登陆' % (uname,))
         self.db.commit()
 
