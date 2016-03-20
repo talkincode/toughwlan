@@ -49,6 +49,13 @@ install()
         echo "portal_listen_port: ${portal_listen_port}"
         rm -f ${rundir}/$instance/docker-compose.yml
         cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+redis:
+    image: "index.alauda.cn/tutum/redis"
+    expose:
+        - "6379"
+    environment:
+        - REDIS_MAXMEMORY="256mb"
+    restart: always         
 wlan:
     container_name: wlan_${instance}
     command: /usr/local/bin/toughrun standalone
@@ -57,6 +64,11 @@ wlan:
     ports:
         - "${admin_port}:1810"
         - "${portal_listen_port}:50100"
+    links:
+        - redis:redis
+    environment:
+        - REDIS_URL=redis
+        - REDIS_PORT=6379
     restart: always  
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
@@ -75,17 +87,15 @@ EOF
     read -p "mysql port (3306): " mysql_port
     mysql_port=${mysql_port:-"3306"}
 
-    read -p "mysql user [raduser]: " mysql_user
-    mysql_user=${mysql_user:-raduser}
+    read -p "mysql user [wlanuser]: " mysql_user
+    mysql_user=${mysql_user:-wlanuser}
 
-    read -p "mysql user password [radpwd]: " mysql_password
-    mysql_password=${mysql_password:-radpwd}
+    read -p "mysql user password [wlanpwd]: " mysql_password
+    mysql_password=${mysql_password:-wlanpwd}
 
-    read -p "mysql database [radiusd]: " mysql_database
-    mysql_database=${mysql_database:-radiusd}
+    read -p "mysql database [wlandb]: " mysql_database
+    mysql_database=${mysql_database:-wlandb}
 
-    read -p "mysql root password [radroot]: " mysql_root_password
-    mysql_root_password=${mysql_root_password:-radroot}
 
     cat <<EOF
 
@@ -97,23 +107,32 @@ EOF
     mysql_user: ${mysql_user}
     mysql_password: ${mysql_password}
     mysql_database: ${mysql_database}
-    mysql_root_password: ${mysql_root_password}
-    admin_port: ${admin_port}
-    portal_auth_port: ${portal_auth_port}
+    web_port: ${portal_auth_port}
+    portal_ha_port: ${portal_auth_port}
     portal_listen_port: ${portal_listen_port}
 
 EOF
 
     rm -f ${rundir}/$instance/docker-compose.yml
     cat > ${rundir}/$instance/docker-compose.yml  <<EOF
+redis:
+    image: "index.alauda.cn/tutum/redis"
+    expose:
+        - "6379"
+    environment:
+        - REDIS_MAXMEMORY="512mb"
+    restart: always 
 wlanpd:
-    container_name: wlanpd_${instance}
     command: /usr/local/bin/toughrun portald
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
     ports:
         - "${portal_listen_port}:50100/udp"
+    links:
+        - redis:redis
     environment:
+        - REDIS_URL=redis
+        - REDIS_PORT=6379
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@$mysql_host:${mysql_port}/$mysql_database?charset=utf8
     restart: always
@@ -125,13 +144,16 @@ wlanpd:
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
 wlan:
-    container_name: wlan_${instance}
     image: "index.alauda.cn/toughstruct/toughwlan"
     privileged: true
-    ports:
-        - "${admin_port}:1810"
+    expose:
+        - "1810"
+    links:
+        - redis:redis
     environment:
-        - EXCLUDE_PORTS=6379,9001,50100
+        - REDIS_URL=redis
+        - REDIS_PORT=6379
+        - EXCLUDE_PORTS=50100
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@$mysql_host:${mysql_port}/$mysql_database?charset=utf8
     restart: always
@@ -143,7 +165,6 @@ wlan:
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
 haproxy:
-    container_name: haproxy_${instance}
     image: "index.alauda.cn/tutum/haproxy"
     privileged: true
     ports:
@@ -226,7 +247,8 @@ scale()
     snum=${2:-4}
     cd ${rundir}/$instance
     docker-compose scale wlan=$snum
-    docker-compose restart
+    docker-compose rm haproxy
+    docker-compose up -d
     docker-compose ps
 }
 
@@ -268,6 +290,7 @@ pull()
     docker pull index.alauda.cn/toughstruct/mysql
     docker pull index.alauda.cn/toughstruct/toughwlan
     docker pull index.alauda.cn/tutum/haproxy
+    docker pull index.alauda.cn/tutum/redis
 }
 
 upshell()

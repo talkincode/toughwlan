@@ -13,6 +13,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from toughlib import utils
 from toughlib import logger
 from toughwlan import models
+from toughwlan.manage.settings import redis_conf
 from toughlib.dbengine import get_engine
 from toughlib.permit import permit, load_handlers
 from toughlib import redis_cache
@@ -54,8 +55,9 @@ class Httpd(cyclone.web.Application):
         self.db_engine = dbengine
         self.db = scoped_session(sessionmaker(bind=self.db_engine, autocommit=False, autoflush=False))
 
-        self.session_manager = redis_session.SessionManager(config.redis,settings["cookie_secret"], 600)
-        self.mcache = redis_cache.CacheManager(config.redis,cache_name='ToughWlanWeb-%s'%os.getpid())
+        redisconf = redis_conf(config)
+        self.session_manager = redis_session.SessionManager(redisconf,settings["cookie_secret"], 600)
+        self.mcache = redis_cache.CacheManager(redisconf,cache_name='ToughWlanWeb-%s'%os.getpid())
         self.mcache.print_hit_stat(10)
 
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[

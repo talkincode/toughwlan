@@ -30,8 +30,6 @@ initserv()
         echo "ok" > /var/toughwlan/.install
         echo "init database ok!"
     fi
-
-    echo "init service ok!"
 }
 
 standalone()
@@ -64,7 +62,6 @@ uplib()
 {
     pypy -m pip install https://github.com/talkincode/toughlib/archive/master.zip --upgrade --no-deps
     pypy -m pip install https://github.com/talkincode/txportal/archive/master.zip --upgrade --no-deps
-    pypy -m pip install https://github.com/talkincode/txradius/archive/master.zip --upgrade --no-deps
 }
 
 case "$1" in

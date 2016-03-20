@@ -11,6 +11,7 @@ from txportal.packet import cmcc, huawei
 from toughlib import utils, logger
 from toughlib import redis_cache
 from toughwlan import models
+from toughwlan.manage.settings import redis_conf
 
 ac_cache_key = 'toughwlan.cache.ac.{0}'.format
 
@@ -22,7 +23,7 @@ class PortalListen(protocol.DatagramProtocol):
         self.syslog = log or logger.Logger(config)
         self.dbengine = dbengine
         self.config = config
-        self.mcache = redis_cache.CacheManager(config.redis,cache_name='ToughWlanPortald-%s'%os.getpid())
+        self.mcache = redis_cache.CacheManager(redis_conf(config),cache_name='ToughWlanPortald-%s'%os.getpid())
         # self.vendor = PortalListen.vendors.get(config.portal.vendor)
         # self.actions = {
         #     self.vendor.mod.NTF_LOGOUT : self.doAckNtfLogout
