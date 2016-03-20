@@ -18,6 +18,13 @@ def portald():
 def all():
     local("pypy toughctl --standalone -c etc/toughwlan.json")
 
+def push():
+    message = raw_input("commit msg:")
+    local("git add .")
+    local("git commit -m '%s'"%message)
+    local("git push origin master")
+    local("git push src master")
+
 def initdb():
     local("pypy toughctl --initdb -c etc/toughwlan.json")
 

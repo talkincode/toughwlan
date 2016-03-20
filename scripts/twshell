@@ -188,6 +188,8 @@ remove()
     docker-compose kill wlan
     docker-compose rm wlan
     rm -f ${rundir}/$instance/.install    
+    docker-compose kill wlanpd
+    docker-compose rm wlanpd
     docker-compose kill haproxy
     docker-compose rm haproxy
 }
