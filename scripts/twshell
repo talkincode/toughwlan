@@ -55,7 +55,7 @@ redis:
         - "6379"
     environment:
         - REDIS_MAXMEMORY="256mb"
-        - REDIS_PASS="**None**"
+        - REDIS_PASS="wlanredis"
     restart: always         
 wlan:
     container_name: wlan_${instance}
@@ -70,6 +70,7 @@ wlan:
     environment:
         - REDIS_URL=redis
         - REDIS_PORT=6379
+        - REDIS_PWD="wlanredis"
     restart: always  
     volumes:
         - /home/toughrun/$instance:/var/toughwlan
@@ -122,7 +123,7 @@ redis:
         - "6379"
     environment:
         - REDIS_MAXMEMORY="512mb"
-        - REDIS_PASS="**None**"
+        - REDIS_PASS="wlanredis"
     restart: always 
 wlanpd:
     command: /usr/local/bin/toughrun portald
@@ -135,6 +136,7 @@ wlanpd:
     environment:
         - REDIS_URL=redis
         - REDIS_PORT=6379
+        - REDIS_PWD="wlanredis"
         - DB_TYPE=mysql
         - DB_URL=mysql://$mysql_user:$mysql_password@$mysql_host:${mysql_port}/$mysql_database?charset=utf8
     restart: always
