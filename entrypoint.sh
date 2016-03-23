@@ -9,3 +9,5 @@ if [ ! -f "/var/toughwlan/.install" ];then
     echo "ok" > /var/toughwlan/.install
     echo "init database ok!"
 fi
+
+exec "$@"
