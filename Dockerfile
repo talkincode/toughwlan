@@ -9,7 +9,7 @@ RUN git clone -b master https://github.com/talkincode/toughwlan.git /opt/toughwl
     ln -s /opt/toughwlan/toughwlan.json /etc/toughwlan.json && \
     chmod +x /opt/toughwlan/toughctl 
 
-ADD script/initdb /usr/local/bin/initdb
+ADD scripts/initdb /usr/local/bin/initdb
 RUN chmod +x /usr/local/bin/initdb
 
 ADD entrypoint.sh /usr/local/bin/entrypoint.sh
