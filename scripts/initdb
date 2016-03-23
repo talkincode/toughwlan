@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pypy /opt/toughwlan/toughctl --initdb
