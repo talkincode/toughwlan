@@ -1,0 +1,43 @@
+{
+    "admin": {
+        "host": "0.0.0.0", 
+        "port": 1810
+    }, 
+    "conf_file": "toughwlan.json", 
+    "database": {
+        "backup_path": "/var/toughwlan/data", 
+        "dbtype": "sqlite", 
+        "dburl": "sqlite:////var/toughwlan/toughwlan.sqlite3", 
+        "echo": 0, 
+        "pool_recycle": 300, 
+        "pool_size": 120
+    }, 
+    "portal": {
+        "chap": 1, 
+        "debug": 1, 
+        "host": "0.0.0.0", 
+        "listen": 50100, 
+        "ntf_heart": 120, 
+        "port": 1818, 
+        "user_ntf_heart": 120,
+        "proxy_addr": "http://127.0.0.1:1818/portal/login"
+    }, 
+    "redis": {
+        "host": "127.0.0.1", 
+        "port": 6379, 
+        "passwd": "",
+        "db":0
+    }, 
+    "syslog": {
+        "enable": 0, 
+        "level": "INFO", 
+        "port": 514, 
+        "server": "127.0.0.1", 
+        "shost": "toughwlan_admin"
+    }, 
+    "system": {
+        "debug": 1, 
+        "secret": "LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920", 
+        "tz": "CST-8"
+    }
+}

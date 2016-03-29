@@ -42,8 +42,10 @@ def start_initdb(config,force=False):
 
 def start_manage(config,dbengine):
     from toughwlan.manage import httpd
-    from toughwlan.manage import ddns_task
     httpd.run(config, dbengine)
+
+def start_task(config,dbengine):
+    from toughwlan.manage import ddns_task
     ddns_task.run(config, dbengine)
 
 def start_portald(config,dbengine):
@@ -55,6 +57,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-httpd', '--httpd', action='store_true', default=False, dest='httpd', help='run httpd')
     parser.add_argument('-portald', '--portald', action='store_true', default=False, dest='portald', help='run portald')
+    parser.add_argument('-task', '--task', action='store_true', default=False, dest='task', help='run task')
     parser.add_argument('-standalone', '--standalone', action='store_true', default=False, dest='standalone', help='run standalone')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -79,6 +82,11 @@ def main():
     elif args.portald:
         setup_logger(config)
         start_portald(config,dbengine=dbengine)
+        reactor.run()
+
+    elif args.task:
+        setup_logger(config)
+        start_task(config,dbengine=dbengine)
         reactor.run()
 
     elif args.standalone:
