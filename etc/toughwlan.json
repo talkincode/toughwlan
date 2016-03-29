@@ -1,7 +1,7 @@
 {
     "admin": {
         "host": "0.0.0.0", 
-        "port": 1810
+        "port": 1818
     }, 
     "conf_file": "toughwlan.json", 
     "database": {
@@ -24,7 +24,7 @@
     }, 
     "redis": {
         "host": "127.0.0.1", 
-        "port": 6379, 
+        "port": 16371, 
         "passwd": "",
         "db":0
     }, 
