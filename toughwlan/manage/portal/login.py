@@ -116,7 +116,8 @@ class LoginHandler(BaseHandler):
                     return
                 _err_msg=u"{0},{1}".format(
                     vendor.mod.AckAuthErrs[auth_resp.errCode], 
-                    utils.safeunicode(auth_resp.get_text_info()[0] or "")
+                    text_info = auth_resp.get_text_info()
+                    utils.safeunicode(text_info and text_info[0] or "")
                 )
                 raise Exception(_err_msg)
 
