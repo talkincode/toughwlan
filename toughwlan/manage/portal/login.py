@@ -114,9 +114,9 @@ class LoginHandler(BaseHandler):
                     self.set_session_user(username, userIp, utils.get_currtime(),qstr=qstr)
                     self.redirect(firsturl)
                     return
+                text_info = auth_resp.get_text_info()
                 _err_msg=u"{0},{1}".format(
                     vendor.mod.AckAuthErrs[auth_resp.errCode], 
-                    text_info = auth_resp.get_text_info()
                     utils.safeunicode(text_info and text_info[0] or "")
                 )
                 raise Exception(_err_msg)
