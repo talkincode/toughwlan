@@ -51,6 +51,9 @@ class LoginHandler(BaseHandler):
             self.render_error(msg=u"AC server portal_vendor {0} not support ".format(_vendor))
             return
 
+        hm_mac=(wlan_params.get('wlanstamac','').replace(".",":").replace('-',':'))
+        macbstr = hm_mac and struct.pack('BBBBBB',*[int(i,base=16) for i in hm_mac.split(':')]) or None
+
         send_portal = functools.partial(
             client.send,
             secret,
@@ -89,7 +92,7 @@ class LoginHandler(BaseHandler):
             challenge_resp = None
             if is_chap:
                 ## req challenge ################################
-                challenge_req=vendor.proto.newReqChallenge(userIp, secret, chap = is_chap)
+                challenge_req=vendor.proto.newReqChallenge(userIp, secret, mac=macbstr, chap = is_chap)
                 challenge_resp = yield send_portal(data = challenge_req, host=ac_addr, port=ac_port)
 
                 if challenge_resp.errCode > 0:
@@ -103,7 +106,7 @@ class LoginHandler(BaseHandler):
                 ## req auth ################################
                 auth_req = vendor.proto.newReqAuth(
                     userIp, username, password, challenge_resp.reqId, challenge_resp.get_challenge(), 
-                    secret, ac_addr, serialNo=challenge_req.serialNo, chap=is_chap)
+                    secret, ac_addr, serialNo=challenge_req.serialNo,mac=macbstr, chap=is_chap)
             else:
                 auth_req = vendor.proto.newReqAuth(userIp, username,password,0,None,secret,ac_addr,chap=is_chap)
 
@@ -123,7 +126,7 @@ class LoginHandler(BaseHandler):
 
             ### aff_ack ################################
             affack_req = vendor.proto.newAffAckAuth(
-                userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, chap = is_chap)
+                userIp, secret,ac_addr,auth_req.serialNo,auth_resp.reqId, mac=macbstr,chap = is_chap)
 
             send_portal(data=affack_req, host=ac_addr, port=ac_port,noresp=True)
 
