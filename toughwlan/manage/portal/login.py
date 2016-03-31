@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-
+import struct
 import time
 from toughlib import utils, logger,dispatch
 from toughwlan.manage.portal.base import BaseHandler
