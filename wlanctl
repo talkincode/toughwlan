@@ -8,7 +8,7 @@ except:
     pass
 from toughlib import choosereactor
 choosereactor.install_optimal_reactor(False)
-import sys, os,click
+import sys, os,click,signal
 sys.path.insert(0, os.path.split(__file__)[0])
 from twisted.python import log
 from twisted.internet import reactor
