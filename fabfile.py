@@ -12,6 +12,9 @@ def tag():
 def all():
     local("venv/bin/python wlanctl standalone -c etc/toughwlan.json")
 
+def initdb():
+    local("venv/bin/python wlanctl initdb -c etc/toughwlan.json")
+
 def push():
     message = raw_input("commit msg:")
     local("git add .")

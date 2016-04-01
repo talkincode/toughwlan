@@ -31,8 +31,8 @@ venv:
 
 upgrade-libs:
 	(\
-	venv/bin/pip --U --no-deps install https://github.com/talkincode/toughlib/archive/master.zip;\
-	venv/bin/pip --U --no-deps install https://github.com/talkincode/txportal/archive/master.zip;\
+	venv/bin/pip install -U --no-deps https://github.com/talkincode/toughlib/archive/master.zip;\
+	venv/bin/pip install -U --no-deps https://github.com/talkincode/txportal/archive/master.zip;\
 	)
 
 upgrade-dev:
