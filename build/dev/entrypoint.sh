@@ -5,7 +5,7 @@ if [ ! -f "/var/toughwlan/data" ];then
 fi
 
 if [ ! -f "/var/toughwlan/.install" ];then
-    pypy /opt/toughwlan/toughctl --initdb
+    pypy /opt/toughwlan/wlanctl initdb -c /etc/toughwlan.json
     echo "ok" > /var/toughwlan/.install
     echo "init database ok!"
 fi
