@@ -19,6 +19,7 @@ release
 target
 _build
 _build/*
+venv/
 Thumbs.db
 *.pyc
 *.pyo

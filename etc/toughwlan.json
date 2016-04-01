@@ -19,9 +19,7 @@
         "listen": 50100, 
         "ntf_heart": 120, 
         "port": 1818, 
-        "user_ntf_heart": 120,
-        "proxy_addr": "http://127.0.0.1:1818/portal/login"
-    }, 
+        "user_ntf_heart": 120    }, 
     "redis": {
         "host": "127.0.0.1", 
         "port": 16371, 
