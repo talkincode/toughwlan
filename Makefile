@@ -53,6 +53,6 @@ inittest:
 clean:
 	rm -fr venv
 
-all:install-deps venv install
+all:install-deps venv upgrade-libs install
 
 .PHONY: all install install-deps upgrade-libs upgrade-dev upgrade test initdb inittest clean
