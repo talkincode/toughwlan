@@ -26,7 +26,10 @@ class LoginHandler(BaseHandler):
         if self.settings.debug:
             logger.info( u"Open portal auth page, wlan params:{0}".format(utils.safeunicode(wlan_params)))
 
-        tpl = self.get_template_attrs(ssid,ispcode)
+        if ssid == 'default':
+            tpl = {'page_title':u'wlan portal','tpl_path':'default'}
+        else:
+            tpl = self.get_template_attrs(ssid,ispcode)
         self.render(self.get_login_template(tpl['tpl_path']), msg=None, tpl=tpl, qstr=qstr, **wlan_params)
 
 
