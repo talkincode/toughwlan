@@ -34,7 +34,7 @@
         "shost": "toughwlan_admin"
     }, 
     "system": {
-        "debug": 1, 
+        "debug": 0, 
         "secret": "LpWE9AtfDPQ3ufXBS6gJ37WW8TnSF920", 
         "tz": "CST-8"
     }

@@ -3,7 +3,7 @@ install:
 	virtualenv venv --relocatable;\
 	test -d /var/toughwlan/data || mkdir -p /var/toughwlan/data;\
 	rm -f /etc/toughwlan.conf && cp etc/toughwlan.conf /etc/toughwlan.conf;\
-	rm -f /etc/toughwlan.json && cp etc/toughwlan.json /etc/toughwlan.json;\
+	test -f /etc/toughwlan.json || cp etc/toughwlan.json /etc/toughwlan.json;\
 	rm -f /etc/init.d/toughwlan && cp etc/toughwlan /etc/init.d/toughwlan;\
 	chmod +x /etc/init.d/toughwlan && chkconfig toughwlan on;\
 	rm -f /usr/lib/systemd/system/toughwlan.service && cp etc/toughwlan.service /usr/lib/systemd/system/toughwlan.service;\

@@ -9,6 +9,11 @@ from toughlib.permit import permit
 from txportal import client
 import functools
 
+@permit.route(r"/portal/ab")
+class ABLoginHandler(BaseHandler):
+    def get(self):
+        self.write('ok')
+
 @permit.route(r"/portal/login")
 class LoginHandler(BaseHandler):
 
