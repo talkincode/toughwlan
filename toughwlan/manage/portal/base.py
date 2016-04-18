@@ -7,9 +7,9 @@ import urlparse
 import urllib
 import traceback
 import functools
-import cyclone.web
+import tornado.web
 from mako.template import Template
-from cyclone.util import ObjectDict
+from tornado.util import ObjectDict
 from twisted.internet import defer
 from toughlib import utils, apiutils
 from toughlib import dispatch, logger
@@ -17,7 +17,7 @@ from toughwlan import models
 from toughlib import db_session as session
 from toughwlan.manage.settings import *
 
-class BaseHandler(cyclone.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
     
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)

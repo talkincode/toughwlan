@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 from hashlib import md5
-import cyclone.web
+import tornado.web
 from toughlib import utils
 from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
@@ -12,7 +12,7 @@ from toughwlan.manage.system.operator_form import opr_status_dict
 
 @permit.route(r"/operator", u"操作员管理", MenuSys, order=3.0000, is_menu=True)
 class OperatorHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("operator_list.html",
                       operator_list=self.db.query(models.TrwOperator),opr_status=opr_status_dict)
@@ -20,11 +20,11 @@ class OperatorHandler(BaseHandler):
 
 @permit.route(r"/operator/add", u"操作员新增", MenuSys, order=3.0001)
 class AddHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("opr_form.html", form=operator_form.operator_add_form(),rules=[])
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         form = operator_form.operator_add_form()
         if not form.validates(source=self.get_params()):
@@ -65,7 +65,7 @@ class AddHandler(BaseHandler):
 
 @permit.route(r"/operator/update", u"操作员修改", MenuSys, order=3.0002)
 class UpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         operator_id = self.get_argument("operator_id")
         opr = self.db.query(models.TrwOperator).get(operator_id)
@@ -120,7 +120,7 @@ class UpdateHandler(BaseHandler):
 @permit.route(r"/operator/delete", u"操作员删除", MenuSys, order=3.0003)
 class DeleteHandler(BaseHandler):
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         operator_id = self.get_argument("operator_id")
         opr = self.db.query(models.TrwOperator).get(operator_id)

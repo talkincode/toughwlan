@@ -20,8 +20,8 @@ class PortalQueryHandler(ApiHandler):
             return
 
         result = dict(
-            portal_addr=self.settings.config.portal.proxy_addr,
-            portal_listen=self.settings.config.portal.listen
+            portal_addr=self.settings['config'].portal.proxy_addr,
+            portal_listen=self.settings['config'].portal.listen
         )
 
         self.render_result(code=0, msg="success", data=result)

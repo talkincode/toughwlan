@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-import cyclone.web
+import tornado.web
 from twisted.internet import reactor, defer
 from urllib import urlencode
 from toughlib import logger,utils,dispatch
@@ -19,7 +19,7 @@ class ForwardHandler(BaseHandler):
             "wlanuserip": self.get_argument("userip", self.request.remote_ip),
             "ispcode": self.get_argument("ispcode", "default"),
             "wlanusername": self.get_argument("username","test"),
-            "wlanacip": self.settings.config.acagent.nasaddr,
+            "wlanacip": self.settings['config'].acagent.nasaddr,
             "ssid": self.get_argument("ssid","default"),
             "wlanusermac": self.get_argument("wlanusermac","00-00-00-00-00"),
             "wlanapmac": self.get_argument("wlanapmac","00-00-00-00-00"),
@@ -42,7 +42,7 @@ class ForwardHandler(BaseHandler):
         self.application.mcache.set(
             "callback_cache_%s" % utils.safestr(wlan_params['wlanuserip']),wlan_params['callback'],300)
 
-        url = self.settings.config.acagent.portal_login.format(**wlan_params)
+        url = self.settings['config'].acagent.portal_login.format(**wlan_params)
         logger.info("portal forward to : %s" % url)
         self.redirect(url, permanent=False)
 

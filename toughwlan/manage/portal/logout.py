@@ -15,7 +15,7 @@ class LogoutHandler(BaseHandler):
     @defer.inlineCallbacks
     def disconnect(self):
         try:
-            is_chap=self.settings.config.portal.chap in (1, "1", "chap")
+            is_chap=self.settings['config'].portal.chap in (1, "1", "chap")
             userIp = self.current_user.ipaddr
 
             nas = self.get_nas(self.current_user.nasaddr)
@@ -30,7 +30,7 @@ class LogoutHandler(BaseHandler):
                 client.send,
                 secret,
                 log=self.syslog,
-                debug=self.settings.debug,
+                debug=self.settings['debug'],
                 vendor=_vendor
             )
             vendor = client.PortalClient.vendors.get(_vendor)

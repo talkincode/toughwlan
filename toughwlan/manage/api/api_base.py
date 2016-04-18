@@ -18,14 +18,14 @@ class ApiHandler(BaseHandler):
         return self.render_result(code=apistatus.server_err.code, msg=u"%s:服务器处理失败" % status_code)
 
     def parse_request(self):
-        return apiutils.parse_request(self.settings.config.system.secret,self.request.body)
+        return apiutils.parse_request(self.settings['config'].system.secret,self.request.body)
 
     def parse_form_request(self):
-        return apiutils.parse_form_request(self.settings.config.system.secret,self.get_params())
+        return apiutils.parse_form_request(self.settings['config'].system.secret,self.get_params())
 
     def render_result(self, **result):
-        resp = apiutils.make_message(self.settings.config.system.secret, **result)
-        if self.settings.debug:
+        resp = apiutils.make_message(self.settings['config'].system.secret, **result)
+        if self.settings['debug']:
             logger.debug("[api debug] :: %s response body: %s" % (self.request.path, utils.safeunicode(resp)))
         self.write(resp)
 

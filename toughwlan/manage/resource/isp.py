@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-import cyclone.web
+import tornado.web
 from toughlib import utils
 from toughwlan.manage.base import BaseHandler,MenuRes
 from toughlib.permit import permit
@@ -11,7 +11,7 @@ from toughwlan.manage.resource import isp_forms
 
 @permit.route(r"/isp", u"服务商管理", MenuRes, order=2.1000, is_menu=True)
 class IspHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("isp_list.html",isp_list=self.db.query(models.TrwIsp))
 
@@ -19,11 +19,11 @@ class IspHandler(BaseHandler):
 @permit.route(r"/isp/add", u"服务商新增", MenuRes, order=2.1001)
 class AddHandler(BaseHandler):
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("base_form.html", form=isp_forms.isp_add_form())
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         form = isp_forms.isp_add_form()
         if not form.validates(source=self.get_params()):
@@ -50,7 +50,7 @@ class AddHandler(BaseHandler):
 
 @permit.route(r"/isp/update", u"服务商修改", MenuRes, order=2.10002)
 class UpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         isp_code = self.get_argument("isp_code")
         form = isp_forms.isp_update_form()
@@ -76,7 +76,7 @@ class UpdateHandler(BaseHandler):
 
 @permit.route(r"/isp/delete", u"服务商删除", MenuRes, order=2.1003)
 class DeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         isp_code = self.get_argument("isp_code")
         self.db.query(models.TrwIsp).filter_by(isp_code=isp_code).delete()

@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # coding:utf-8
-import cyclone.web
+import tornado.web
 from toughwlan import models
 from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 
 @permit.route(r"/operate/log", u'操作日志查询', MenuSys, order=4.0000, is_menu=True)
 class OpsListHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.post()
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         opr_name = self.get_argument('opr_name', "")
         query_begin_time = self.get_argument('query_begin_time', "")

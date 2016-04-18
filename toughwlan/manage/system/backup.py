@@ -2,9 +2,9 @@
 # coding:utf-8
 import os
 import os.path
-import cyclone.auth
-import cyclone.escape
-import cyclone.web
+import tornado.auth
+import tornado.escape
+import tornado.web
 from twisted.python import log
 from toughlib import utils
 from toughlib.permit import permit
@@ -12,9 +12,9 @@ from toughwlan.manage.base import BaseHandler, MenuSys
 
 @permit.route(r"/backup", u"数据备份管理", MenuSys, order=5.0001, is_menu=True)
 class BackupHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
-        backup_path = self.settings.config.database.backup_path
+        backup_path = self.settings['config'].database.backup_path
         try:
             if not os.path.exists(backup_path):
                 os.makedirs(backup_path)
@@ -26,9 +26,9 @@ class BackupHandler(BaseHandler):
 
 @permit.route(r"/backup/dump", u"备份数据", MenuSys, order=5.0002)
 class DumpHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
-        backup_path = self.settings.config.database.backup_path
+        backup_path = self.settings['config'].database.backup_path
         backup_file = "toughwlan_db_%s.json.gz" % utils.gen_backep_id()
         try:
             self.db_backup.dumpdb(os.path.join(backup_path, backup_file))
@@ -39,9 +39,9 @@ class DumpHandler(BaseHandler):
 
 @permit.route(r"/backup/restore", u"恢复数据", MenuSys, order=5.0003)
 class RestoreHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
-        backup_path = self.settings.config.database.backup_path
+        backup_path = self.settings['config'].database.backup_path
         backup_file = "toughwlan_db_%s.before_restore.json.gz" % utils.gen_backep_id()
         rebakfs = self.get_argument("bakfs")
         try:
@@ -54,9 +54,9 @@ class RestoreHandler(BaseHandler):
 
 @permit.route(r"/backup/delete", u"删除数据", MenuSys, order=5.0004)
 class DeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
-        backup_path = self.settings.config.database.backup_path
+        backup_path = self.settings['config'].database.backup_path
         bakfs = self.get_argument("bakfs")
         try:
             os.remove(os.path.join(backup_path, bakfs))
@@ -67,11 +67,11 @@ class DeleteHandler(BaseHandler):
 
 @permit.route(r"/backup/upload", u"上传数据", MenuSys, order=5.0004)
 class UploadHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         try:
             f = self.request.files['Filedata'][0]
-            save_path = os.path.join(self.settings.config.database.backup_path, f['filename'])
+            save_path = os.path.join(self.settings['config'].database.backup_path, f['filename'])
             tf = open(save_path, 'wb')
             tf.write(f['body'])
             tf.close()

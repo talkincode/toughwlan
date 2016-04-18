@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-import cyclone.web
+import tornado.web
 from toughlib import utils
 from toughwlan.manage.base import BaseHandler,MenuRes
 from toughlib.permit import permit
@@ -11,7 +11,7 @@ from toughwlan.manage.resource import nas_forms
 
 @permit.route(r"/bas", u"接入设备管理", MenuRes, order=1.0000, is_menu=True)
 class BasHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("bas_list.html",
                       bastype=nas_forms.bastype,
@@ -21,12 +21,12 @@ class BasHandler(BaseHandler):
 @permit.route(r"/bas/add", u"接入设备新增", MenuRes, order=1.0001)
 class AddHandler(BaseHandler):
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
         self.render("base_form.html", form=nas_forms.bas_add_form(isps=isps))
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
         form = nas_forms.bas_add_form(isps)
@@ -59,7 +59,7 @@ class AddHandler(BaseHandler):
 
 @permit.route(r"/bas/update", u"接入设备修改", MenuRes, order=1.00002)
 class UpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         bas_id = self.get_argument("bas_id")
         isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
@@ -90,7 +90,7 @@ class UpdateHandler(BaseHandler):
 
 @permit.route(r"/bas/delete", u"接入设备删除", MenuRes, order=1.0003)
 class DeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         bas_id = self.get_argument("bas_id")
         self.db.query(models.TrwBas).filter_by(id=bas_id).delete()

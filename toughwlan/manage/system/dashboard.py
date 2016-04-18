@@ -3,7 +3,7 @@
 import os
 import subprocess
 import os.path
-import cyclone.web
+import tornado.web
 from toughwlan.manage.base import BaseHandler, MenuSys
 from toughlib.permit import permit
 
@@ -66,34 +66,34 @@ def execute(cmd):
 @permit.route(r"/dashboard", u"控制面板", MenuSys, order=1.0000, is_menu=True, is_open=False)
 class DashboardHandler(BaseHandler):
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
-        self.render("index.html", config=self.settings.config)
+        self.render("index.html", config=self.settings['config'])
 
 @permit.route(r"/dashboard/initdb", u"初始化数据库", MenuSys, order=1.0001, is_menu=False)
 class InitdbHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         return self.render_json(**execute("/opt/toughwlan/toughctl --initdb"))
 
 
 @permit.route(r"/dashboard/restart", u"重启服务", MenuSys, order=1.0004, is_menu=False)
 class RestartHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         return self.render_json(**execute("supervisorctl restart all && supervisorctl status all"))
 
 
 @permit.route(r"/dashboard/update", u"更新系统状态", MenuSys, order=1.0002, is_menu=False)
 class UpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         return self.render_json(**execute("supervisorctl status all"))
 
 
 @permit.route(r"/dashboard/upgrade", u"升级系统版本", MenuSys, order=1.0003, is_menu=False)
 class UpgradeHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         release = self.get_argument("release")
         cmd1 = "cd /opt/toughwlan"

@@ -18,7 +18,7 @@ class LoginHandler(BaseHandler):
         ssid = wlan_params.get("ssid", "default")
         ispcode = wlan_params.get("ispcode", "default")
 
-        if self.settings.debug:
+        if self.settings['debug']:
             logger.info( u"Open portal auth page, wlan params:{0}".format(utils.safeunicode(wlan_params)))
 
         tpl = self.get_template_attrs(ssid,ispcode)
@@ -57,18 +57,18 @@ class LoginHandler(BaseHandler):
             client.send,
             secret,
             log=logger,
-            debug=self.settings.debug,
+            debug=self.settings['debug'],
             vendor=_vendor,
             timeout=10,
         )
         vendor = client.PortalClient.vendors.get(_vendor)
 
-        is_chap=self.settings.config.portal.chap in (1, "1", "chap")
+        is_chap=self.settings['config'].portal.chap in (1, "1", "chap")
         userIp=wlan_params.get('wlanuserip', self.request.remote_ip)
         username=self.get_argument("username", None)
         password=self.get_argument("password", None)
 
-        if self.settings.debug:
+        if self.settings['debug']:
             logger.info( u"Start [username:%s] portal auth, wlan params:%s" % (
                 username, utils.safeunicode(wlan_params)))
 
@@ -131,7 +131,7 @@ class LoginHandler(BaseHandler):
 
             logger.info( u'Portal [username:{0}] auth success'.format(username))
 
-            if self.settings.debug:
+            if self.settings['debug']:
                 logger.debug( u'Portal [username:%s] auth login [cast:%s ms]' % (
                 username, (time.time() - start_time) * 1000))
 

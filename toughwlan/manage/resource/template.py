@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-import cyclone.web
+import tornado.web
 from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
 from toughwlan.manage.resource import template_forms
@@ -8,7 +8,7 @@ from toughwlan import models
 
 @permit.route(r"/template", u"认证模版管理", MenuRes, order=7.0000, is_menu=True)
 class TemplateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         tpl_list = self.db.query(models.TrwTemplate)
         self.render("template.html",tpl_list=tpl_list)
@@ -16,12 +16,12 @@ class TemplateHandler(BaseHandler):
 
 @permit.route(r"/template/add", u"模版新增", MenuRes, order=7.0001)
 class TemplateAddHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         form = template_forms.tpl_add_form()
         self.render("base_form.html", form=form)
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
         form = template_forms.tpl_add_form()
         if not form.validates(source=self.get_params()):
@@ -38,7 +38,7 @@ class TemplateAddHandler(BaseHandler):
 
 @permit.route(r"/template/update", u"模版修改", MenuRes, order=7.0002)
 class TemplateUpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         tpl_id = self.get_argument("tpl_id")
         form = template_forms.tpl_update_form()
@@ -46,7 +46,7 @@ class TemplateUpdateHandler(BaseHandler):
         form.fill(tpl)
         self.render("base_form.html",form=form)
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
         form = template_forms.tpl_update_form()
         if not form.validates(source=self.get_params()):
@@ -63,7 +63,7 @@ class TemplateUpdateHandler(BaseHandler):
 
 @permit.route(r"/template/delete", u"模版删除", MenuRes, order=7.0003)
 class TemplateDeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self, *args, **kwargs):
         tpl_id = self.get_argument("tpl_id")
         self.db.query(models.TrwTemplate).filter_by(id=tpl_id).delete()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-import cyclone.web
+import tornado.web
 from toughlib import utils
 from toughwlan.manage.base import BaseHandler, MenuRes
 from toughlib.permit import permit
@@ -10,13 +10,13 @@ from toughwlan.manage.resource import domain_form
 
 @permit.route(r"/domain", u"域信息管理", MenuRes, order=5.0000, is_menu=True)
 class DomainHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         self.render("domain_list.html", page_data=self.get_page_data(self.db.query(models.TrwDomain)))
 
 @permit.route(r"/domain/detail", u"域信息详情", MenuRes, order=5.0001)
 class DomainDetailHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         domain_id = self.get_argument("domain_id")
         domain = self.db.query(models.TrwDomain).get(domain_id)
@@ -29,13 +29,13 @@ class DomainDetailHandler(BaseHandler):
 
 @permit.route(r"/domain/add", u"域信息新增", MenuRes, order=5.0002)
 class AddHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         tpls = [(t.tpl_name, t.tpl_desc) for t in self.db.query(models.TrwTemplate)]
         isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
         self.render("base_form.html", form=domain_form.domain_add_vform(tpls=tpls,isps=isps))
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         tpls = [(t.tpl_name, t.tpl_desc) for t in self.db.query(models.TrwTemplate)]
         isps = [(t.isp_code, t.isp_name) for t in self.db.query(models.TrwIsp)]
@@ -59,7 +59,7 @@ class AddHandler(BaseHandler):
 
 @permit.route(r"/domain/update", u"域信息修改", MenuRes, order=5.0003)
 class UpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         domain_id = self.get_argument("domain_id")
         tpls = [(t.tpl_name, t.tpl_desc) for t in self.db.query(models.TrwTemplate)]
@@ -85,7 +85,7 @@ class UpdateHandler(BaseHandler):
 @permit.route(r"/domain/delete", u"域信息删除", MenuRes, order=5.0004)
 class DeleteHandler(BaseHandler):
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         domain_id = self.get_argument("domain_id")
         domain = self.db.query(models.TrwDomain).filter_by(id=domain_id).first()
@@ -102,7 +102,7 @@ class DeleteHandler(BaseHandler):
 
 @permit.route(r"/domain/attr/add", u"域属性新增", MenuRes, order=5.0005)
 class DomainAttrAddHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         isp_code = self.get_argument("isp_code")
         domain_code = self.get_argument("domain_code")
@@ -114,7 +114,7 @@ class DomainAttrAddHandler(BaseHandler):
         form.isp_code.set_value(isp_code)
         self.render("base_form.html", form=form)
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         form = domain_form.domain_attr_add_form()
         if not form.validates(source=self.get_params()):
@@ -135,7 +135,7 @@ class DomainAttrAddHandler(BaseHandler):
 
 @permit.route(r"/domain/attr/update", u"域属性修改", MenuRes, order=5.0006)
 class DomainAttrUpdateHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         attr_id = self.get_argument("attr_id")
         attr = self.db.query(models.TrwDomainAttr).get(attr_id)
@@ -143,7 +143,7 @@ class DomainAttrUpdateHandler(BaseHandler):
         form.fill(attr)
         self.render("base_form.html", form=form)
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
         form = domain_form.domain_attr_update_form()
         if not form.validates(source=self.get_params()):
@@ -161,7 +161,7 @@ class DomainAttrUpdateHandler(BaseHandler):
 
 @permit.route(r"/domain/attr/delete", u"域属性删除", MenuRes, order=5.0007)
 class DomainAttrDeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         attr_id = self.get_argument("attr_id")
         attr = self.db.query(models.TrwDomainAttr).get(attr_id)
@@ -175,7 +175,7 @@ class DomainAttrDeleteHandler(BaseHandler):
 
 @permit.route(r"/domain/ssid/add", u"SSID信息新增", MenuRes, order=5.0008)
 class AddHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         isp_code = self.get_argument("isp_code")
         domain_code = self.get_argument("domain_code")
@@ -184,7 +184,7 @@ class AddHandler(BaseHandler):
         form.domain_code.set_value(domain_code)
         self.render("base_form.html", form=form)
 
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def post(self):
         form = domain_form.ssid_add_form()
         if not form.validates(source=self.get_params()):
@@ -212,7 +212,7 @@ class AddHandler(BaseHandler):
 
 @permit.route(r"/domain/ssid/delete", u"SSID信息删除", MenuRes, order=5.0009)
 class DeleteHandler(BaseHandler):
-    @cyclone.web.authenticated
+    @tornado.web.authenticated
     def get(self):
         ssid_id = self.get_argument("ssid_id")
         mssid = self.db.query(models.TrwSsid).get(ssid_id)

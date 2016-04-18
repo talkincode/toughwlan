@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 #coding:utf-8
+from tornado.platform.twisted import TwistedIOLoop
+TwistedIOLoop().install()
 import sys
 import os
 import time
-import cyclone.web
+import tornado.web
 from twisted.python import log
 from twisted.internet import reactor
 from beaker.cache import CacheManager
@@ -23,7 +25,7 @@ import toughwlan
 
 
 
-class Httpd(cyclone.web.Application):
+class Httpd(tornado.web.Application):
     def __init__(self, config=None, dbengine=None, **kwargs):
 
         self.config = config
@@ -65,7 +67,7 @@ class Httpd(cyclone.web.Application):
 
         self.aes = utils.AESCipher(key=self.config.system.secret)
 
-        permit.add_route(cyclone.web.StaticFileHandler,
+        permit.add_route(tornado.web.StaticFileHandler,
                          r"/backup/download/(.*)",
                          u"下载数据",
                          u"系统管理",
@@ -75,11 +77,11 @@ class Httpd(cyclone.web.Application):
         handler_path = os.path.join(os.path.abspath(os.path.dirname(toughwlan.__file__)), "manage")
         load_handlers(handler_path=handler_path, pkg_prefix="toughwlan.manage",excludes=['views','httpd','ddns_task'])
 
-        cyclone.web.Application.__init__(self, permit.all_handlers, **settings)
+        tornado.web.Application.__init__(self, permit.all_handlers, **settings)
 
 
 
 def run(config, dbengine=None):
     app = Httpd(config, dbengine=dbengine)
-    reactor.listenTCP(config.admin.port, app, interface=config.admin.host)
+    app.listen(config.admin.port)
 

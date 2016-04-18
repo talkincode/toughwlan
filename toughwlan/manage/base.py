@@ -5,8 +5,8 @@ import re
 import urlparse
 import urllib
 import traceback
-import cyclone.web
-from cyclone.util import ObjectDict
+import tornado.web
+from tornado.util import ObjectDict
 from toughlib import utils,dispatch,logger
 from toughlib.permit import permit
 from toughlib.paginator import Paginator
@@ -24,7 +24,7 @@ MENU_ICONS = {
 }
 
 
-class BaseHandler(cyclone.web.RequestHandler):
+class BaseHandler(tornado.web.RequestHandler):
     
     def __init__(self, *argc, **argkw):
         super(BaseHandler, self).__init__(*argc, **argkw)
@@ -70,7 +70,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         if not template_vars.has_key("code"):
             template_vars["code"] = 0
         resp = json.dumps(template_vars, ensure_ascii=False)
-        # if self.settings.debug:
+        # if self.settings['debug']:
         #     logger.debug("[api debug] :: %s response body: %s" % (self.request.path, utils.safestr(resp)))
         self.write(resp)
 
