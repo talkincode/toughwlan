@@ -25,7 +25,6 @@ venv:
 	test -d venv || virtualenv venv;\
 	venv/bin/pip install -U pip;\
 	venv/bin/pip install -U wheel;\
-	venv/bin/pip install -U coverage;\
 	venv/bin/pip install -U -r requirements.txt;\
 	)
 
@@ -45,10 +44,10 @@ test:
 	sh runtests.sh
 
 initdb:
-	venv/bin/python wlanctl initdb -f -c /etc/toughwlan.json
+	python wlanctl initdb -f -c /etc/toughwlan.json
 
 inittest:
-	venv/bin/python wlanctl inittest -c /etc/toughwlan.json
+	python wlanctl inittest -c /etc/toughwlan.json
 
 clean:
 	rm -fr venv
