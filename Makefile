@@ -3,7 +3,7 @@ install:
 	virtualenv venv --relocatable;\
 	test -d /var/toughwlan/data || mkdir -p /var/toughwlan/data;\
 	rm -f /etc/toughwlan.conf && cp etc/toughwlan.conf /etc/toughwlan.conf;\
-	rm -f /etc/toughwlan.json && cp etc/toughwlan.json /etc/toughwlan.json;\
+	test -f /etc/toughwlan.json || cp etc/toughwlan.json /etc/toughwlan.json;\
 	rm -f /etc/init.d/toughwlan && cp etc/toughwlan /etc/init.d/toughwlan;\
 	chmod +x /etc/init.d/toughwlan && chkconfig toughwlan on;\
 	rm -f /usr/lib/systemd/system/toughwlan.service && cp etc/toughwlan.service /usr/lib/systemd/system/toughwlan.service;\
@@ -25,7 +25,6 @@ venv:
 	test -d venv || virtualenv venv;\
 	venv/bin/pip install -U pip;\
 	venv/bin/pip install -U wheel;\
-	venv/bin/pip install -U coverage;\
 	venv/bin/pip install -U -r requirements.txt;\
 	)
 
@@ -45,14 +44,14 @@ test:
 	sh runtests.sh
 
 initdb:
-	venv/bin/python wlanctl initdb -f -c /etc/toughwlan.json
+	python wlanctl initdb -f -c /etc/toughwlan.json
 
 inittest:
-	venv/bin/python wlanctl inittest -c /etc/toughwlan.json
+	python wlanctl inittest -c /etc/toughwlan.json
 
 clean:
 	rm -fr venv
 
-all:install-deps venv install
+all:install-deps venv upgrade-libs install
 
 .PHONY: all install install-deps upgrade-libs upgrade-dev upgrade test initdb inittest clean
