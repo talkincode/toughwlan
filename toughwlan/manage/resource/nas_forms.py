@@ -11,9 +11,6 @@ portaltype = {
     'cmccv2': "CMCC V2",
     'huaweiv1': "HUAWEI V1",
     'huaweiv2': "HUAWEI V2",
-    'wifidog': "WIFIDOG",
-    'routeros': "RouterOS",
-    'ikuai' : "ikuai"
 }
 
 bastype = {
@@ -24,8 +21,6 @@ bastype = {
     2011: u'华为',
     25506: u'H3C',
     3902: u'中兴',
-    10055: u'爱快',
-    14988: u'RouterOS'
 }
 
 def bas_add_form(isps=[]):

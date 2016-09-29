@@ -58,7 +58,6 @@ class Httpd(cyclone.web.Application):
         redisconf = redis_conf(config)
         self.session_manager = redis_session.SessionManager(redisconf,settings["cookie_secret"], 600)
         self.mcache = redis_cache.CacheManager(redisconf,cache_name='ToughWlanWeb-%s'%os.getpid())
-        self.mcache.print_hit_stat(10)
 
         self.db_backup = DBBackup(models.get_metadata(self.db_engine), excludes=[
             'trw_online','system_session','system_cache'])

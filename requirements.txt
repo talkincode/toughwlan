@@ -11,10 +11,7 @@ cyclone
 six
 autobahn
 pycrypto
-MySQL-python
 SQLAlchemy
-pyzmq
-txzmq
 msgpack-python
 psutil
 toughlib

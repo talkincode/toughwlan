@@ -68,7 +68,7 @@ class LoginHandler(BaseHandler):
             log=logger,
             debug=self.settings.debug,
             vendor=_vendor,
-            timeout=15
+            timeout=5
         )
         vendor = client.PortalClient.vendors.get(_vendor)
 
