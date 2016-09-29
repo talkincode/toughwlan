@@ -1,5 +1,5 @@
-FROM index.alauda.cn/toughstruct/tough-pypy:twlan
-MAINTAINER jamiesun <jamiesun.net@gmail.com>
+FROM daocloud.io/toughcloud/docker-base
+MAINTAINER toughcloud <support@toughstruct.com>
 
 VOLUME ["/var/toughwlan"]
 
@@ -17,5 +17,5 @@ EXPOSE 1810
 EXPOSE 50100/udp
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["pypy", "/opt/toughwlan/wlanctl", "standalone]"
+CMD ["python", "/opt/toughwlan/wlanctl", "standalone]"
 
