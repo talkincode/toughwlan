@@ -1,3 +1,7 @@
+
+> ## 最新版本TOUGHRADIUS 已经实现 WLAN认证功能，请移步 [https://github.com/talkincode/ToughRADIUS](https://github.com/talkincode/ToughRADIUS)
+
+
 # TOUGHWLAN介绍
 
 TOUGHWLAN 是一个开源的WLAN运营管理系统，采用于AGPL许可协议发布。
